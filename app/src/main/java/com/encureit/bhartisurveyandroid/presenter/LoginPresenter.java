@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.text.TextUtils;
 
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
+import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.login.LoginActivity;
 import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
 import com.encureit.bhartisurveyandroid.models.contracts.LoginContract;
@@ -55,18 +56,24 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void doLogin() {
         if (validate()) {
+            ScreenHelper.hideKeyboard(mActivity);
             if(mActivity.isInternetConnected()) {
                 mActivity.startProgressDialog();
 
                 RetrofitClientLogin.getApiService().getLoginResponse(userId.get()).enqueue(new Callback<LoginResponseModel>() {
                     @Override
                     public void onResponse(Call<LoginResponseModel> call, Response<LoginResponseModel> response) {
-                        if (response.code() == 201) {
-                            UserLoginObject obj = new UserLoginObject();
-                            obj.setResponse(response.body());
-                            obj.setUserId(userId.get());
-                            mActivity.dismissProgressDialog();
-                            mViewModel.login(obj);
+                        if (response.code() == 200 || response.code() == 201) {
+                            if (response.body().isStatus()) {
+                                UserLoginObject obj = new UserLoginObject();
+                                obj.setResponse(response.body());
+                                obj.setUserId(userId.get());
+                                mActivity.dismissProgressDialog();
+                                mViewModel.login(obj);
+                            } else {
+                                mActivity.dismissProgressDialog();
+                                mViewModel.showLoginFailed(response.body().getMessage());
+                            }
                         } else {
                             mActivity.dismissProgressDialog();
                             mViewModel.showLoginFailed("Invalid Response from server");

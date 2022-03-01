@@ -8,6 +8,8 @@ public class LoginResponseModel {
    String key;
    String user_id;
    String user_role;
+   String errorCode;
+   String message = "Invalid Response From Server";
 
     public boolean isStatus() {
         return status;
@@ -39,5 +41,21 @@ public class LoginResponseModel {
 
     public void setUser_role(String user_role) {
         this.user_role = user_role;
+    }
+
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
