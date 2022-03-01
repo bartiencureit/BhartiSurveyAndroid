@@ -1,5 +1,6 @@
 package com.encureit.bhartisurveyandroid.network;
 
+import android.content.Context;
 import android.os.Environment;
 
 public class Contants {
@@ -28,4 +29,5 @@ public class Contants {
     public static String UNIQUE_FORM_ID = "com.encureit.samtadoot.uniqueFormID";
     public static String IS_FORM_NEW = "com.encureit.samtadoot.isFormNew";
     public static String IS_FORM_COMPLETED = "com.encureit.samtadoot.isFormCompleted";
+    public static Context applicationContext = null;
 }
