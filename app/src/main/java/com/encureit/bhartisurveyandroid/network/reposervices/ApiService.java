@@ -2,6 +2,7 @@ package com.encureit.bhartisurveyandroid.network.reposervices;
 
 
 import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.network.Contants;
 
 import java.util.List;
@@ -24,6 +25,21 @@ public interface ApiService {
     @POST(Contants.GET_LOGIN)
     Call<LoginResponseModel> getLoginResponse(
             @Field("user_serial_no") String user_serial_no
+    );
+
+    /**
+     * @date 1-3-2022
+     * Checks Otp
+     * Response has status, error_code, login_date and message
+     * @param user_id
+     * @param otp
+     * @return
+     */
+    @FormUrlEncoded
+    @POST(Contants.GET_VERIFY_OTP)
+    Call<OtpCheckResponseModel> getOtpCheckResponse(
+            @Field("user_id") String user_id,
+            @Field("otp") String otp
     );
 }
 

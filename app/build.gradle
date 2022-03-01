@@ -48,4 +48,5 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
     implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.github.GoodieBag:Pinview:v1.4'
 }

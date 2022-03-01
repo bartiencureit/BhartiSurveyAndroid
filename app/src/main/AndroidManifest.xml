@@ -10,7 +10,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BhartiSurveyAndroid">
-        <activity android:name=".login.OtpCheckActivity"></activity>
+        <activity android:name=".login.OtpCheckActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/BaseTheme"
+            />
         <activity
             android:name=".login.LoginActivity"
             android:exported="true"
