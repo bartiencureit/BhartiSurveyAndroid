@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
 import com.encureit.bhartisurveyandroid.R;
@@ -11,13 +12,14 @@ import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.databinding.ActivityLoginBinding;
 import com.encureit.bhartisurveyandroid.databinding.ActivityOtpCheckBinding;
 import com.encureit.bhartisurveyandroid.lib.AppKeys;
+import com.encureit.bhartisurveyandroid.listeners.MessageListener;
 import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.models.contracts.OtpContract;
 import com.encureit.bhartisurveyandroid.presenter.OtpPresenter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewModel {
+public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewModel, MessageListener {
     public ActivityOtpCheckBinding mBinding;
     private String loginUserId;
     private OtpPresenter mPresenter;
@@ -49,5 +51,20 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
     @Override
     public void showOtpFailed(String error) {
         Snackbar.make(mBinding.getRoot(),""+error, BaseTransientBottomBar.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void messageReceived(String message) {
+        Log.i("OTPCA::", "OTP_: " + message);
+        if (!message.equalsIgnoreCase("")) {
+            if (message.contains(":")) {
+                String[] data = message.split(":");
+                message = data[1];
+                mBinding.pinview.setValue(message);
+            }
+            Log.i("OCA:","OTP Received : " + message);
+        } else {
+            Log.i("OCA:","OTP not Received : ");
+        }
     }
 }
