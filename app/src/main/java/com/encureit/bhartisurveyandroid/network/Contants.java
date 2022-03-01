@@ -4,8 +4,10 @@ import android.content.Context;
 import android.os.Environment;
 
 public class Contants {
-    public static final String BASE_URL = "https://machinetest.encureit.com";
-    public static final String GET_LIST = "country.php";
+    public static final String BASE_URL = "http://evaluation.rkenterprises.group/";
+    public static final String OTHER_BASE_URL = BASE_URL+"api/";
+    public static final String LOGIN_BASE_URL = BASE_URL+"login_api/";
+    public static final String GET_LOGIN = "isLoginf";
 
     public static String PREF_IS_LOGIN = "PREF_IS_LOGIN";
     public static String PREF_AUTH_TOKEN = "PREF_AUTH_TOKEN";

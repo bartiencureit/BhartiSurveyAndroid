@@ -22,6 +22,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivitySplashBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         mPresenter = new SplashPresenter(this);
         mBinding.setPresenter(mPresenter);
         initObject();
@@ -42,5 +43,17 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     @Override
     public void startAnotherActivity(Class<?> cls, boolean finishCurrent) {
         startActivityOnTop(cls,finishCurrent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mHandler.postDelayed(mRunnable, SPLASH_INTERVAL_IN_MILLIS);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeCallbacks(mRunnable);
     }
 }

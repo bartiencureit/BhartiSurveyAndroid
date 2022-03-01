@@ -2,7 +2,8 @@ package com.encureit.bhartisurveyandroid.utils;
 
 import android.util.Log;
 
-import com.encureit.samtadoot.BuildConfig;
+import androidx.viewbinding.BuildConfig;
+
 
 /**
  * Created by AbhishekR on

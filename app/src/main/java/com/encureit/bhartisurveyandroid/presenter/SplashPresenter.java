@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
 import com.encureit.bhartisurveyandroid.MainActivity;
+import com.encureit.bhartisurveyandroid.login.LoginActivity;
 import com.encureit.bhartisurveyandroid.models.contracts.SplashContract;
 
 import java.text.SimpleDateFormat;
@@ -21,6 +22,10 @@ public class SplashPresenter implements SplashContract.Presenter {
         this.mViewModel = mViewModel;
     }
 
+    /**
+     * Checks last login date
+     * @param helper
+     */
     @Override
     public void checkLastLoginDate(GlobalHelper helper) {
         SimpleDateFormat myFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -39,7 +44,7 @@ public class SplashPresenter implements SplashContract.Presenter {
 //                    mViewModel.startAnotherActivity(DashboardActivity.class, true);
                     Log.i("SplashActivity::", "direct start");
                 } else {
-//                    mViewModel.startAnotherActivity(LogInActivity.class, true);
+                    mViewModel.startAnotherActivity(LoginActivity.class, true);
                     Log.i("SplashActivity::", "login expired start");
                 }
             } catch (Exception e) {
@@ -48,7 +53,7 @@ public class SplashPresenter implements SplashContract.Presenter {
             }
         } else {
             // todo direct login screen
-//            mViewModel.startAnotherActivity(LogInActivity.class, true);
+            mViewModel.startAnotherActivity(LoginActivity.class, true);
             Log.i("SplashActivity::", "Freshly start");
         }
     }

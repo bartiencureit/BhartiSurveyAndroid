@@ -7,4 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="textColor">@color/purple_500</color>
+    <color name="colorPrimary">#323593</color>
+    <color name="colorPrimaryDark">#323593</color>
+    <color name="colorAccent">#9E9E9E</color>
+    <color name="textBlackColor">@android:color/black</color>
+
+    <color name="colorBackground">#fafafa</color>
+    <!---->
+    <color name="colorBorder">#ddd</color>
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorGray">#f3f3f3</color>
+    <color name="colorRed">#FF0000</color>
+    <color name="red">#FF0000</color>
 </resources>

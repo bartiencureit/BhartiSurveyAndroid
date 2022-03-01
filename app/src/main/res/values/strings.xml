@@ -4,4 +4,37 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="loading">Loading</string>
+
+    <string name="save">जतन करा</string>
+    <string name="user_type">वापरकर्ता प्रकार</string>
+    <string name="user_id">वापरकर्ता आयडी</string>
+    <string name="login">लॉगिन</string>
+    <string name="otp_msg">कृपया रजिस्टर मोबाईल नंबर पाठविलेली \n कोड टाईप  करा</string>
+    <string name="login_msg">कृपया योग्य वापरकर्ता आयडी \n टाइप करा</string>
+    <string name="otp_resend"><u>पुन्हा पाठवा</u></string>
+    <string name="submit">सबमिट करा </string>
+
+    <string name="sync_all_data_from_server">सर्व्हर वरून सर्व डेटा गोळा करा</string>
+    <string name="sync_candidate_forms">सर्वेक्षण फॉर्म अपलोड करा</string>
+    <string name="last_sync">शेवटचं Sync:</string>
+    <string name="compare_question1">घरातील सर्व सदस्य कामावर गेले आहेत</string>
+
+    <string name="completed">Completed</string>
+    <string name="pending">Pending</string>
+    <string name="anukramank">अनुक्रमांक</string>
+    <string name="message_on_back_button_pressed">आपला डेटा जतन होणार नाही</string>
+    <string name="message_on_save_button_pressed">आपण आपला फॉर्म जतन करू इच्छिता?</string>
+    <string name="fill_this_editBox_errorMessage">हे भरा.</string>
+    <string name="please_fill_valid_userID">कृपया  वापरकर्ता आयडी बरोबर टाका.</string>
+    <string name="please_fill_valid_otp">कृपया रजिस्टर मोबाइल नंबर वर पाठविलेला कोड टाईप करा.</string>
+    <string name="data_sync_finished_successfully">सर्वेक्षण फॉर्म यशस्वीरित्या लोड झाला.</string>
+    <string name="nothing_to_sync_from_user">वापरकर्त्याकडून अपलोड करण्यासाठी काहीही नाही.</string>
+    <string name="logout">लॉग ऑऊट</string>
+    <string name="sanketank_bhara">संकेतांक भरा</string>
+    <string name="divider_v_line">\t|\t</string>
+
+    <string name="other_than_sodun">वरील व्यतिरिक्त (सोडून गेलेली)</string>
+    <string name="other_than_mrut">वरील व्यतिरिक्त (मृत)</string>
+    <string name="ramai_awas_yojna_title">रमाई आवास योजना (शहरी विभाग) – लाभार्थी प्रपत्र सन 2020-21</string>
+    <string name="no_internet_connection">No Internet Connection</string>
 </resources>

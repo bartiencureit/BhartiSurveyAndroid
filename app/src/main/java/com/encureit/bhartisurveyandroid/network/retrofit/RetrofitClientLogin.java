@@ -9,12 +9,10 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.encureit.bhartisurveyandroid.network.Contants.BASE_URL;
 import static com.encureit.bhartisurveyandroid.network.Contants.LOGIN_BASE_URL;
-import static com.encureit.bhartisurveyandroid.network.Contants.OTHER_BASE_URL;
 
 
-public class RetrofitClient {
+public class RetrofitClientLogin {
 
     /**
      * Get Retrofit Instance
@@ -22,7 +20,7 @@ public class RetrofitClient {
     private static Retrofit getRetrofitInstance() {
 
         return new Retrofit.Builder()
-                .baseUrl(OTHER_BASE_URL)
+                .baseUrl(LOGIN_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();

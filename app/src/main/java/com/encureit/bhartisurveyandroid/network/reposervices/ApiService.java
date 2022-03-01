@@ -1,7 +1,8 @@
 package com.encureit.bhartisurveyandroid.network.reposervices;
 
-import com.ensureit.testapp.network.Contants;
-import com.ensureit.testapp.network.responsemodel.ListModel;
+
+import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.network.Contants;
 
 import java.util.List;
 
@@ -12,10 +13,17 @@ import retrofit2.http.POST;
 
 public interface ApiService {
 
+    /**
+     * @date 1-3-2022
+     * Gets Login Response from server
+     * Response has status, key, user_id and user_role
+     * @param user_serial_no
+     * @return
+     */
     @FormUrlEncoded
-    @POST(Contants.GET_LIST)
-    Call<List<ListModel>> getList(
-            @Field("country") String country
+    @POST(Contants.GET_LOGIN)
+    Call<LoginResponseModel> getLoginResponse(
+            @Field("user_serial_no") String user_serial_no
     );
 }
 
