@@ -1,9 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".features.setting.SettingsActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <data>
+        <variable
+            name="presenter"
+            type="com.encureit.bhartisurveyandroid.presenter.SettingsPresenter"
+            />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!--<FrameLayout
+            android:id="@+id/settings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />-->
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar" />
+        <LinearLayout
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/linearLayoutSyncAllData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/tv_sync_all"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sync_all_data_from_server"
+                    android:textSize="22sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/textBlackColor"
+                    android:maxLines="1"
+                    android:layout_margin="5dp"
+                    android:padding="5dp"/>
+
+                <ImageButton
+                    android:id="@+id/btn_sync_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/sync132"
+                    android:onClick="@{ () -> presenter.syncAll()}"
+                    android:layout_margin="5dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lastSyncAllDataTextView"
+                android:textAlignment="textEnd"
+                android:paddingEnd="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@={presenter.lastSyncDate}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/linearLayoutSyncCandidateForms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/tv_sync_userFilledForms"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sync_candidate_forms"
+                    android:textSize="22sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/textBlackColor"
+                    android:maxLines="1"
+                    android:layout_margin="5dp"
+                    android:padding="5dp"/>
+
+                <ImageButton
+                    android:id="@+id/btn_sync_candidateForms"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/sync132"
+                    android:onClick="@{ () -> presenter.syncAllForms()}"
+                    android:layout_margin="5dp"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lastSyncCandidateFormTextView"
+                android:textAlignment="textEnd"
+                android:paddingEnd="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@={presenter.lastSyncCandidateFormDate}" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:clickable="true"
+            android:focusable="true"
+            android:id="@+id/linearLayoutlogOut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="10dp">
+
+                <TextView
+                    android:id="@+id/tv_user_logout"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:text="@string/logout"
+                    android:textSize="22sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/textBlackColor"
+                    android:maxLines="1"
+                    android:onClick="@{ () -> presenter.logout()}"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/tv_login_user_id"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingStart="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:text="@={presenter.userIDRole}" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</layout>
