@@ -1,4 +1,4 @@
-package com.encureit.bhartisurveyandroid.models;
+package com.encureit.bhartisurveyandroid.network.responsemodel;
 
 /**
  * Created by Swapna Thakur on 3/1/2022.

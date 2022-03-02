@@ -1,6 +1,6 @@
 package com.encureit.bhartisurveyandroid.models.viewmodelobj;
 
-import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.LoginResponseModel;
 
 /**
  * Created by Swapna Thakur on 3/1/2022.

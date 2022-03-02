@@ -1,19 +1,15 @@
 package com.encureit.bhartisurveyandroid.login;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
-import com.encureit.bhartisurveyandroid.R;
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
-import com.encureit.bhartisurveyandroid.databinding.ActivityLoginBinding;
 import com.encureit.bhartisurveyandroid.databinding.ActivityOtpCheckBinding;
 import com.encureit.bhartisurveyandroid.lib.AppKeys;
 import com.encureit.bhartisurveyandroid.listeners.MessageListener;
-import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.models.contracts.OtpContract;
 import com.encureit.bhartisurveyandroid.presenter.OtpPresenter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;

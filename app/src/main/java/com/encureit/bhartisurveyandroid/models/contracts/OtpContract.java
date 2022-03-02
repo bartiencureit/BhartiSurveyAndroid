@@ -1,7 +1,6 @@
 package com.encureit.bhartisurveyandroid.models.contracts;
 
-import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
-import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
+import com.encureit.bhartisurveyandroid.network.responsemodel.OtpCheckResponseModel;
 
 /**
  * Created by Swapna Thakur on 3/1/2022.

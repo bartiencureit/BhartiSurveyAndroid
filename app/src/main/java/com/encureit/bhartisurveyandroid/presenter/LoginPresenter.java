@@ -6,15 +6,10 @@ import android.text.TextUtils;
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.login.LoginActivity;
-import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.LoginResponseModel;
 import com.encureit.bhartisurveyandroid.models.contracts.LoginContract;
 import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
-import com.encureit.bhartisurveyandroid.network.retrofit.RetrofitClient;
 import com.encureit.bhartisurveyandroid.network.retrofit.RetrofitClientLogin;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.List;
 
 import androidx.databinding.ObservableField;
 import retrofit2.Call;

@@ -2,7 +2,6 @@ package com.encureit.bhartisurveyandroid.presenter;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
@@ -10,29 +9,23 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 
-import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.database.DatabaseUtil;
 import com.encureit.bhartisurveyandroid.features.dashboard.DashboardActivity;
-import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
-import com.encureit.bhartisurveyandroid.login.LoginActivity;
-import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.SurveyTypeResponseModel;
+import com.encureit.bhartisurveyandroid.models.SurveyType;
 import com.encureit.bhartisurveyandroid.models.UserDeviceDetails;
 import com.encureit.bhartisurveyandroid.models.contracts.DashboardContract;
-import com.encureit.bhartisurveyandroid.models.contracts.LoginContract;
 import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
-import com.encureit.bhartisurveyandroid.network.Contants;
-import com.encureit.bhartisurveyandroid.network.retrofit.RetrofitClientLogin;
+import com.encureit.bhartisurveyandroid.network.retrofit.RetrofitClient;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 import androidx.core.content.ContextCompat;
-import androidx.databinding.ObservableField;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,9 +42,27 @@ public class DashboardPresenter implements DashboardContract.Presenter {
         this.mViewModel = mViewModel;
     }
 
+    /**
+     * Checks internet connected or not
+     * if internet is connected get data from server
+     * else get data drom local database
+     * @param loginRole
+     */
     @Override
     public void startDashboard(String loginRole) {
-        mViewModel.setupDashboardFields(loginRole);
+        if (mActivity.isInternetConnected()) {
+            syncData();
+        } else {
+            List<SurveyType> surveyTypes = DatabaseUtil.on().getAllSurveyType();
+            mViewModel.setupDashboardFields(surveyTypes, loginRole);
+        }
+    }
+
+    /**
+     * to sync server data to local database
+     */
+    private void syncData() {
+        getSurveyMaster();
     }
 
     @Override
@@ -187,6 +198,34 @@ public class DashboardPresenter implements DashboardContract.Presenter {
 
     @Override
     public void getSurveyMaster() {
+        mActivity.startProgressDialog();
 
+        RetrofitClient.getApiService().getSurveyTypes().enqueue(new Callback<SurveyTypeResponseModel>() {
+            @Override
+            public void onResponse(Call<SurveyTypeResponseModel> call, Response<SurveyTypeResponseModel> response) {
+                if (response.code() == 200 || response.code() == 201) {
+                    if (response.body() != null && response.body().getSurvey_type() != null) {
+                        List<SurveyType> surveyTypeList = response.body().getSurvey_type();
+                        if(DatabaseUtil.on().hasSurveyType()) {
+                            DatabaseUtil.on().deleteAllSurvey();
+                        }
+                        DatabaseUtil.on().insertAllSurveyTypes(surveyTypeList);
+                        mViewModel.setupDashboardFields(surveyTypeList,"");
+                    } else {
+                        mActivity.dismissProgressDialog();
+                        mViewModel.showResponseFailed("Null Response from server");
+                    }
+                } else {
+                    mActivity.dismissProgressDialog();
+                    mViewModel.showResponseFailed("Invalid Response from server");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SurveyTypeResponseModel> call, Throwable t) {
+                mActivity.dismissProgressDialog();
+                mViewModel.showResponseFailed(t.getMessage());
+            }
+        });
     }
 }

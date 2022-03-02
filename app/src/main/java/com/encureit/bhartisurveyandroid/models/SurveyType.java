@@ -1,5 +1,8 @@
 package com.encureit.bhartisurveyandroid.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.encureit.bhartisurveyandroid.database.TableNames;
 
 import androidx.room.Entity;
@@ -9,7 +12,7 @@ import androidx.room.PrimaryKey;
  * Created by Swapna Thakur on 3/2/2022.
  */
 @Entity(tableName = TableNames.TABLE_SURVEY_MASTER)
-public class SurveyType {
+public class SurveyType implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
@@ -18,6 +21,27 @@ public class SurveyType {
     String form_type;
     String form_description;
     String isActive;
+
+    protected SurveyType(Parcel in) {
+        id = in.readInt();
+        Form_unique_id = in.readString();
+        Form_no = in.readString();
+        form_type = in.readString();
+        form_description = in.readString();
+        isActive = in.readString();
+    }
+
+    public static final Creator<SurveyType> CREATOR = new Creator<SurveyType>() {
+        @Override
+        public SurveyType createFromParcel(Parcel in) {
+            return new SurveyType(in);
+        }
+
+        @Override
+        public SurveyType[] newArray(int size) {
+            return new SurveyType[size];
+        }
+    };
 
     public String getForm_unique_id() {
         return Form_unique_id;
@@ -57,5 +81,20 @@ public class SurveyType {
 
     public void setIsActive(String isActive) {
         this.isActive = isActive;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(Form_unique_id);
+        parcel.writeString(Form_no);
+        parcel.writeString(form_type);
+        parcel.writeString(form_description);
+        parcel.writeString(isActive);
     }
 }

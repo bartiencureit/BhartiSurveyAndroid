@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.encureit.bhartisurveyandroid">
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
-
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
-
-    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
 
     <application
         android:name=".base.BaseApplication"
@@ -18,7 +12,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BhartiSurveyAndroid">
-        <activity android:name=".features.dashboard.DashboardActivity"></activity>
+        <activity android:name=".features.subforms.QuesSectionListActivity"></activity>
+        <activity android:name=".features.setting.SettingsActivity" />
+        <activity android:name=".features.dashboard.DashboardActivity" />
         <activity
             android:name=".login.OtpCheckActivity"
             android:screenOrientation="portrait"
@@ -50,11 +46,14 @@
             </intent-filter>
         </receiver>
     </application>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+        tools:ignore="ProtectedPermissions" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
 </manifest>

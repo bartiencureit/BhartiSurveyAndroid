@@ -12,15 +12,24 @@ import android.widget.Toast;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
 import com.encureit.bhartisurveyandroid.R;
+import com.encureit.bhartisurveyandroid.adapters.SurveyTypeListAdapter;
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.databinding.ActivityDashboardBinding;
+import com.encureit.bhartisurveyandroid.features.setting.SettingsActivity;
+import com.encureit.bhartisurveyandroid.features.subforms.QuesSectionListActivity;
+import com.encureit.bhartisurveyandroid.lib.AppKeys;
+import com.encureit.bhartisurveyandroid.models.SurveyType;
 import com.encureit.bhartisurveyandroid.models.contracts.DashboardContract;
 import com.encureit.bhartisurveyandroid.presenter.DashboardPresenter;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 public class DashboardActivity extends BaseActivity implements DashboardContract.ViewModel {
     private ActivityDashboardBinding mBinding;
@@ -42,9 +51,21 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         mPresenter.getUserDeviceDetails(helper.getSharedPreferencesHelper().getLoginUserId());
     }
 
-    @Override
-    public void setupDashboardFields(String loginRole) {
 
+    @Override
+    public void setupDashboardFields(List<SurveyType> list, String loginRole) {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        mBinding.gridView.setLayoutManager(gridLayoutManager);
+        SurveyTypeListAdapter surveyAdapter = new SurveyTypeListAdapter(this, list, new SurveyTypeListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(SurveyType listModel, int position) {
+                Intent intent = new Intent(DashboardActivity.this, QuesSectionListActivity.class);
+                intent.putExtra(AppKeys.SURVEY_TYPE,listModel);
+                startActivityOnTop(false, intent);
+                finish();
+            }
+        });
+        mBinding.gridView.setAdapter(surveyAdapter);
     }
 
     @Override
@@ -55,9 +76,6 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
     @Override
     protected void onStart() {
         super.onStart();
-        //checkGps();
-        //dashboardFormController.startDashoard(loginRole);
-
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -94,9 +112,9 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.menu_setting == item.getItemId()) {
-            //Intent intent = new Intent(this, SettingsActivity.class);
-            //startActivityOnTop(false, intent);
-            //finish();
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityOnTop(false, intent);
+            finish();
         }
         return true;
     }

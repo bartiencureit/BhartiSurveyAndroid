@@ -1,15 +1,15 @@
 package com.encureit.bhartisurveyandroid.network.reposervices;
 
 
-import com.encureit.bhartisurveyandroid.models.LoginResponseModel;
-import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.LoginResponseModel;
+import com.encureit.bhartisurveyandroid.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.network.Contants;
-
-import java.util.List;
+import com.encureit.bhartisurveyandroid.network.responsemodel.SurveyTypeResponseModel;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
 public interface ApiService {
@@ -41,5 +41,14 @@ public interface ApiService {
             @Field("user_id") String user_id,
             @Field("otp") String otp
     );
+
+    /**
+     * @date 2-3-2022
+     * gets all survey types
+     * response has list of survey type
+     * @return
+     */
+    @GET(Contants.GET_SURVEY_TYPE)
+    Call<SurveyTypeResponseModel> getSurveyTypes();
 }
 

@@ -62,6 +62,10 @@ public class DatabaseUtil {
         return getSurveyTypeDao().insert(surveyType);
     }
 
+    public long[] insertAllSurveyTypes(List<SurveyType> surveyTypes) {
+        return getSurveyTypeDao().insertBulk(surveyTypes);
+    }
+
     public List<SurveyType> getAllSurveyType() {
         return getSurveyTypeDao().getAllFlowableCodes();
     }
@@ -74,7 +78,7 @@ public class DatabaseUtil {
         return getSurveyTypeDao().getRowCount();
     }
 
-    public void deleteAll() {
+    public void deleteAllSurvey() {
         getSurveyTypeDao().nukeTable();
     }
 

@@ -5,15 +5,11 @@ import android.text.TextUtils;
 
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
-import com.encureit.bhartisurveyandroid.login.LoginActivity;
 import com.encureit.bhartisurveyandroid.login.OtpCheckActivity;
-import com.encureit.bhartisurveyandroid.models.OtpCheckResponseModel;
-import com.encureit.bhartisurveyandroid.models.contracts.LoginContract;
+import com.encureit.bhartisurveyandroid.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.models.contracts.OtpContract;
-import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
 import com.encureit.bhartisurveyandroid.network.retrofit.RetrofitClientLogin;
 
-import androidx.databinding.ObservableField;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
