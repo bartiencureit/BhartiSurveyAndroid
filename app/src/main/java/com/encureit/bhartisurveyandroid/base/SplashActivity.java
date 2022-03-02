@@ -1,11 +1,9 @@
 package com.encureit.bhartisurveyandroid.base;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
-import com.encureit.bhartisurveyandroid.R;
 import com.encureit.bhartisurveyandroid.databinding.ActivitySplashBinding;
 import com.encureit.bhartisurveyandroid.models.contracts.SplashContract;
 import com.encureit.bhartisurveyandroid.presenter.SplashPresenter;
