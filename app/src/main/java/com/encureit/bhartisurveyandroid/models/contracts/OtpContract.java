@@ -5,7 +5,7 @@ import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
 
 /**
  * Created by Swapna Thakur on 3/1/2022.
- * Contract for login
+ * Contract for otp
  */
 public interface OtpContract {
 

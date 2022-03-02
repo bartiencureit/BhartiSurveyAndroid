@@ -9,9 +9,12 @@ import android.content.Context;
 import android.os.StrictMode;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
+import com.encureit.bhartisurveyandroid.database.DatabaseUtil;
+
+import androidx.multidex.MultiDexApplication;
 
 
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
     private static Context appsContext;
     private static BaseApplication instances;
     private static GlobalHelper globalHelper;
@@ -36,6 +39,7 @@ public class BaseApplication extends Application {
         this.instances = this;
 
         super.onCreate();
+        DatabaseUtil.init(getApplicationContext());
         setStrictPolicy();
     }
 

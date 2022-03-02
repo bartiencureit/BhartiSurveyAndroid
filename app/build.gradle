@@ -14,6 +14,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -49,4 +50,8 @@ dependencies {
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
     implementation 'com.google.code.gson:gson:2.8.7'
     implementation 'com.github.GoodieBag:Pinview:v1.4'
+    annotationProcessor 'androidx.room:room-compiler:2.4.2'
+    implementation 'androidx.room:room-runtime:2.4.2'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
 }
