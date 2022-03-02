@@ -3,11 +3,14 @@ package com.encureit.bhartisurveyandroid.database;
 import android.content.Context;
 
 import com.encureit.bhartisurveyandroid.R;
+import com.encureit.bhartisurveyandroid.database.dao.SurveyTypeDao;
+import com.encureit.bhartisurveyandroid.database.dao.UserDeviceDetailsDao;
 import com.encureit.bhartisurveyandroid.models.SurveyType;
+import com.encureit.bhartisurveyandroid.models.UserDeviceDetails;
 
 import androidx.room.Database;
 
-@Database(entities = {SurveyType.class},
+@Database(entities = {SurveyType.class, UserDeviceDetails.class},
         version = 1, exportSchema = false)
 public abstract class UniqaDatabase extends AppDatabase {
 
@@ -27,5 +30,6 @@ public abstract class UniqaDatabase extends AppDatabase {
         }
     }
 
-    public abstract UniqaCustomDao codeDao();
+    public abstract SurveyTypeDao surveyTypeDao();
+    public abstract UserDeviceDetailsDao userDeviceDetailsDao();
 }

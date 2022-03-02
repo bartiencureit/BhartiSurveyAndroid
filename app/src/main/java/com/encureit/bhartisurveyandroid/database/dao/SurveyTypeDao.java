@@ -1,6 +1,8 @@
-package com.encureit.bhartisurveyandroid.database;
+package com.encureit.bhartisurveyandroid.database.dao;
 
 
+import com.encureit.bhartisurveyandroid.database.BaseDao;
+import com.encureit.bhartisurveyandroid.database.TableNames;
 import com.encureit.bhartisurveyandroid.models.SurveyType;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import androidx.room.Query;
 
 @Dao
 
-public interface UniqaCustomDao extends BaseDao<SurveyType> {
+public interface SurveyTypeDao extends BaseDao<SurveyType> {
 
     @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_MASTER)
     List<SurveyType> getAllFlowableCodes();
