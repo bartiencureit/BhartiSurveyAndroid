@@ -1,16 +1,16 @@
 package com.encureit.bhartisurveyandroid.network.responsemodel;
 
-import com.encureit.bhartisurveyandroid.models.SurveyType;
+import com.encureit.bhartisurveyandroid.models.QuestionType;
 
 import java.util.List;
 
 /**
- * Created by Swapna Thakur on 3/2/2022.
+ * Created by Swapna Thakur on 3/3/2022.
  */
-public class SurveyTypeResponseModel {
+public class QuestionTypeResponseModel {
     boolean status;
     String errorCode;
-    List<SurveyType> survey_type;
+    List<QuestionType> question_type;
 
     public boolean isStatus() {
         return status;
@@ -28,11 +28,11 @@ public class SurveyTypeResponseModel {
         this.errorCode = errorCode;
     }
 
-    public List<SurveyType> getSurvey_type() {
-        return survey_type;
+    public List<QuestionType> getQuestion_type() {
+        return question_type;
     }
 
-    public void setSurvey_type(List<SurveyType> survey_type) {
-        this.survey_type = survey_type;
+    public void setQuestion_type(List<QuestionType> question_type) {
+        this.question_type = question_type;
     }
 }

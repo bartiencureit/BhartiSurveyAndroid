@@ -41,7 +41,7 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
     public void getOtp(OtpCheckResponseModel otpCheckResponseModel) {
         //save date to shared preference
         helper.getSharedPreferencesHelper().setLoginDateTimeData(otpCheckResponseModel.getLoginDate());
-        Snackbar.make(mBinding.getRoot(),""+otpCheckResponseModel.getMessage(), BaseTransientBottomBar.LENGTH_LONG).show();
+        mPresenter.getSurveySectionFields();
     }
 
     @Override

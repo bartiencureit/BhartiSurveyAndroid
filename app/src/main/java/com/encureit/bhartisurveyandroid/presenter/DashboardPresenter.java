@@ -62,7 +62,7 @@ public class DashboardPresenter implements DashboardContract.Presenter {
      * to sync server data to local database
      */
     private void syncData() {
-        getSurveyMaster();
+        //getSurveyMaster();
     }
 
     @Override
@@ -196,7 +196,9 @@ public class DashboardPresenter implements DashboardContract.Presenter {
         return imei;
     }
 
-    @Override
+  /*
+   Not important here *//*
+   @Override
     public void getSurveyMaster() {
         mActivity.startProgressDialog();
 
@@ -227,5 +229,5 @@ public class DashboardPresenter implements DashboardContract.Presenter {
                 mViewModel.showResponseFailed(t.getMessage());
             }
         });
-    }
+    }*/
 }

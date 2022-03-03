@@ -4,6 +4,7 @@ package com.encureit.bhartisurveyandroid.network.reposervices;
 import com.encureit.bhartisurveyandroid.network.responsemodel.LoginResponseModel;
 import com.encureit.bhartisurveyandroid.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.bhartisurveyandroid.network.Contants;
+import com.encureit.bhartisurveyandroid.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.bhartisurveyandroid.network.responsemodel.SurveyTypeResponseModel;
 
 import retrofit2.Call;
@@ -50,5 +51,14 @@ public interface ApiService {
      */
     @GET(Contants.GET_SURVEY_TYPE)
     Call<SurveyTypeResponseModel> getSurveyTypes();
+
+    /**
+     * @date 3-3-2022
+     * gets all survey types
+     * response has list of survey type
+     * @return
+     */
+    @GET(Contants.GET_SURVEY_SECTION)
+    Call<SurveySectionResponseModel> getSurveySection();
 }
 

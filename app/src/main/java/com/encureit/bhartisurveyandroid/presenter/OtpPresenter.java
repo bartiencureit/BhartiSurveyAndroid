@@ -79,4 +79,39 @@ public class OtpPresenter implements OtpContract.Presenter {
             }
         }
     }
+
+    @Override
+    public void getSurveySectionFields() {
+
+    }
+
+    @Override
+    public void getSurveyQuestionField() {
+
+    }
+
+    @Override
+    public void getQuestionOptionField() {
+
+    }
+
+    @Override
+    public void getQuestionTypesField() {
+
+    }
+
+    @Override
+    public void getQuestionValidationFields() {
+
+    }
+
+    @Override
+    public void getUserAssignedDetails(String user_id) {
+
+    }
+
+    @Override
+    public void getSurveyMaster() {
+
+    }
 }

@@ -10,6 +10,7 @@ public class Contants {
     public static final String GET_LOGIN = "isLoginf";
     public static final String GET_VERIFY_OTP = "verifyOTP";
     public static final String GET_SURVEY_TYPE = "get_survey_masters";
+    public static final String GET_SURVEY_SECTION = "get_survey_section";
 
     public static String PREF_IS_LOGIN = "PREF_IS_LOGIN";
     public static String PREF_AUTH_TOKEN = "PREF_AUTH_TOKEN";

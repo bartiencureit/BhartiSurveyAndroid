@@ -19,6 +19,5 @@ public interface DashboardContract {
     interface Presenter {
         void startDashboard(String loginRole);
         void getUserDeviceDetails(String loginUserId);
-        void getSurveyMaster();
     }
 }
