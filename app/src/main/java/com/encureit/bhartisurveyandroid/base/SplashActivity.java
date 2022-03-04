@@ -13,7 +13,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     private SplashPresenter mPresenter;
     private Runnable mRunnable;
     private Handler mHandler;
-    private final static long SPLASH_INTERVAL_IN_MILLIS = 1500;
+    private final static long SPLASH_INTERVAL_IN_MILLIS = 500;
     private GlobalHelper helper;
 
     @Override
@@ -22,6 +22,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
         mBinding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         mPresenter = new SplashPresenter(this);
+        mPresenter.rootView = mBinding.getRoot();
         mBinding.setPresenter(mPresenter);
         initObject();
         init();

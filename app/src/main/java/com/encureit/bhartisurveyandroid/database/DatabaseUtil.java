@@ -2,8 +2,20 @@ package com.encureit.bhartisurveyandroid.database;
 
 import android.content.Context;
 
+import com.encureit.bhartisurveyandroid.database.dao.AssignDetailsDao;
+import com.encureit.bhartisurveyandroid.database.dao.QuestionOptionDao;
+import com.encureit.bhartisurveyandroid.database.dao.QuestionTypeDao;
+import com.encureit.bhartisurveyandroid.database.dao.QuestionValidationDao;
+import com.encureit.bhartisurveyandroid.database.dao.SurveyQuestionDao;
+import com.encureit.bhartisurveyandroid.database.dao.SurveySectionDao;
 import com.encureit.bhartisurveyandroid.database.dao.SurveyTypeDao;
 import com.encureit.bhartisurveyandroid.database.dao.UserDeviceDetailsDao;
+import com.encureit.bhartisurveyandroid.models.AssignDetails;
+import com.encureit.bhartisurveyandroid.models.QuestionOption;
+import com.encureit.bhartisurveyandroid.models.QuestionType;
+import com.encureit.bhartisurveyandroid.models.QuestionValidation;
+import com.encureit.bhartisurveyandroid.models.SurveyQuestion;
+import com.encureit.bhartisurveyandroid.models.SurveySection;
 import com.encureit.bhartisurveyandroid.models.SurveyType;
 import com.encureit.bhartisurveyandroid.models.UserDeviceDetails;
 
@@ -17,10 +29,22 @@ public class DatabaseUtil {
     private static DatabaseUtil sInstance;
     private SurveyTypeDao mSurveyTypeDao;
     private UserDeviceDetailsDao mUserDeviceDetailsDao;
+    private QuestionOptionDao mQuestionOptionDao;
+    private QuestionTypeDao mQuestionTypeDao;
+    private QuestionValidationDao mQuestionValidationDao;
+    private SurveyQuestionDao mSurveyQuestionDao;
+    private SurveySectionDao mSurveySectionDao;
+    private AssignDetailsDao mAssignDetailsDao;
 
     private DatabaseUtil() {
         setSurveyTypeDao(UniqaDatabase.on().surveyTypeDao());
         setUserDeviceDetailsDao(UniqaDatabase.on().userDeviceDetailsDao());
+        setQuestionOptionDao(UniqaDatabase.on().questionOptionDao());
+        setQuestionTypeDao(UniqaDatabase.on().questionTypeDao());
+        setQuestionValidationDao(UniqaDatabase.on().questionValidationDao());
+        setSurveyQuestionDao(UniqaDatabase.on().surveyQuestionDao());
+        setSurveySectionDao(UniqaDatabase.on().surveySectionDao());
+        setAssignDetailsDao(UniqaDatabase.on().assignDetailsDao());
     }
 
     /**
@@ -42,11 +66,11 @@ public class DatabaseUtil {
         return sInstance;
     }
 
-    private SurveyTypeDao getSurveyTypeDao() {
+    public SurveyTypeDao getSurveyTypeDao() {
         return mSurveyTypeDao;
     }
 
-    private void setSurveyTypeDao(SurveyTypeDao surveyTypeDao) {
+    public void setSurveyTypeDao(SurveyTypeDao surveyTypeDao) {
         mSurveyTypeDao = surveyTypeDao;
     }
 
@@ -56,6 +80,54 @@ public class DatabaseUtil {
 
     public void setUserDeviceDetailsDao(UserDeviceDetailsDao mUserDeviceDetailsDao) {
         this.mUserDeviceDetailsDao = mUserDeviceDetailsDao;
+    }
+
+    public QuestionOptionDao getQuestionOptionDao() {
+        return mQuestionOptionDao;
+    }
+
+    public void setQuestionOptionDao(QuestionOptionDao mQuestionOptionDao) {
+        this.mQuestionOptionDao = mQuestionOptionDao;
+    }
+
+    public QuestionTypeDao getQuestionTypeDao() {
+        return mQuestionTypeDao;
+    }
+
+    public void setQuestionTypeDao(QuestionTypeDao mQuestionTypeDao) {
+        this.mQuestionTypeDao = mQuestionTypeDao;
+    }
+
+    public QuestionValidationDao getQuestionValidationDao() {
+        return mQuestionValidationDao;
+    }
+
+    public void setQuestionValidationDao(QuestionValidationDao mQuestionValidationDao) {
+        this.mQuestionValidationDao = mQuestionValidationDao;
+    }
+
+    public SurveyQuestionDao getSurveyQuestionDao() {
+        return mSurveyQuestionDao;
+    }
+
+    public void setSurveyQuestionDao(SurveyQuestionDao mSurveyQuestionDao) {
+        this.mSurveyQuestionDao = mSurveyQuestionDao;
+    }
+
+    public SurveySectionDao getSurveySectionDao() {
+        return mSurveySectionDao;
+    }
+
+    public void setSurveySectionDao(SurveySectionDao mSurveySectionDao) {
+        this.mSurveySectionDao = mSurveySectionDao;
+    }
+
+    public AssignDetailsDao getAssignDetailsDao() {
+        return mAssignDetailsDao;
+    }
+
+    public void setAssignDetailsDao(AssignDetailsDao mAssignDetailsDao) {
+        this.mAssignDetailsDao = mAssignDetailsDao;
     }
 
     public long[] insertSurveyType(SurveyType surveyType) {
@@ -104,6 +176,53 @@ public class DatabaseUtil {
 
     public long[] insertUserDeviceDetails(UserDeviceDetails userDeviceDetails) {
         return getUserDeviceDetailsDao().insert(userDeviceDetails);
+    }
+
+    public long[] insertQuestionOption(QuestionOption questionOption) {
+        return getQuestionOptionDao().insert(questionOption);
+    }
+
+    public long[] insertQuestionType(QuestionType questionType) {
+        return getQuestionTypeDao().insert(questionType);
+    }
+
+    public long[] insertQuestionValidation(QuestionValidation questionValidation) {
+        return getQuestionValidationDao().insert(questionValidation);
+    }
+
+    public long[] insertSurveyQuestion(SurveyQuestion surveyQuestion) {
+        return getSurveyQuestionDao().insert(surveyQuestion);
+    }
+
+    public long[] insertSurveySection(SurveySection surveySection) {
+        return getSurveySectionDao().insert(surveySection);
+    }
+
+    /**
+     * insert list
+     */
+    public long[] insertAllQuestionOption(List<QuestionOption> questionOptions) {
+        return getQuestionOptionDao().insertBulk(questionOptions);
+    }
+
+    public long[] insertAllQuestionType(List<QuestionType> questionTypes) {
+        return getQuestionTypeDao().insertBulk(questionTypes);
+    }
+
+    public long[] insertAllQuestionValidation(List<QuestionValidation> questionValidations) {
+        return getQuestionValidationDao().insertBulk(questionValidations);
+    }
+
+    public long[] insertAllSurveyQuestion(List<SurveyQuestion> surveyQuestions) {
+        return getSurveyQuestionDao().insertBulk(surveyQuestions);
+    }
+
+    public long[] insertAllSurveySection(List<SurveySection> surveySections) {
+        return getSurveySectionDao().insertBulk(surveySections);
+    }
+
+    public long[] insertAllUserAssignedDetails(List<AssignDetails> assignDetails) {
+        return getAssignDetailsDao().insertBulk(assignDetails);
     }
 
 }

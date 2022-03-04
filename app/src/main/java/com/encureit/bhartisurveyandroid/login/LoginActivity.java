@@ -19,6 +19,7 @@ import com.encureit.bhartisurveyandroid.R;
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.databinding.ActivityLoginBinding;
 import com.encureit.bhartisurveyandroid.lib.AppKeys;
+import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.models.contracts.LoginContract;
 import com.encureit.bhartisurveyandroid.models.viewmodelobj.UserLoginObject;
 import com.encureit.bhartisurveyandroid.presenter.LoginPresenter;
@@ -40,6 +41,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
         setContentView(mBinding.getRoot());
         helper = new GlobalHelper(this);
         mPresenter = new LoginPresenter(this,this);
+        mPresenter.rootView = mBinding.getRoot();
         mPresenter.userId.set("1111");
         askPermission();
         mBinding.setPresenter(mPresenter);
@@ -58,13 +60,13 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivityOnTop(false,intent);
         } catch (Exception e) {
-            Snackbar.make(mBinding.getRoot(),"Error : "+e.getMessage(), BaseTransientBottomBar.LENGTH_LONG).show();
+            ScreenHelper.showErrorSnackBar(mBinding.getRoot(),e.getMessage());
         }
     }
 
     @Override
     public void showLoginFailed(String error) {
-        Snackbar.make(mBinding.getRoot(),""+error, BaseTransientBottomBar.LENGTH_LONG).show();
+        ScreenHelper.showErrorSnackBar(mBinding.getRoot(),error);
     }
 
     private void askPermission() {

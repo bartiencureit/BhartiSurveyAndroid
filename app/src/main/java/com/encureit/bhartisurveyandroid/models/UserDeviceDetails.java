@@ -13,24 +13,24 @@ public class UserDeviceDetails {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    private String device_info_id;
-    private String userRoleId;
-    private String dManufacturer;
-    private String dBrand;
-    private String dModel;
-    private String dSerialNo;
-    private String dImeiNo;
-    private String dDisplaySize;
-    private String dMobileNetwork;
-    private String dWifi;
-    private String dBluetooth;
-    private String dSdkVersionNo;
-    private String dReleaseVersion;
-    private String dOsVersionNo;
-    private String dID;
-    private String dHost;
-    private String dHardware;
-    private String dFingerprint;
+    public String device_info_id;
+    public String userRoleId;
+    public String dManufacturer;
+    public String dBrand;
+    public String dModel;
+    public String dSerialNo;
+    public String dImeiNo;
+    public String dDisplaySize;
+    public String dMobileNetwork;
+    public String dWifi;
+    public String dBluetooth;
+    public String dSdkVersionNo;
+    public String dReleaseVersion;
+    public String dOsVersionNo;
+    public String dID;
+    public String dHost;
+    public String dHardware;
+    public String dFingerprint;
 
     public UserDeviceDetails() {
     }

@@ -11,6 +11,11 @@ public class Contants {
     public static final String GET_VERIFY_OTP = "verifyOTP";
     public static final String GET_SURVEY_TYPE = "get_survey_masters";
     public static final String GET_SURVEY_SECTION = "get_survey_section";
+    public static final String GET_SURVEY_QUESTION = "get_survey_question";
+    public static final String GET_QUESTION_OPTION = "get_question_option";
+    public static final String GET_QUESTION_TYPES = "get_question_type";
+    public static final String GET_QUESTION_VALIDATION = "get_question_validation";
+    public static final String GET_USER_ASSIGNED_DETAILS = "get_user_assigned_details";
 
     public static String PREF_IS_LOGIN = "PREF_IS_LOGIN";
     public static String PREF_AUTH_TOKEN = "PREF_AUTH_TOKEN";

@@ -23,9 +23,6 @@ public interface UserDeviceDetailsDao extends BaseDao<UserDeviceDetails> {
     @Query("DELETE FROM "  + TableNames.TABLE_USER_DEVICE_DETAILS)
     void nukeTable();
 
-//    @Query("UPDATE " + TableNames.TABLE_USER_DEVICE_DETAILS+" SET Form_unique_id = :Form_unique_id WHERE id =:id")
-//    void update_Form_unique_id(int id, String Form_unique_id);
-
     @Query("UPDATE " + TableNames.TABLE_USER_DEVICE_DETAILS+" SET device_info_id = :device_info_id WHERE id =:id")
     void update_device_info_id(int id, String device_info_id);
 

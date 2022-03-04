@@ -11,24 +11,37 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.BhartiSurveyAndroid">
-        <activity android:name=".features.subforms.QuesSectionListActivity"></activity>
-        <activity android:name=".features.setting.SettingsActivity" />
-        <activity android:name=".features.dashboard.DashboardActivity" />
+        android:theme="@style/BaseTheme">
+
+        <activity android:name=".features.subforms.QuesSectionListActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            />
+
+        <activity android:name=".features.setting.SettingsActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            />
+
+        <activity android:name=".features.dashboard.DashboardActivity"
+            android:exported="true"
+            android:screenOrientation="fullSensor"
+            />
+
         <activity
             android:name=".login.OtpCheckActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/BaseTheme" />
+            android:screenOrientation="fullSensor"
+            android:exported="true" />
         <activity
             android:name=".login.LoginActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/BaseTheme" />
+            android:screenOrientation="fullSensor"
+             />
         <activity
             android:name=".base.SplashActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/BaseTheme">
+            android:screenOrientation="fullSensor"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,6 +53,7 @@
             android:exported="true" /> <!-- receivers -->
         <receiver
             android:name=".recievers.MessageReceiver"
+            android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />

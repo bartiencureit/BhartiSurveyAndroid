@@ -3,7 +3,7 @@
     <string name="exit_app_string">Do you want to exit app?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="loading">Loading</string>
+    <string name="loading">कृपाया प्रतिक्षा करा...</string>
 
     <string name="save">जतन करा</string>
     <string name="user_type">वापरकर्ता प्रकार</string>
@@ -39,4 +39,6 @@
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="dashboard_heading">आदिवासी विकास विभाग, महाराष्ट्र शासन \nआदिवासी संशोधन व प्रशिक्षण संस्थेमार्फत \nबेंचमार्क सर्वेक्षण – २०१९</string>
     <string name="setting_">आस सेटिंग</string>
+    <string name="invalid_response">सर्व्हरकडून अवैध प्रतिसाद</string>
+    <string name="sucessfull_login">यशस्वी लॉगिन</string>
 </resources>

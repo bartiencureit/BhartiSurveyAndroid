@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import com.encureit.bhartisurveyandroid.R;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -150,6 +153,20 @@ public class ScreenHelper {
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static void showGreenSnackBar(View view,String text) {
+        Snackbar snackbar = Snackbar.make(view,""+text, BaseTransientBottomBar.LENGTH_LONG);
+        View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(Color.GREEN);
+        snackbar.show();
+    }
+
+    public static void showErrorSnackBar(View view,String text) {
+        Snackbar snackbar = Snackbar.make(view,""+text, BaseTransientBottomBar.LENGTH_LONG);
+        View snackBarView = snackbar.getView();
+        snackBarView.setBackgroundColor(Color.RED);
+        snackbar.show();
     }
 
 }

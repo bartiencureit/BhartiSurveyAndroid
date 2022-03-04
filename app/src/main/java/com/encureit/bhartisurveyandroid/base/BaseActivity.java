@@ -16,6 +16,8 @@ import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
 import com.encureit.bhartisurveyandroid.R;
 import com.encureit.bhartisurveyandroid.lib.NetworkHelper;
 import com.encureit.bhartisurveyandroid.network.Contants;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
@@ -28,6 +30,9 @@ public class BaseActivity extends AppCompatActivity {
     public boolean doubleBackToExitPressedOnce = false;
     private GlobalHelper globalHelper;
     protected AppCompatActivity mActivity;
+    private ProgressDialog progressDialog;
+    private Snackbar snackbar;
+    private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,28 +46,35 @@ public class BaseActivity extends AppCompatActivity {
         mActivity = this;
     }
 
-    private ProgressDialog progressDialog;
 
-    public void startProgressDialog() {
 
-        String progressMessage = getResources().getString(R.string.loading);
-        progressDialog = new ProgressDialog(this, android.R.style.Theme_Translucent);
-        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        progressDialog.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        progressDialog.getWindow().requestFeature(Window.FEATURE_PROGRESS);
-        progressDialog.getWindow().requestFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setMessage(progressMessage);
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_bar);
-        TextView tv = (TextView) progressDialog.findViewById(R.id.progress_tv);
-        tv.setText(progressMessage);
+    public void startProgressDialog(View view) {
+        this.view = view;
+//        String progressMessage = getResources().getString(R.string.loading);
+//        progressDialog = new ProgressDialog(this, android.R.style.Theme_Translucent);
+//        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        progressDialog.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+//        progressDialog.getWindow().requestFeature(Window.FEATURE_PROGRESS);
+//        progressDialog.getWindow().requestFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+//        progressDialog.setIndeterminate(true);
+//        progressDialog.setMessage(progressMessage);
+//        progressDialog.setCancelable(false);
+//        progressDialog.show();
+//        progressDialog.setContentView(R.layout.progress_bar);
+//        TextView tv = (TextView) progressDialog.findViewById(R.id.progress_tv);
+//        tv.setText(progressMessage);
+        view.setEnabled(false);
+        snackbar = Snackbar.make(view,getResources().getString(R.string.loading), BaseTransientBottomBar.LENGTH_INDEFINITE);
+        snackbar.show();
     }
 
     public void dismissProgressDialog() {
-        if (progressDialog != null && progressDialog.isShowing()) {
-            progressDialog.dismiss();
+//        if (progressDialog != null && progressDialog.isShowing()) {
+//            progressDialog.dismiss();
+//        }
+        view.setEnabled(true);
+        if(snackbar != null) {
+            snackbar.dismiss();
         }
     }
 

@@ -2,7 +2,9 @@ package com.encureit.bhartisurveyandroid.presenter;
 
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.view.View;
 
+import com.encureit.bhartisurveyandroid.R;
 import com.encureit.bhartisurveyandroid.base.BaseActivity;
 import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.login.LoginActivity;
@@ -23,6 +25,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private LoginActivity mActivity;
     private LoginContract.ViewModel mViewModel;
     public ObservableField<String> userId;
+    public View rootView;
 
     public LoginPresenter(LoginActivity mActivity, LoginContract.ViewModel mViewModel) {
         this.mActivity = mActivity;
@@ -53,7 +56,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         if (validate()) {
             ScreenHelper.hideKeyboard(mActivity);
             if(mActivity.isInternetConnected()) {
-                mActivity.startProgressDialog();
+                mActivity.startProgressDialog(rootView);
 
                 RetrofitClientLogin.getApiService().getLoginResponse(userId.get()).enqueue(new Callback<LoginResponseModel>() {
                     @Override
@@ -71,7 +74,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                             }
                         } else {
                             mActivity.dismissProgressDialog();
-                            mViewModel.showLoginFailed("Invalid Response from server");
+                            mViewModel.showLoginFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                         }
                     }
 

@@ -1,11 +1,17 @@
 package com.encureit.bhartisurveyandroid.presenter;
 
+import android.graphics.Color;
 import android.util.Log;
+import android.view.View;
 
 import com.encureit.bhartisurveyandroid.Helpers.GlobalHelper;
 import com.encureit.bhartisurveyandroid.MainActivity;
+import com.encureit.bhartisurveyandroid.features.dashboard.DashboardActivity;
+import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.login.LoginActivity;
 import com.encureit.bhartisurveyandroid.models.contracts.SplashContract;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,6 +23,8 @@ import static com.encureit.bhartisurveyandroid.utils.CommonUtils.getCurrentDateO
  */
 public class SplashPresenter implements SplashContract.Presenter {
     private SplashContract.ViewModel mViewModel;
+    public View rootView;
+
 
     public SplashPresenter(SplashContract.ViewModel mViewModel) {
         this.mViewModel = mViewModel;
@@ -41,15 +49,14 @@ public class SplashPresenter implements SplashContract.Presenter {
                 /* You can also convert the milliseconds to days using this method
                  * float daysBetween = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS) */
                 if (daysBetween < 15) {
-//                    mViewModel.startAnotherActivity(DashboardActivity.class, true);
+                   mViewModel.startAnotherActivity(DashboardActivity.class, true);
                     Log.i("SplashActivity::", "direct start");
                 } else {
                     mViewModel.startAnotherActivity(LoginActivity.class, true);
                     Log.i("SplashActivity::", "login expired start");
                 }
             } catch (Exception e) {
-                Log.e("act_SplashActivity::", "Exception_: " + e);
-                e.printStackTrace();
+                ScreenHelper.showErrorSnackBar(rootView,e.getMessage());
             }
         } else {
             // todo direct login screen

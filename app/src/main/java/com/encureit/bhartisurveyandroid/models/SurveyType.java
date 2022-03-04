@@ -5,7 +5,10 @@ import android.os.Parcelable;
 
 import com.encureit.bhartisurveyandroid.database.TableNames;
 
+import java.io.Serializable;
+
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 /**
@@ -22,7 +25,10 @@ public class SurveyType implements Parcelable {
     String form_description;
     String isActive;
 
-    protected SurveyType(Parcel in) {
+    public SurveyType () {}
+
+    @Ignore
+    public SurveyType(Parcel in) {
         id = in.readInt();
         Form_unique_id = in.readString();
         Form_no = in.readString();
@@ -31,6 +37,7 @@ public class SurveyType implements Parcelable {
         isActive = in.readString();
     }
 
+    @Ignore
     public static final Creator<SurveyType> CREATOR = new Creator<SurveyType>() {
         @Override
         public SurveyType createFromParcel(Parcel in) {
@@ -83,11 +90,13 @@ public class SurveyType implements Parcelable {
         this.isActive = isActive;
     }
 
+    @Ignore
     @Override
     public int describeContents() {
         return 0;
     }
 
+    @Ignore
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeInt(id);
