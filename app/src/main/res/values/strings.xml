@@ -41,4 +41,5 @@
     <string name="setting_">आस सेटिंग</string>
     <string name="invalid_response">सर्व्हरकडून अवैध प्रतिसाद</string>
     <string name="sucessfull_login">यशस्वी लॉगिन</string>
+    <string name="generic_name">%s)</string>
 </resources>
