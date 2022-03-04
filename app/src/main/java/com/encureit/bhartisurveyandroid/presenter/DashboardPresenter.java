@@ -50,12 +50,15 @@ public class DashboardPresenter implements DashboardContract.Presenter {
      */
     @Override
     public void startDashboard(String loginRole) {
-        if (mActivity.isInternetConnected()) {
-            syncData();
-        } else {
-            List<SurveyType> surveyTypes = DatabaseUtil.on().getAllSurveyType();
-            mViewModel.setupDashboardFields(surveyTypes, loginRole);
-        }
+//        if (mActivity.isInternetConnected()) {
+//            syncData();
+//        } else {
+//            List<SurveyType> surveyTypes = DatabaseUtil.on().getAllSurveyType();
+//            mViewModel.setupDashboardFields(surveyTypes, loginRole);
+//        }
+        List<SurveyType> surveyTypes = DatabaseUtil.on().getAllSurveyType();
+        mViewModel.setupDashboardFields(surveyTypes, loginRole);
+
     }
 
     /**

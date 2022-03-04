@@ -18,6 +18,7 @@ import com.encureit.bhartisurveyandroid.databinding.ActivityDashboardBinding;
 import com.encureit.bhartisurveyandroid.features.setting.SettingsActivity;
 import com.encureit.bhartisurveyandroid.features.subforms.QuesSectionListActivity;
 import com.encureit.bhartisurveyandroid.lib.AppKeys;
+import com.encureit.bhartisurveyandroid.lib.ScreenHelper;
 import com.encureit.bhartisurveyandroid.models.SurveyType;
 import com.encureit.bhartisurveyandroid.models.contracts.DashboardContract;
 import com.encureit.bhartisurveyandroid.presenter.DashboardPresenter;
@@ -70,7 +71,7 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
 
     @Override
     public void showResponseFailed(String error) {
-
+        ScreenHelper.showErrorSnackBar(mBinding.getRoot(),error);
     }
 
     @Override

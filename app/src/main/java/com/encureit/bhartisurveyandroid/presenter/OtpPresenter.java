@@ -233,11 +233,11 @@ public class OtpPresenter implements OtpContract.Presenter {
             public void onResponse(Call<SurveyTypeResponseModel> call, Response<SurveyTypeResponseModel> response) {
                 //mActivity.enableForm();
                 if (response.code() == 200 && response.body() != null) {
-                    if (response.body().isStatus()) {
+                    //if (response.body().isStatus()) {
                         mViewModel.getSurveyMasterResponse(response.body());
-                    } else {
-                        mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
-                    }
+//                    } else {
+//                        mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
+//                    }
                 } else {
                     mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                 }
