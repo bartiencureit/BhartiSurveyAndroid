@@ -5,7 +5,7 @@
     <data>
         <variable
             name="presenter"
-            type="com.encureit.bhartisurveyandroid.presenter.SurveySectionPresenter"
+            type="com.encureit.samtadoot.presenter.SurveySectionPresenter"
             />
     </data>
 <LinearLayout

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.encureit.bhartisurveyandroid">
+    package="com.encureit.samtadoot">
 
     <application
-        android:name=".base.BaseApplication"
+        android:name="com.encureit.samtadoot.base.BaseApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,32 +13,32 @@
         android:supportsRtl="true"
         android:theme="@style/BaseTheme">
 
-        <activity android:name=".features.subforms.QuesSectionListActivity"
+        <activity android:name="com.encureit.samtadoot.features.subforms.QuesSectionListActivity"
             android:exported="true"
             android:screenOrientation="fullSensor"
             />
 
-        <activity android:name=".features.setting.SettingsActivity"
+        <activity android:name="com.encureit.samtadoot.features.setting.SettingsActivity"
             android:exported="true"
             android:screenOrientation="fullSensor"
             />
 
-        <activity android:name=".features.dashboard.DashboardActivity"
+        <activity android:name="com.encureit.samtadoot.features.dashboard.DashboardActivity"
             android:exported="true"
             android:screenOrientation="fullSensor"
             />
 
         <activity
-            android:name=".login.OtpCheckActivity"
+            android:name="com.encureit.samtadoot.login.OtpCheckActivity"
             android:screenOrientation="fullSensor"
             android:exported="true" />
         <activity
-            android:name=".login.LoginActivity"
+            android:name="com.encureit.samtadoot.login.LoginActivity"
             android:exported="true"
             android:screenOrientation="fullSensor"
              />
         <activity
-            android:name=".base.SplashActivity"
+            android:name="com.encureit.samtadoot.base.SplashActivity"
             android:exported="true"
             android:screenOrientation="fullSensor"
             >
@@ -49,10 +49,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.encureit.samtadoot.MainActivity"
             android:exported="true" /> <!-- receivers -->
         <receiver
-            android:name=".recievers.MessageReceiver"
+            android:name="com.encureit.samtadoot.recievers.MessageReceiver"
             android:exported="true"
             android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>

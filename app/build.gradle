@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.encureit.bhartisurveyandroid"
+        applicationId "com.encureit.samtadoot"
         minSdkVersion 19
         targetSdkVersion 31
         versionCode 1

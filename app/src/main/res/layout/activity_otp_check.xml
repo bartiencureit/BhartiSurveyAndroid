@@ -6,7 +6,7 @@
     <data>
         <variable
             name="presenter"
-            type="com.encureit.bhartisurveyandroid.presenter.OtpPresenter"
+            type="com.encureit.samtadoot.presenter.OtpPresenter"
             />
     </data>
 

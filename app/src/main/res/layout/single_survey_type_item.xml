@@ -5,7 +5,7 @@
     <data>
         <variable
             name="surveyType"
-            type="com.encureit.bhartisurveyandroid.models.SurveyType"
+            type="com.encureit.samtadoot.models.SurveyType"
             />
     </data>
     <LinearLayout
@@ -35,7 +35,7 @@
                     android:orientation="horizontal"
                     android:padding="5dp">
 
-                    <com.encureit.bhartisurveyandroid.custom.CustomCardView
+                    <com.encureit.samtadoot.custom.CustomCardView
                         android:id="@+id/btnForm1"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -58,7 +58,7 @@
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
-                    </com.encureit.bhartisurveyandroid.custom.CustomCardView>
+                    </com.encureit.samtadoot.custom.CustomCardView>
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
