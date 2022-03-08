@@ -23,6 +23,12 @@ public interface SurveyQuestionDao extends BaseDao<SurveyQuestion> {
     @Query("DELETE FROM "  + TableNames.TABLE_SURVEY_QUESTIONS)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE SurveySection_ID =:section_id")
+    List<SurveyQuestion> getAllQuestionsBySection(String section_id);
+
+    @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE ParentQuestionId =:Ques_id")
+    List<SurveyQuestion> getAllChildQuestion(String Ques_id);
+
      @Query("UPDATE " + TableNames.TABLE_SURVEY_QUESTIONS+" SET SurveyQuestion_ID =:SurveyQuestion_ID WHERE id =:id")
      void update_SurveyQuestion_ID(int id, String SurveyQuestion_ID);
 

@@ -23,6 +23,9 @@ public interface QuestionTypeDao extends BaseDao<QuestionType> {
     @Query("DELETE FROM "  + TableNames.TABLE_QUESTIONS_TYPES)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_QUESTIONS_TYPES+" WHERE QuestionTypeID =:QuestionTypeID")
+    QuestionType getQuestionTypeById(String QuestionTypeID);
+
     @Query("UPDATE " + TableNames.TABLE_QUESTIONS_TYPES+" SET QuestionTypeID = :QuestionTypeID WHERE id =:id")
     void update_QuestionTypeID(int id, String QuestionTypeID);
 

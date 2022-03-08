@@ -1,15 +1,19 @@
 package com.encureit.samtadoot.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.encureit.samtadoot.database.TableNames;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 /**
  * Created by Swapna Thakur on 3/3/2022.
  */
 @Entity(tableName = TableNames.TABLE_SURVEY_SECTIONS)
-public class SurveySection {
+public class SurveySection implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
@@ -23,6 +27,36 @@ public class SurveySection {
    String ModifiedBy;
    String ModifiedDate;
    String IsActive;
+
+   public SurveySection() {}
+
+   @Ignore
+    public SurveySection(Parcel in) {
+        id = in.readInt();
+        SurveySection_ID = in.readString();
+        SurveyMaster_ID = in.readString();
+        SectionNumber = in.readString();
+        SectionName = in.readString();
+        SectionDescription = in.readString();
+        CreatedBy = in.readString();
+        CreatedDate = in.readString();
+        ModifiedBy = in.readString();
+        ModifiedDate = in.readString();
+        IsActive = in.readString();
+    }
+
+    @Ignore
+    public static final Creator<SurveySection> CREATOR = new Creator<SurveySection>() {
+        @Override
+        public SurveySection createFromParcel(Parcel in) {
+            return new SurveySection(in);
+        }
+
+        @Override
+        public SurveySection[] newArray(int size) {
+            return new SurveySection[size];
+        }
+    };
 
     public String getSurveySection_ID() {
         return SurveySection_ID;
@@ -102,5 +136,27 @@ public class SurveySection {
 
     public void setIsActive(String isActive) {
         IsActive = isActive;
+    }
+
+    @Ignore
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Ignore
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(SurveySection_ID);
+        parcel.writeString(SurveyMaster_ID);
+        parcel.writeString(SectionNumber);
+        parcel.writeString(SectionName);
+        parcel.writeString(SectionDescription);
+        parcel.writeString(CreatedBy);
+        parcel.writeString(CreatedDate);
+        parcel.writeString(ModifiedBy);
+        parcel.writeString(ModifiedDate);
+        parcel.writeString(IsActive);
     }
 }

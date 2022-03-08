@@ -2,11 +2,13 @@ package com.encureit.samtadoot.features.subforms;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.encureit.samtadoot.adapters.SurveySectionListAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.databinding.ActivityQuesSectionListBinding;
+import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.contracts.SurveySectionContract;
 import com.encureit.samtadoot.presenter.SurveySectionPresenter;
@@ -34,7 +36,9 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         mAdapter = new SurveySectionListAdapter(this, list, new SurveySectionListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(SurveySection listModel, int position) {
-
+                Intent intent = new Intent(QuesSectionListActivity.this,SubFormActivity.class);
+                intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
+                startActivityOnTop(true,intent);
             }
         });
         mBinding.rvQueSections.setAdapter(mAdapter);

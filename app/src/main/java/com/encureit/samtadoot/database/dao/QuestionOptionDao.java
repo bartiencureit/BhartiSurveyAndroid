@@ -23,6 +23,9 @@ public interface QuestionOptionDao extends BaseDao<QuestionOption> {
     @Query("DELETE FROM "  + TableNames.TABLE_QUESTIONS_OPTION)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_QUESTIONS_OPTION+" WHERE SurveyQuestion_ID =:SurveyQuestion_ID")
+    List<QuestionOption> getAllQuestionOption(String SurveyQuestion_ID);
+
      @Query("UPDATE " + TableNames.TABLE_QUESTIONS_OPTION+" SET QNAOption_ID = :QNAOption_ID WHERE id=:id")
      void update_QNAOption_ID(int id, String QNAOption_ID);
 
