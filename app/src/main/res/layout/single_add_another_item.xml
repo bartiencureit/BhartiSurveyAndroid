@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="subForm"
+            type="com.encureit.samtadoot.models.SurveyQuestionWithData" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_add_another_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/ll_add_another"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_add_another"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_another"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+</layout>

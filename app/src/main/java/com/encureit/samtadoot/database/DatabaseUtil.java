@@ -270,6 +270,10 @@ public class DatabaseUtil {
                 List<SurveyQuestionWithData> childQuestions = getAllChildQuestions(surveyQuestion.getSurveyQuestion_ID());
                 surveyQuestionWithData.setChildQuestions(childQuestions);
 
+                //get all linked question and set to parent question
+                List<SurveyQuestionWithData> linkedQuestions = getAllLinkedQuestions(surveyQuestion.getSurveyQuestion_ID());
+                surveyQuestionWithData.setLinkedQuestions(linkedQuestions);
+
                 surveyQuestionsWithData.add(surveyQuestionWithData);
             }
 
@@ -279,43 +283,100 @@ public class DatabaseUtil {
         return surveyQuestionsWithData;
     }
 
+    /**
+     * get all child questions
+     * if child question is linked = true then it should be added in linked question list
+     * hence it's skipped here
+     * @param questionId
+     * @return
+     */
     public List<SurveyQuestionWithData> getAllChildQuestions(String questionId) {
         List<SurveyQuestionWithData> childQuestions = new ArrayList<>();
         List<SurveyQuestion> allChildQuestions = getSurveyQuestionDao().getAllChildQuestion(questionId);
 
         for (int i = 0; i < allChildQuestions.size(); i++) {
             SurveyQuestion childSurveyQuestion = allChildQuestions.get(i);
+            if (!childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
+                SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
+                surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
+                surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
+                surveyQuestionWithData.setQuestionTypeID(childSurveyQuestion.getQuestionTypeID());
+                surveyQuestionWithData.setAutopopulate(childSurveyQuestion.getAutopopulate());
+                surveyQuestionWithData.setLabelHeader(childSurveyQuestion.getLabelHeader());
+                surveyQuestionWithData.setRequired(childSurveyQuestion.getRequired());
+                surveyQuestionWithData.setQuestionSequence(childSurveyQuestion.getQuestionSequence());
+                surveyQuestionWithData.setValidationType(childSurveyQuestion.getValidationType());
+                surveyQuestionWithData.setIsValidation(childSurveyQuestion.getIsValidation());
+                surveyQuestionWithData.setIsLinkedQuestionId(childSurveyQuestion.getIsLinkedQuestionId());
+                surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
+                surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
+                surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+                surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
+                surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
+                surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
+                surveyQuestionWithData.setUpdatedDate(childSurveyQuestion.getUpdatedDate());
+                surveyQuestionWithData.setIs_section(childSurveyQuestion.getIs_section());
+                surveyQuestionWithData.setIsActive(childSurveyQuestion.getIsActive());
 
-            SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
-            surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
-            surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
-            surveyQuestionWithData.setQuestionTypeID(childSurveyQuestion.getQuestionTypeID());
-            surveyQuestionWithData.setAutopopulate(childSurveyQuestion.getAutopopulate());
-            surveyQuestionWithData.setLabelHeader(childSurveyQuestion.getLabelHeader());
-            surveyQuestionWithData.setRequired(childSurveyQuestion.getRequired());
-            surveyQuestionWithData.setQuestionSequence(childSurveyQuestion.getQuestionSequence());
-            surveyQuestionWithData.setValidationType(childSurveyQuestion.getValidationType());
-            surveyQuestionWithData.setIsValidation(childSurveyQuestion.getIsValidation());
-            surveyQuestionWithData.setIsLinkedQuestionId(childSurveyQuestion.getIsLinkedQuestionId());
-            surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
-            surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
-            surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
-            surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
-            surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
-            surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
-            surveyQuestionWithData.setUpdatedDate(childSurveyQuestion.getUpdatedDate());
-            surveyQuestionWithData.setIs_section(childSurveyQuestion.getIs_section());
-            surveyQuestionWithData.setIsActive(childSurveyQuestion.getIsActive());
+                //get question type of given child question
+                QuestionType questionType = getQuestionTypeOfQuestion(childSurveyQuestion);
+                surveyQuestionWithData.setQuestionType(questionType);
 
-            //get question type of given child question
-            QuestionType questionType = getQuestionTypeOfQuestion(childSurveyQuestion);
-            surveyQuestionWithData.setQuestionType(questionType);
+                //get Question Options of given child question
+                List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(childSurveyQuestion.getSurveyQuestion_ID());
+                surveyQuestionWithData.setQuestionOptions(questionOptions);
 
-            //get Question Options of given child question
-            List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(childSurveyQuestion.getSurveyQuestion_ID());
-            surveyQuestionWithData.setQuestionOptions(questionOptions);
+                childQuestions.add(surveyQuestionWithData);
+            }
+        }
 
-            childQuestions.add(surveyQuestionWithData);
+
+        return childQuestions;
+    }
+
+    /**
+     * get all linked questions
+     * @param questionId
+     * @return
+     */
+    public List<SurveyQuestionWithData> getAllLinkedQuestions(String questionId) {
+        List<SurveyQuestionWithData> childQuestions = new ArrayList<>();
+        List<SurveyQuestion> allChildQuestions = getSurveyQuestionDao().getAllChildQuestion(questionId);
+
+        for (int i = 0; i < allChildQuestions.size(); i++) {
+            SurveyQuestion childSurveyQuestion = allChildQuestions.get(i);
+            if (childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
+                SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
+                surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
+                surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
+                surveyQuestionWithData.setQuestionTypeID(childSurveyQuestion.getQuestionTypeID());
+                surveyQuestionWithData.setAutopopulate(childSurveyQuestion.getAutopopulate());
+                surveyQuestionWithData.setLabelHeader(childSurveyQuestion.getLabelHeader());
+                surveyQuestionWithData.setRequired(childSurveyQuestion.getRequired());
+                surveyQuestionWithData.setQuestionSequence(childSurveyQuestion.getQuestionSequence());
+                surveyQuestionWithData.setValidationType(childSurveyQuestion.getValidationType());
+                surveyQuestionWithData.setIsValidation(childSurveyQuestion.getIsValidation());
+                surveyQuestionWithData.setIsLinkedQuestionId(childSurveyQuestion.getIsLinkedQuestionId());
+                surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
+                surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
+                surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+                surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
+                surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
+                surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
+                surveyQuestionWithData.setUpdatedDate(childSurveyQuestion.getUpdatedDate());
+                surveyQuestionWithData.setIs_section(childSurveyQuestion.getIs_section());
+                surveyQuestionWithData.setIsActive(childSurveyQuestion.getIsActive());
+
+                //get question type of given child question
+                QuestionType questionType = getQuestionTypeOfQuestion(childSurveyQuestion);
+                surveyQuestionWithData.setQuestionType(questionType);
+
+                //get Question Options of given child question
+                List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(childSurveyQuestion.getSurveyQuestion_ID());
+                surveyQuestionWithData.setQuestionOptions(questionOptions);
+
+                childQuestions.add(surveyQuestionWithData);
+            }
         }
 
 

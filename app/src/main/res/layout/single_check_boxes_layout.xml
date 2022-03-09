@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+
+        <variable
+            name="subForm"
+            type="com.encureit.samtadoot.models.SurveyQuestionWithData" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/ll_input_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <com.encureit.samtadoot.custom.HeaderTextView
+            android:id="@+id/tv_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={subForm.questions}"/>
+
+        <RadioGroup
+            android:id="@+id/rg_checkbox_question_options"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+        </RadioGroup>
+
+    </LinearLayout>
+
+
+</layout>

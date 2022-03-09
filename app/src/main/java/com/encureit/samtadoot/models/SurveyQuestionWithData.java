@@ -2,6 +2,7 @@ package com.encureit.samtadoot.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.InputType;
 
 import java.util.List;
 
@@ -30,7 +31,9 @@ public class SurveyQuestionWithData implements Parcelable {
     String IsActive;
     QuestionType questionType;
     List<SurveyQuestionWithData> childQuestions;
+    List<SurveyQuestionWithData> linkedQuestions;
     List<QuestionOption> questionOptions;
+    public int last_linked_question_index = -1;
 
     public SurveyQuestionWithData() {}
 
@@ -245,6 +248,14 @@ public class SurveyQuestionWithData implements Parcelable {
         this.questionOptions = questionOptions;
     }
 
+    public List<SurveyQuestionWithData> getLinkedQuestions() {
+        return linkedQuestions;
+    }
+
+    public void setLinkedQuestions(List<SurveyQuestionWithData> linkedQuestions) {
+        this.linkedQuestions = linkedQuestions;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -273,4 +284,17 @@ public class SurveyQuestionWithData implements Parcelable {
         parcel.writeString(IsActive);
         parcel.writeTypedList(childQuestions);
     }
+
+    public int getInputValidation() {
+        switch (ValidationType) {
+            case "text":
+                return InputType.TYPE_CLASS_TEXT;
+            case "number":
+                return InputType.TYPE_CLASS_NUMBER;
+        }
+
+        return InputType.TYPE_CLASS_TEXT;
+    }
+
+
 }
