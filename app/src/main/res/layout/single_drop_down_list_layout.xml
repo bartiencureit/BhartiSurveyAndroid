@@ -24,7 +24,8 @@
         <Spinner
             android:id="@+id/spr_question_option"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_rounded_corners"/>
 
     </LinearLayout>
 

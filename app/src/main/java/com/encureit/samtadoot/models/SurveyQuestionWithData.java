@@ -33,7 +33,6 @@ public class SurveyQuestionWithData implements Parcelable {
     List<SurveyQuestionWithData> childQuestions;
     List<SurveyQuestionWithData> linkedQuestions;
     List<QuestionOption> questionOptions;
-    public int last_linked_question_index = -1;
 
     public SurveyQuestionWithData() {}
 
@@ -295,6 +294,4 @@ public class SurveyQuestionWithData implements Parcelable {
 
         return InputType.TYPE_CLASS_TEXT;
     }
-
-
 }
