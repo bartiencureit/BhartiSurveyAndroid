@@ -24,13 +24,10 @@ public class SubFormPresenter implements SubFormContract.Presenter {
     }
 
     @Override
-    public void startSubForm() {
-        Intent intent = mActivity.getIntent();
-        if (intent.hasExtra(AppKeys.SURVEY_SECTION)) {
-            SurveySection section = intent.getParcelableExtra(AppKeys.SURVEY_SECTION);
-            List<SurveyQuestionWithData> subFormList = DatabaseUtil.on().getAllQuestions(section.getSurveySection_ID());
-            mViewModel.setupSubForms(subFormList,section);
-        }
+    public void startSubForm(SurveySection surveySection) {
+
+        List<SurveyQuestionWithData> subFormList = DatabaseUtil.on().getAllQuestions(surveySection.getSurveySection_ID());
+        mViewModel.setupSubForms(subFormList,surveySection);
     }
 
     @Override

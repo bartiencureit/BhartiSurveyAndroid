@@ -29,6 +29,9 @@ public interface SurveyQuestionDao extends BaseDao<SurveyQuestion> {
     @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE ParentQuestionId =:Ques_id")
     List<SurveyQuestion> getAllChildQuestion(String Ques_id);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE Questions =:Questions")
+    SurveyQuestion getQuestionFromText(String Questions);
+
      @Query("UPDATE " + TableNames.TABLE_SURVEY_QUESTIONS+" SET SurveyQuestion_ID =:SurveyQuestion_ID WHERE id =:id")
      void update_SurveyQuestion_ID(int id, String SurveyQuestion_ID);
 

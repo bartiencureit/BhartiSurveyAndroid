@@ -4,6 +4,9 @@ import android.content.Context;
 
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
+import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
+import com.encureit.samtadoot.database.dao.CandidateSurveyStatusDetailsDao;
+import com.encureit.samtadoot.database.dao.OtherValuesDao;
 import com.encureit.samtadoot.database.dao.QuestionOptionDao;
 import com.encureit.samtadoot.database.dao.QuestionTypeDao;
 import com.encureit.samtadoot.database.dao.QuestionValidationDao;
@@ -12,6 +15,9 @@ import com.encureit.samtadoot.database.dao.SurveySectionDao;
 import com.encureit.samtadoot.database.dao.SurveyTypeDao;
 import com.encureit.samtadoot.database.dao.UserDeviceDetailsDao;
 import com.encureit.samtadoot.models.AssignDetails;
+import com.encureit.samtadoot.models.CandidateDetails;
+import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
+import com.encureit.samtadoot.models.OtherValues;
 import com.encureit.samtadoot.models.QuestionOption;
 import com.encureit.samtadoot.models.QuestionType;
 import com.encureit.samtadoot.models.QuestionValidation;
@@ -31,7 +37,10 @@ import androidx.room.Database;
         QuestionValidation.class,
         SurveyQuestion.class,
         SurveySection.class,
-        AssignDetails.class
+        AssignDetails.class,
+        CandidateDetails.class,
+        CandidateSurveyStatusDetails.class,
+        OtherValues.class
 },
         version = 1, exportSchema = false)
 public abstract class UniqaDatabase extends AppDatabase {
@@ -60,4 +69,7 @@ public abstract class UniqaDatabase extends AppDatabase {
     public abstract SurveyQuestionDao surveyQuestionDao();
     public abstract SurveySectionDao surveySectionDao();
     public abstract AssignDetailsDao assignDetailsDao();
+    public abstract CandidateDetailsDao candidateDetailsDao();
+    public abstract CandidateSurveyStatusDetailsDao candidateSurveyStatusDetailsDao();
+    public abstract OtherValuesDao otherValuesDao();
 }

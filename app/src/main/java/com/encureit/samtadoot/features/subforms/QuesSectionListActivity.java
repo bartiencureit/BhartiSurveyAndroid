@@ -10,6 +10,7 @@ import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.databinding.ActivityQuesSectionListBinding;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.models.SurveySection;
+import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.contracts.SurveySectionContract;
 import com.encureit.samtadoot.presenter.SurveySectionPresenter;
 
@@ -19,6 +20,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     private ActivityQuesSectionListBinding mBinding;
     private SurveySectionPresenter mPresenter;
     private SurveySectionListAdapter mAdapter;
+    private SurveyType surveyType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,10 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         mPresenter = new SurveySectionPresenter(QuesSectionListActivity.this,this);
         mPresenter.rootView = mBinding.getRoot();
         mPresenter.startSurveySection();
+        Intent intent = getIntent();
+        if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
+            surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
+        }
     }
 
     @Override
@@ -37,6 +43,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
             @Override
             public void onItemClicked(SurveySection listModel, int position) {
                 Intent intent = new Intent(QuesSectionListActivity.this,SubFormActivity.class);
+                intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
                 intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
                 startActivityOnTop(true,intent);
             }

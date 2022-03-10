@@ -1,18 +1,26 @@
 package com.encureit.samtadoot.features.subforms;
 
+import android.content.Context;
+import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
+import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
+import com.encureit.samtadoot.Helpers.GPSTracker;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.adapters.DropDownArrayAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.custom.HeaderTextView;
+import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivitySubFormBinding;
 import com.encureit.samtadoot.databinding.SingleAddAnotherItemBinding;
 import com.encureit.samtadoot.databinding.SingleAddAnotherParentItemBinding;
@@ -25,11 +33,19 @@ import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.models.QuestionOption;
 import com.encureit.samtadoot.models.SurveyQuestionWithData;
 import com.encureit.samtadoot.models.SurveySection;
+import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.contracts.SubFormContract;
 import com.encureit.samtadoot.presenter.SubFormPresenter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import androidx.appcompat.widget.AppCompatEditText;
+
+import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
 
 public class SubFormActivity extends BaseActivity implements SubFormContract.ViewModel {
     private ActivitySubFormBinding mBinding;
@@ -37,15 +53,73 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private SingleAddAnotherItemBinding mBindingChild;
     private List<SurveyQuestionWithData> list;
     private int i = 0;
+    private List<HashMap<String,AppCompatEditText>> editTexts = new ArrayList<>();
+    private List<HashMap<String,Spinner>> spinners = new ArrayList<>();
+    private List<HashMap<String,MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
+    private List<HashMap<String,RadioGroup>> radioGroups = new ArrayList<>();
+    private List<HashMap<String,CheckBox>> checkBoxes = new ArrayList<>();
+    private LinearLayout mainLinear;
+    private SurveySection section;
+    private SurveyType surveyType;
+    private String formId;
+    private LocationManager locationManager;
+    private double latitude, longitude;
+    private long start_date;
+    private long end_date;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = ActivitySubFormBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        Intent intent = mActivity.getIntent();
+        if (intent.hasExtra(AppKeys.SURVEY_SECTION)) {
+            section = intent.getParcelableExtra(AppKeys.SURVEY_SECTION);
+            surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
+        }
         mPresenter = new SubFormPresenter(SubFormActivity.this,this);
         mBinding.setPresenter(mPresenter);
-        mPresenter.startSubForm();
+        mPresenter.startSubForm(section);
+
+        formId = getRandomAlphaNumericString();
+        start_date = Calendar.getInstance().getTimeInMillis();
+
+        mBinding.btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                end_date = Calendar.getInstance().getTimeInMillis();
+                getAllChildView();
+                uploadData();
+            }
+        });
+    }
+
+    /**
+     * @date 10-3-2022
+     * Save form to sqlite
+     */
+    private void uploadData() {
+        saveInputBoxDataToDb();
+    }
+
+    /**
+     * @date 10-3-2022
+     * save edittext data to sqlite db
+     */
+    private void saveInputBoxDataToDb() {
+        //render through edittext hashmap list
+        for (int j = 0; j < editTexts.size(); j++) {
+            HashMap<String,AppCompatEditText> map = editTexts.get(j);
+            for (Map.Entry<String,AppCompatEditText> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                AppCompatEditText editText = entry.getValue();
+                //Question was saved in hashmap i.e header text value as key
+                //We have get question id using question text from database
+                String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
+                String questionValue = editText.getText().toString();
+            }
+
+        }
     }
 
     @Override
@@ -83,6 +157,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
 
         mBinding.llFormList.addView(mBindingChild.getRoot());
+        mainLinear = mBinding.llFormList;
     }
 
     private void addLinkedQuestion(SurveyQuestionWithData subForm) {
@@ -100,23 +175,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         });
         mBindingChild.llAddAnotherSingleView.addView(binding.getRoot());
     }
-
-    /*private void addLinkedQuestion(SurveyQuestionWithData subForm) {
-        SingleAddAnotherParentItemBinding singleAddAnotherParentItemBinding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
-        for (int j = 0; j< subForm.getLinkedQuestions().size();j++) {
-            mBindingLinked = SingleLinkedQuestionLayoutBinding.inflate(getLayoutInflater());
-            populateChildQuestionInput(subForm.getLinkedQuestions().get(j),j);
-            singleAddAnotherParentItemBinding.llAddAnother.addView(mBindingLinked.getRoot());
-        }
-
-        singleAddAnotherParentItemBinding.imgDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mBindingChild.llAddAnotherSingleView.removeView(singleAddAnotherParentItemBinding.llAddAnother);
-            }
-        });
-        mBindingChild.llAddAnotherSingleView.addView(singleAddAnotherParentItemBinding.getRoot());
-    }*/
 
     /**
      * @date 7-3-2022
@@ -458,6 +516,64 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         rootView.addView(binding.getRoot());
     }
 
+    /**
+     * @date 9-3-2022 and 10-3-2022
+     * get all child views
+     */
+    private void getAllChildView() {
+        //get the count of main linear layout
+        int count = mainLinear.getChildCount();
+        for (int j = 0; j < count; j++) {
+            //get all child views in main linear layout
+            View view = mainLinear.getChildAt(j);
+            //as our header text is not child of main linear so here we have checked for instanceof LinearLayout (this is ll_input_box layout)
+            if (view instanceof LinearLayout) {
+                LinearLayout linearLayout = ((LinearLayout)view);
+                int ll_count = linearLayout.getChildCount();
+
+                for (int k = 0; k <ll_count; k++) {
+                    View child_view = linearLayout.getChildAt(k);
+                    if (child_view instanceof HeaderTextView) {
+                        HeaderTextView headerTextView = (HeaderTextView) child_view;
+                        int view_next_to_header_id = linearLayout.indexOfChild(child_view) + 1;
+                        View next_view = linearLayout.getChildAt(view_next_to_header_id);
+                        if( next_view != null) {
+                            if (next_view instanceof AppCompatEditText) {
+                                HashMap<String,AppCompatEditText> map = new HashMap<>();
+                                map.put(headerTextView.getText().toString(),(AppCompatEditText) next_view);
+                                editTexts.add(map);
+                            }
+
+                            if (next_view instanceof Spinner) {
+                                HashMap<String,Spinner> map = new HashMap<>();
+                                map.put(headerTextView.getText().toString(),(Spinner) next_view);
+                                spinners.add(map);
+                            }
+
+                            if (next_view instanceof MultiSpinnerSearch) {
+                                HashMap<String,MultiSpinnerSearch> map = new HashMap<>();
+                                map.put(headerTextView.getText().toString(),(MultiSpinnerSearch) next_view);
+                                multiSpinnerSearches.add(map);
+                            }
+
+                            if (next_view instanceof RadioGroup) {
+                                HashMap<String,RadioGroup> map = new HashMap<>();
+                                map.put(headerTextView.getText().toString(),(RadioGroup) next_view);
+                                radioGroups.add(map);
+                            }
+
+                            if (next_view instanceof CheckBox) {
+                                HashMap<String,CheckBox> map = new HashMap<>();
+                                map.put(headerTextView.getText().toString(),(CheckBox) next_view);
+                                checkBoxes.add(map);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void showResponseFailed(String error) {
 
@@ -466,5 +582,24 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     @Override
     public void onBackPressed() {
         startActivityOnTop(QuesSectionListActivity.class,false);
+    }
+
+    public void checkGps() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        GPSTracker gpsTracker = new GPSTracker(this);
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            //OnGPS();
+            gpsTracker.showSettingsAlert();
+        } else {
+            //getLocation();
+            if (gpsTracker.canGetLocation()) {
+                latitude = gpsTracker.getLatitude();
+                longitude = gpsTracker.getLongitude();
+                Log.e("TAG", "getLocation: " + "Your Location: " + "Latitude: " + latitude + "\t" + "Longitude: " + longitude);
+                //Toast.makeText(this, "Your Location: " + "Latitude: " + latitude + "\t" + "Longitude: " + longitude,Toast.LENGTH_SHORT).show();
+            } else {
+                gpsTracker.showSettingsAlert();
+            }
+        }
     }
 }

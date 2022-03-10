@@ -33,6 +33,7 @@ public class SurveyQuestionWithData implements Parcelable {
     List<SurveyQuestionWithData> childQuestions;
     List<SurveyQuestionWithData> linkedQuestions;
     List<QuestionOption> questionOptions;
+    String Value;
 
     public SurveyQuestionWithData() {}
 
@@ -253,6 +254,14 @@ public class SurveyQuestionWithData implements Parcelable {
 
     public void setLinkedQuestions(List<SurveyQuestionWithData> linkedQuestions) {
         this.linkedQuestions = linkedQuestions;
+    }
+
+    public String getValue() {
+        return Value;
+    }
+
+    public void setValue(String value) {
+        Value = value;
     }
 
     @Override

@@ -71,8 +71,7 @@
                 android:textStyle="bold"
                 android:background="@color/colorPrimaryDark"
                 android:text="@string/save"
-                android:onClick="@{() -> presenter.saveForm()}"
-                android:visibility="gone" />
+                 />
         </RelativeLayout>
 
     </LinearLayout>

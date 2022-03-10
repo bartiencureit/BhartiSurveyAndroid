@@ -12,4 +12,5 @@ public interface TableNames {
     String TABLE_SURVEY_SECTIONS = "tbl_survey_sections";
     String TABLE_SURVEY_MASTER = "tbl_survey_master";
     String TABLE_USER_ASSIGNED_DATA = "tbl_user_assigned_data";
+    String TABLE_OTHER_VALUES = "tbl_other_values";
 }

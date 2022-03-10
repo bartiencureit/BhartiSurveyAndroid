@@ -3,6 +3,9 @@ package com.encureit.samtadoot.database;
 import android.content.Context;
 
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
+import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
+import com.encureit.samtadoot.database.dao.CandidateSurveyStatusDetailsDao;
+import com.encureit.samtadoot.database.dao.OtherValuesDao;
 import com.encureit.samtadoot.database.dao.QuestionOptionDao;
 import com.encureit.samtadoot.database.dao.QuestionTypeDao;
 import com.encureit.samtadoot.database.dao.QuestionValidationDao;
@@ -11,6 +14,9 @@ import com.encureit.samtadoot.database.dao.SurveySectionDao;
 import com.encureit.samtadoot.database.dao.SurveyTypeDao;
 import com.encureit.samtadoot.database.dao.UserDeviceDetailsDao;
 import com.encureit.samtadoot.models.AssignDetails;
+import com.encureit.samtadoot.models.CandidateDetails;
+import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
+import com.encureit.samtadoot.models.OtherValues;
 import com.encureit.samtadoot.models.QuestionOption;
 import com.encureit.samtadoot.models.QuestionType;
 import com.encureit.samtadoot.models.QuestionValidation;
@@ -37,6 +43,9 @@ public class DatabaseUtil {
     private SurveyQuestionDao mSurveyQuestionDao;
     private SurveySectionDao mSurveySectionDao;
     private AssignDetailsDao mAssignDetailsDao;
+    private CandidateDetailsDao mCandidateDetailsDao;
+    private CandidateSurveyStatusDetailsDao mCandidateSurveyStatusDetailsDao;
+    private OtherValuesDao mOtherValuesDao;
 
     private DatabaseUtil() {
         setSurveyTypeDao(UniqaDatabase.on().surveyTypeDao());
@@ -47,6 +56,9 @@ public class DatabaseUtil {
         setSurveyQuestionDao(UniqaDatabase.on().surveyQuestionDao());
         setSurveySectionDao(UniqaDatabase.on().surveySectionDao());
         setAssignDetailsDao(UniqaDatabase.on().assignDetailsDao());
+        setCandidateDetailsDao(UniqaDatabase.on().candidateDetailsDao());
+        setCandidateSurveyStatusDetailsDao(UniqaDatabase.on().candidateSurveyStatusDetailsDao());
+        setOtherValuesDao(UniqaDatabase.on().otherValuesDao());
     }
 
     /**
@@ -130,6 +142,30 @@ public class DatabaseUtil {
 
     public void setAssignDetailsDao(AssignDetailsDao mAssignDetailsDao) {
         this.mAssignDetailsDao = mAssignDetailsDao;
+    }
+
+    public CandidateDetailsDao getCandidateDetailsDao() {
+        return mCandidateDetailsDao;
+    }
+
+    public void setCandidateDetailsDao(CandidateDetailsDao mCandidateDetailsDao) {
+        this.mCandidateDetailsDao = mCandidateDetailsDao;
+    }
+
+    public CandidateSurveyStatusDetailsDao getCandidateSurveyStatusDetailsDao() {
+        return mCandidateSurveyStatusDetailsDao;
+    }
+
+    public void setCandidateSurveyStatusDetailsDao(CandidateSurveyStatusDetailsDao mCandidateSurveyStatusDetailsDao) {
+        this.mCandidateSurveyStatusDetailsDao = mCandidateSurveyStatusDetailsDao;
+    }
+
+    public OtherValuesDao getOtherValuesDao() {
+        return mOtherValuesDao;
+    }
+
+    public void setOtherValuesDao(OtherValuesDao mOtherValuesDao) {
+        this.mOtherValuesDao = mOtherValuesDao;
     }
 
     public long[] insertSurveyType(SurveyType surveyType) {
@@ -225,6 +261,18 @@ public class DatabaseUtil {
 
     public long[] insertAllUserAssignedDetails(List<AssignDetails> assignDetails) {
         return getAssignDetailsDao().insertBulk(assignDetails);
+    }
+
+    public long[] insertAllCandidateDetails(List<CandidateDetails> candidateDetails) {
+        return getCandidateDetailsDao().insertBulk(candidateDetails);
+    }
+
+    public long[] insertAllCandidateSurveyStatusDetails(List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails) {
+        return getCandidateSurveyStatusDetailsDao().insertBulk(candidateSurveyStatusDetails);
+    }
+
+    public long[] insertOtherValues(List<OtherValues> otherValues) {
+        return getOtherValuesDao().insertBulk(otherValues);
     }
 
     public List<SurveyQuestionWithData> getAllQuestions(String sectionId) {
@@ -385,82 +433,26 @@ public class DatabaseUtil {
 
     /**
      * @date 7-3-2022
-     * Get All sub form list
-     * @return list of sub forms
-     *//**
-     * @commentedBy Swapna
-     * Incorrect logic to get survey question list
-     * /
-//    public List<SubForm> getAllSubFormList(String sectionId) {
-//        List<SubForm> subForms = new ArrayList<>();
-//        List<SurveyQuestion> questions = getSurveyQuestionDao().getAllQuestionsBySection(sectionId);
-//
-//        for (int i = 0; i < questions.size(); i++) {
-//            SurveyQuestion surveyQuestion = questions.get(i);
-//            SubForm subForm = new SubForm();
-//            subForm.setSurveyQuestion(surveyQuestion);
-//            QuestionType questionType = getQuestionTypeOfQuestion(surveyQuestion);
-//            subForm.setQuestionType(questionType);
-//            if (surveyQuestion.getParentQuestionId().equalsIgnoreCase("0")) {
-//                List<SurveyQuestionWithOption> surveyQuestionWithOptions = populateChildQuestions(surveyQuestion);
-//                subForm.setChildQuestions(surveyQuestionWithOptions);
-//                List<QuestionOption> questionOption = getQuestionOptionDao().getAllQuestionOption(surveyQuestion.getSurveyQuestion_ID());
-//                subForms.add(subForm);
-//            }
-//        }
-//
-//        return subForms;
-//    }
-
-    /**
-     * @date 7-3-2022
-     * Generates all child questions with options
-     * @param surveyQuestion
-     * @return surveyQuestionWithOptions
-     */
-//    private List<SurveyQuestionWithOption> populateChildQuestions(SurveyQuestion surveyQuestion) {
-//        List<SurveyQuestion> childQuestions = getSurveyQuestionDao().getAllChildQuestion(surveyQuestion.getSurveyQuestion_ID());
-//        List<SurveyQuestionWithOption> surveyQuestionWithOptions = new ArrayList<>();
-//
-//        for (int i = 0; i < childQuestions.size(); i++) {
-//            SurveyQuestion childQuestion = childQuestions.get(i);
-//            List<QuestionOption> questionOption = getQuestionOptionDao().getAllQuestionOption(childQuestion.getSurveyQuestion_ID());
-//            SurveyQuestionWithOption surveyQuestionWithOption = new SurveyQuestionWithOption();
-//            surveyQuestionWithOption.setSurveyQuestion_ID(childQuestion.getSurveyQuestion_ID());
-//            surveyQuestionWithOption.setSurveySection_ID(childQuestion.getSurveySection_ID());
-//            surveyQuestionWithOption.setQuestionTypeID(childQuestion.getQuestionTypeID());
-//            surveyQuestionWithOption.setAutopopulate(childQuestion.getAutopopulate());
-//            surveyQuestionWithOption.setLabelHeader(childQuestion.getLabelHeader());
-//            surveyQuestionWithOption.setRequired(childQuestion.getRequired());
-//            surveyQuestionWithOption.setQuestionSequence(childQuestion.getQuestionSequence());
-//            surveyQuestionWithOption.setValidationType(childQuestion.getValidationType());
-//            surveyQuestionWithOption.setIsValidation(childQuestion.getIsValidation());
-//            surveyQuestionWithOption.setIsLinkedQuestionId(childQuestion.getIsLinkedQuestionId());
-//            surveyQuestionWithOption.setParentQuestionId(childQuestion.getParentQuestionId());
-//            surveyQuestionWithOption.setOptionDependent(childQuestion.getOptionDependent());
-//            surveyQuestionWithOption.setQuestions(childQuestion.getQuestions());
-//            surveyQuestionWithOption.setCreatedBy(childQuestion.getCreatedBy());
-//            surveyQuestionWithOption.setCreatedDate(childQuestion.getCreatedDate());
-//            surveyQuestionWithOption.setUpdatedBy(childQuestion.getUpdatedBy());
-//            surveyQuestionWithOption.setUpdatedDate(childQuestion.getUpdatedDate());
-//            surveyQuestionWithOption.setIs_section(childQuestion.getIs_section());
-//            surveyQuestionWithOption.setIsActive(childQuestion.getIsActive());
-//            surveyQuestionWithOption.setQuestionOption(questionOption);
-//            surveyQuestionWithOptions.add(surveyQuestionWithOption);
-//        }
-//
-//        return surveyQuestionWithOptions;
-//    }
-
-
-    /**
-     * @date 7-3-2022
      * Get QuestionType of given Question
      * @param question
      * @return question_type
      */
     public QuestionType getQuestionTypeOfQuestion(SurveyQuestion question) {
         return getQuestionTypeDao().getQuestionTypeById(question.getQuestionTypeID());
+    }
+
+    /**
+     * @date 10-3-2022
+     * Get question id from question
+     * @param str_question
+     * @return Question id
+     */
+    public String getQuestionIdFromQuestion(String str_question) {
+        SurveyQuestion question = getSurveyQuestionDao().getQuestionFromText(str_question);
+        if (question != null) {
+            return question.getSurveyQuestion_ID();
+        }
+        return null;
     }
 
 }
