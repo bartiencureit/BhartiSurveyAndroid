@@ -1,5 +1,7 @@
 package com.encureit.samtadoot.models.contracts;
 
+import com.encureit.samtadoot.models.OtherValues;
+import com.encureit.samtadoot.network.responsemodel.OtherValuesResponseModel;
 import com.encureit.samtadoot.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.samtadoot.network.responsemodel.QuestionOptionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.QuestionTypeResponseModel;
@@ -24,6 +26,7 @@ public interface OtpContract {
         void getQuestionValidationFieldsResponse(QuestionValidationResponseModel questionValidationResponseModel);
         void getUserAssignedDetails(UserAssignedDetailsResponseModel userAssignedDetailsResponseModel);
         void getSurveyMasterResponse(SurveyTypeResponseModel surveyTypeResponseModel);
+        void getOtherValuesResponse(OtherValuesResponseModel otherValuesResponseModel);
         void showOtpFailed(String error);
     }
     interface Presenter {
@@ -35,5 +38,6 @@ public interface OtpContract {
         void getQuestionValidationFields();
         void getUserAssignedDetails(String user_id);
         void getSurveyMaster();
+        void getOtherValues();
     }
 }

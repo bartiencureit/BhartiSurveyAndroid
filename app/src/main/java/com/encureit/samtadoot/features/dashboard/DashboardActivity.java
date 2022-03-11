@@ -13,8 +13,10 @@ import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.adapters.SurveyTypeListAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
+import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivityDashboardBinding;
 import com.encureit.samtadoot.features.setting.SettingsActivity;
+import com.encureit.samtadoot.features.subforms.CandidateSurveyActivity;
 import com.encureit.samtadoot.features.subforms.QuesSectionListActivity;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.lib.ScreenHelper;
@@ -30,7 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-public class DashboardActivity extends BaseActivity implements DashboardContract.ViewModel {
+public class DashboardActivity extends BaseActivity implements DashboardContract.ViewModel, MenuItem.OnMenuItemClickListener {
     private ActivityDashboardBinding mBinding;
     private DashboardPresenter mPresenter;
     private GlobalHelper helper;
@@ -43,6 +45,7 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         super.onCreate(savedInstanceState);
         mBinding = ActivityDashboardBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
+        mBinding.toolbar.toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
         mPresenter = new DashboardPresenter(DashboardActivity.this,this);
         helper = new GlobalHelper(DashboardActivity.this);
         mBinding.setPresenter(mPresenter);
@@ -58,10 +61,15 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         SurveyTypeListAdapter surveyAdapter = new SurveyTypeListAdapter(this, list, new SurveyTypeListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(SurveyType listModel, int position) {
-                Intent intent = new Intent(DashboardActivity.this, QuesSectionListActivity.class);
-                intent.putExtra(AppKeys.SURVEY_TYPE,listModel);
-                startActivityOnTop(false, intent);
-                finish();
+                if(DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes().size() > 0) {
+                    Intent intent = new Intent(DashboardActivity.this, CandidateSurveyActivity.class);
+                    intent.putExtra(AppKeys.SURVEY_TYPE, listModel);
+                    startActivityOnTop(false, intent);
+                } else {
+                    Intent intent = new Intent(DashboardActivity.this, QuesSectionListActivity.class);
+                    intent.putExtra(AppKeys.SURVEY_TYPE, listModel);
+                    startActivityOnTop(false, intent);
+                }
             }
         });
         mBinding.gridView.setAdapter(surveyAdapter);
@@ -108,9 +116,10 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         }
     }
 
+
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (R.id.menu_setting == item.getItemId()) {
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        if (R.id.menu_setting == menuItem.getItemId()) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityOnTop(false, intent);
             finish();

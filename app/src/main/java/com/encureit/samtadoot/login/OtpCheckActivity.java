@@ -15,12 +15,14 @@ import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.listeners.MessageListener;
 import com.encureit.samtadoot.models.AssignDetails;
+import com.encureit.samtadoot.models.OtherValues;
 import com.encureit.samtadoot.models.QuestionOption;
 import com.encureit.samtadoot.models.QuestionType;
 import com.encureit.samtadoot.models.QuestionValidation;
 import com.encureit.samtadoot.models.SurveyQuestion;
 import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.SurveyType;
+import com.encureit.samtadoot.network.responsemodel.OtherValuesResponseModel;
 import com.encureit.samtadoot.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.samtadoot.models.contracts.OtpContract;
 import com.encureit.samtadoot.network.responsemodel.QuestionOptionResponseModel;
@@ -196,6 +198,19 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
         addSurveyMasterToDb(surveyTypeResponseModel.getSurvey_type());
     }
 
+    @Override
+    public void getOtherValuesResponse(OtherValuesResponseModel otherValuesResponseModel) {
+        addOtherValuesToDb(otherValuesResponseModel.getOther_values());
+    }
+
+    private void addOtherValuesToDb(List<OtherValues> other_values) {
+        DatabaseUtil.on().getOtherValuesDao().nukeTable();
+        DatabaseUtil.on().insertAllOtherValues(other_values);
+        dismissProgressDialog();
+        ScreenHelper.showGreenSnackBar(mBinding.getRoot(),getResources().getString(R.string.sucessfull_login));
+        goToDashboard();
+    }
+
     /**
      * @date 3-3-2022
      * Empty SurveyMaster table and
@@ -205,9 +220,7 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
     private void addSurveyMasterToDb(List<SurveyType> surveyTypes) {
         DatabaseUtil.on().getSurveyTypeDao().nukeTable();
         DatabaseUtil.on().insertAllSurveyTypes(surveyTypes);
-        dismissProgressDialog();
-        ScreenHelper.showGreenSnackBar(mBinding.getRoot(),getResources().getString(R.string.sucessfull_login));
-        goToDashboard();
+        mPresenter.getOtherValues();
     }
 
     /**

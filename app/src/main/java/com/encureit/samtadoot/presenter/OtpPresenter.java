@@ -8,6 +8,7 @@ import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.login.OtpCheckActivity;
+import com.encureit.samtadoot.network.responsemodel.OtherValuesResponseModel;
 import com.encureit.samtadoot.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.samtadoot.models.contracts.OtpContract;
 import com.encureit.samtadoot.network.responsemodel.QuestionOptionResponseModel;
@@ -245,6 +246,29 @@ public class OtpPresenter implements OtpContract.Presenter {
 
             @Override
             public void onFailure(Call<SurveyTypeResponseModel> call, Throwable t) {
+                mViewModel.showOtpFailed(""+t.getMessage());
+            }
+        });
+    }
+
+    @Override
+    public void getOtherValues() {
+        RetrofitClient.getApiService().getOtherValues().enqueue(new Callback<OtherValuesResponseModel>() {
+            @Override
+            public void onResponse(Call<OtherValuesResponseModel> call, Response<OtherValuesResponseModel> response) {
+                if (response.code() == 200 && response.body() != null) {
+                    if (response.body().isStatus()) {
+                        mViewModel.getOtherValuesResponse(response.body());
+                    } else {
+                        mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
+                    }
+                } else {
+                    mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OtherValuesResponseModel> call, Throwable t) {
                 mViewModel.showOtpFailed(""+t.getMessage());
             }
         });

@@ -23,6 +23,9 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("DELETE FROM "  + TableNames.TABLE_CANDIDATE_DETAILS)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE FormID =:FormID")
+    List<CandidateDetails> getAllDetailsByForm(String FormID);
+
     @Query("UPDATE " + TableNames.TABLE_CANDIDATE_DETAILS+" SET survey_master_id =:survey_master_id WHERE id =:id")
     void update_survey_master_id(int id,String survey_master_id);
 

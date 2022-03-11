@@ -43,4 +43,7 @@
     <string name="sucessfull_login">यशस्वी लॉगिन</string>
     <string name="generic_name">%s)</string>
     <string name="add_another">आणखी जोडा</string>
+    <string name="invalid_entry">Please fill all the fields</string>
+    <string name="new_form">New Form</string>
+
 </resources>

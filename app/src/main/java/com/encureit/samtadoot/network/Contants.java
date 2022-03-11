@@ -6,6 +6,7 @@ import android.os.Environment;
 public class Contants {
     public static final String BASE_URL = "http://evaluation.rkenterprises.group/";
     public static final String OTHER_BASE_URL = BASE_URL+"api/";
+    public static final String CANDIDATE_BASE_URL = BASE_URL+"getdata/";
     public static final String LOGIN_BASE_URL = BASE_URL+"login_api/";
     public static final String GET_LOGIN = "isLoginf";
     public static final String GET_VERIFY_OTP = "verifyOTP";
@@ -16,6 +17,8 @@ public class Contants {
     public static final String GET_QUESTION_TYPES = "get_question_type";
     public static final String GET_QUESTION_VALIDATION = "get_question_validation";
     public static final String GET_USER_ASSIGNED_DETAILS = "get_user_assigned_details";
+    public static final String GET_OTHER_VALUES = "get_other_values";
+    public static final String INSERT_CANDIDATE = "insertData";
 
     public static String PREF_IS_LOGIN = "PREF_IS_LOGIN";
     public static String PREF_AUTH_TOKEN = "PREF_AUTH_TOKEN";

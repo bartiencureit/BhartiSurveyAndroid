@@ -271,7 +271,7 @@ public class DatabaseUtil {
         return getCandidateSurveyStatusDetailsDao().insertBulk(candidateSurveyStatusDetails);
     }
 
-    public long[] insertOtherValues(List<OtherValues> otherValues) {
+    public long[] insertAllOtherValues(List<OtherValues> otherValues) {
         return getOtherValuesDao().insertBulk(otherValues);
     }
 
@@ -453,6 +453,71 @@ public class DatabaseUtil {
             return question.getSurveyQuestion_ID();
         }
         return null;
+    }
+
+    /**
+     * @date 10-3-2022
+     * Get Last survey section id, if it is equals to Survey_section_id then
+     * check if all sections are entered in for particular form or not
+     * if yes
+     * return true
+     * else return false
+     * else return false
+     * @param Survey_section_id
+     * @return boolean
+     */
+    public boolean isLastSurveySection(String Survey_section_id,String form_id) {
+        List<SurveySection> surveySections = getSurveySectionDao().getAllFlowableCodes();
+        if (surveySections.get(surveySections.size() -1).getSurveySection_ID().equalsIgnoreCase(Survey_section_id)) {
+            if(surveySections.size() == getCandidateDetailsDao().getAllDetailsByForm(form_id).size()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @date 10-3-2022
+     * Check option is present in other values or not
+     * @param questionOption
+     * @return
+     */
+    public boolean isPresentInOtherValues(QuestionOption questionOption) {
+        OtherValues values = getOtherValuesDao().checkValue(questionOption.getQNA_Values());
+        if (values != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @date 10-3-2022
+     * Get option id from question and option string
+     * @param question
+     * @param option
+     * @return
+     */
+    public String getOptionId(String question,String option) {
+        SurveyQuestion surveyQuestion = getSurveyQuestionDao().getQuestionFromText(question);
+        List<QuestionOption> options = getQuestionOptionDao().getAllQuestionOption(surveyQuestion.getSurveyQuestion_ID());
+        for (int i = 0; i < options.size(); i++) {
+            if (options.get(i).getQNA_Values().equalsIgnoreCase(option)) {
+                return options.get(i).getQNAOption_ID();
+            }
+        }
+        return null;
+    }
+
+    public int deleteCandidate(CandidateDetails candidateDetails) {
+        return getCandidateDetailsDao().delete(candidateDetails);
+    }
+
+    public List<CandidateDetails> getCandidateDetailsByForm(String formId) {
+        return getCandidateDetailsDao().getAllDetailsByForm(formId);
     }
 
 }

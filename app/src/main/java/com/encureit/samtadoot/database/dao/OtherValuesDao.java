@@ -23,6 +23,9 @@ public interface OtherValuesDao extends BaseDao<OtherValues> {
     @Query("DELETE FROM "  + TableNames.TABLE_OTHER_VALUES)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_OTHER_VALUES+" WHERE value =:value")
+    OtherValues checkValue(String value);
+
     @Query("UPDATE " + TableNames.TABLE_OTHER_VALUES+" SET id =:id WHERE other_value_id =:other_value_id")
     void update_id(int other_value_id, String id);
 

@@ -131,3 +131,5 @@ public class CandidateDetails {
         Longitude = longitude;
     }
 }
+
+
