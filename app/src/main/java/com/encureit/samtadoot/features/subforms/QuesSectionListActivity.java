@@ -8,7 +8,9 @@ import android.os.Bundle;
 import com.encureit.samtadoot.adapters.SurveySectionListAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.databinding.ActivityQuesSectionListBinding;
+import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.AppKeys;
+import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.contracts.SurveySectionContract;
@@ -21,6 +23,8 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     private SurveySectionPresenter mPresenter;
     private SurveySectionListAdapter mAdapter;
     private SurveyType surveyType;
+    private boolean inEditMode = false;
+    private CandidateSurveyStatusDetails candidateSurveyStatusDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +38,24 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
             surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
         }
+        if(intent.hasExtra(AppKeys.CANDIDATE_SURVEY_DETAILS)) {
+            inEditMode = true;
+            candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
+        }
+
     }
 
     @Override
     public void setupFields(List<SurveySection> list) {
         mBinding.rvQueSections.setLayoutManager(new LinearLayoutManager(QuesSectionListActivity.this));
-        mAdapter = new SurveySectionListAdapter(this, list, new SurveySectionListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClicked(SurveySection listModel, int position) {
+        mAdapter = new SurveySectionListAdapter(this, list, (listModel, position) -> {
+            if (inEditMode) {
+                Intent intent = new Intent(QuesSectionListActivity.this,EditFormActivity.class);
+                intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
+                intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
+                intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS,candidateSurveyStatusDetails);
+                startActivityOnTop(true,intent);
+            } else {
                 Intent intent = new Intent(QuesSectionListActivity.this,SubFormActivity.class);
                 intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
                 intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
@@ -55,5 +69,10 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     @Override
     public void showFormSaveFailed(String error) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivityOnTop(DashboardActivity.class,false);
     }
 }

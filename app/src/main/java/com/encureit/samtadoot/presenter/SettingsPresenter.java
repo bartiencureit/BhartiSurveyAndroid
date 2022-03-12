@@ -1,8 +1,5 @@
 package com.encureit.samtadoot.presenter;
 
-import android.content.Intent;
-import android.os.Build;
-
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.database.DatabaseUtil;
@@ -19,7 +16,6 @@ import com.encureit.samtadoot.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.SurveyTypeResponseModel;
 import com.encureit.samtadoot.network.responsemodel.UserAssignedDetailsResponseModel;
 import com.encureit.samtadoot.network.retrofit.RetrofitClient;
-import com.encureit.samtadoot.network.retrofit.RetrofitClientCandidate;
 
 import java.util.List;
 
@@ -83,7 +79,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes();
         for (int i = 0; i < candidateDetails.size(); i++) {
             CandidateDetails details = candidateDetails.get(i);
-            RetrofitClientCandidate.getApiService().insertCandidateData(details).enqueue(new Callback<CandidateInsertResponseModel>() {
+            RetrofitClient.getApiService().insertCandidateData(details).enqueue(new Callback<CandidateInsertResponseModel>() {
                 @Override
                 public void onResponse(Call<CandidateInsertResponseModel> call, Response<CandidateInsertResponseModel> response) {
                     if (response.code() == 200) {

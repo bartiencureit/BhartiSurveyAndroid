@@ -12,5 +12,6 @@ public class AppKeys {
     public static final String LABEL_TEXT = "Label Text";
     public static final String HEADER_TEXT = "Header Text";
     public static final String DROPDOWNMULTISELECT = "DropdownMultiselect";
+    public static final String CANDIDATE_SURVEY_DETAILS = "candiate_survey_details";
     public static String loginUserId = "loginUserId";
 }

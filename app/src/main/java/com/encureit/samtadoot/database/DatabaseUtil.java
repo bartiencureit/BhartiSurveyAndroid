@@ -520,4 +520,18 @@ public class DatabaseUtil {
         return getCandidateDetailsDao().getAllDetailsByForm(formId);
     }
 
+    public boolean isCandidateDetailsPresent(CandidateDetails candidateDetails) {
+        boolean isCandidatePresent = false;
+        List<CandidateDetails> candidateDetailsList = getCandidateDetailsDao().getAllDetailsByForm(candidateDetails.getFormID());
+        for (int i = 0; i < candidateDetailsList.size(); i++) {
+            if (
+               candidateDetailsList.get(i).getSurvey_master_id().equalsIgnoreCase(candidateDetails.getSurvey_master_id()) &&
+               candidateDetailsList.get(i).getSurvey_section_id().equalsIgnoreCase(candidateDetails.getSurvey_section_id()) &&
+               candidateDetailsList.get(i).getSurvey_que_id().equalsIgnoreCase(candidateDetails.getSurvey_que_id())
+            ) {
+                isCandidatePresent = true;
+            }
+        }
+        return isCandidatePresent;
+    }
 }

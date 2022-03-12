@@ -12,7 +12,8 @@
         android:roundIcon="@drawable/app_logo_465x454"
         android:supportsRtl="true"
         android:theme="@style/BaseTheme">
-        <activity android:name=".features.subforms.CandidateSurveyActivity"></activity>
+        <activity android:name=".features.subforms.EditFormActivity"></activity>
+        <activity android:name=".features.subforms.CandidateSurveyActivity" />
         <activity android:name=".features.subforms.SubFormActivity" />
         <activity
             android:name=".features.subforms.QuesSectionListActivity"
@@ -56,14 +57,14 @@
             </intent-filter>
         </receiver>
     </application>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
         android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

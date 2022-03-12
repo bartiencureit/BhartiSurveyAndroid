@@ -126,4 +126,9 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         }
         return true;
     }
+
+    @Override
+    public void onBackPressed() {
+        ScreenHelper.exitApp(DashboardActivity.this);
+    }
 }
