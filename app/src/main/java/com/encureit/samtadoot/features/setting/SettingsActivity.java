@@ -35,6 +35,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
+import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
+
 public class SettingsActivity extends BaseActivity implements SettingsContract.ViewModel {
     public ActivitySettingsBinding mBinding;
     private SettingsPresenter mPresenter;
@@ -56,13 +58,14 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
     @Override
     public void syncFinished() {
         startProgressDialog(mBinding.getRoot());
-        mPresenter.syncAll();
+        mPresenter.getSurveySectionFields();
     }
 
     @Override
     public void syncFormsFinished() {
         DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().nukeTable();
-        Snackbar.make(mBinding.getRoot(),"Sync Forms Finished", BaseTransientBottomBar.LENGTH_LONG).show();
+        helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
+        ScreenHelper.showGreenSnackBar(mBinding.getRoot(),"Sync Forms Finished");
     }
 
     @Override
@@ -195,6 +198,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
     }
 
     private void addOtherValuesToDb(List<OtherValues> other_values) {
+        helper.getSharedPreferencesHelper().setLastSyncTimeAllData(getCurrentDate());
         DatabaseUtil.on().getOtherValuesDao().nukeTable();
         DatabaseUtil.on().insertAllOtherValues(other_values);
         dismissProgressDialog();
@@ -216,6 +220,13 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
 
     @Override
     public void showResponseFailed(String error) {
-        Snackbar.make(mBinding.getRoot(),""+error, BaseTransientBottomBar.LENGTH_LONG).show();
+        ScreenHelper.showErrorSnackBar(mBinding.getRoot(),error);
+    }
+
+    @Override
+    public void showResponseNoData(String message) {
+        helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
+        ScreenHelper.showGreenSnackBar(mBinding.getRoot(),message);
+        mPresenter.setUpData(helper);
     }
 }

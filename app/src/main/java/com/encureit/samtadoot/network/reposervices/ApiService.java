@@ -15,6 +15,7 @@ import com.encureit.samtadoot.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.SurveyTypeResponseModel;
 import com.encureit.samtadoot.network.responsemodel.UserAssignedDetailsResponseModel;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -133,8 +134,23 @@ public interface ApiService {
      * response has list of question validation
      * @return
      */
-    @GET(Contants.INSERT_CANDIDATE)
-    Call<CandidateInsertResponseModel> insertCandidateData(@Body CandidateDetails candidateDetails);
+    @FormUrlEncoded
+    @POST(Contants.INSERT_CANDIDATE)
+    Call<CandidateInsertResponseModel> insertCandidateData(
+            @Field("survey_master_id") String survey_master_id,
+            @Field("survey_section_id") String survey_section_id,
+            @Field("survey_que_id") String survey_que_id,
+            @Field("survey_que_option_id") String survey_que_option_id,
+            @Field("survey_que_values") String survey_que_values,
+            @Field("FormID") String FormID,
+            @Field("Current_Form_Status") String Current_Form_Status,
+            @Field("age_value") String age_value,
+            @Field("Survey_StartDate") String Survey_StartDate,
+            @Field("Survey_EndDate") String Survey_EndDate,
+            @Field("created_by") String created_by,
+            @Field("Latitude") String Latitude,
+            @Field("Longitude") String Longitude
+    );
 
 }
 

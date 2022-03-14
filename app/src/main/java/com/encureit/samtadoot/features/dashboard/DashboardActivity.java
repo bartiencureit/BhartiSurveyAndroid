@@ -61,7 +61,7 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         SurveyTypeListAdapter surveyAdapter = new SurveyTypeListAdapter(this, list, new SurveyTypeListAdapter.OnItemClickListener() {
             @Override
             public void onItemClicked(SurveyType listModel, int position) {
-                if(DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes().size() > 0) {
+                if(DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes().size() > 0) {
                     Intent intent = new Intent(DashboardActivity.this, CandidateSurveyActivity.class);
                     intent.putExtra(AppKeys.SURVEY_TYPE, listModel);
                     startActivityOnTop(false, intent);

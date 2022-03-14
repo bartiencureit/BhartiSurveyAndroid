@@ -9,26 +9,36 @@
             type="com.encureit.samtadoot.presenter.CandidateSurveyDetailsPresenter" />
     </data>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_candidate_details"
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar" />
+
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"/>
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btn_new_form"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@color/colorPrimary"
-            android:textColor="@color/white"
-            android:onClick="@{()->candidatePresenter.createNewForm()}"
-            android:text="@string/new_form"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_candidate_details"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp" />
 
-    </RelativeLayout>
+            <Button
+                android:id="@+id/btn_new_form"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorPrimary"
+                android:textColor="@color/white"
+                android:onClick="@{()->candidatePresenter.createNewForm()}"
+                android:text="@string/new_form" />
+
+        </RelativeLayout>
+    </LinearLayout>
 
 </layout>

@@ -29,6 +29,7 @@ public interface SettingsContract {
         void getSurveyMasterResponse(SurveyTypeResponseModel surveyTypeResponseModel);
         void getOtherValuesResponse(OtherValuesResponseModel otherValuesResponseModel);
         void showResponseFailed(String error);
+        void showResponseNoData(String message);
     }
     interface Presenter {
         void setUpData(GlobalHelper helper);

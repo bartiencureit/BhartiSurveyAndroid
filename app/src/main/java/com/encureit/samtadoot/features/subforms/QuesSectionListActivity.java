@@ -37,6 +37,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         Intent intent = getIntent();
         if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
             surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
+            mBinding.toolbar.tvToolbarTitle.setText(surveyType.getForm_description());
         }
         if(intent.hasExtra(AppKeys.CANDIDATE_SURVEY_DETAILS)) {
             inEditMode = true;
@@ -45,6 +46,10 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
 
     }
 
+    /**
+     * Set adpater to recyclerview
+     * @param list
+     */
     @Override
     public void setupFields(List<SurveySection> list) {
         mBinding.rvQueSections.setLayoutManager(new LinearLayoutManager(QuesSectionListActivity.this));
@@ -63,7 +68,6 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
             }
         });
         mBinding.rvQueSections.setAdapter(mAdapter);
-
     }
 
     @Override

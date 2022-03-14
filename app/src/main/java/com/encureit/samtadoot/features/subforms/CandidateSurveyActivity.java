@@ -37,6 +37,7 @@ public class CandidateSurveyActivity extends BaseActivity implements CandidateSu
         Intent intent = getIntent();
         if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
             listModel = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
+            mBinding.toolbar.tvToolbarTitle.setText(listModel.getForm_description());
         }
 
     }

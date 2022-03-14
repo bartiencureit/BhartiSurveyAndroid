@@ -130,6 +130,26 @@ public class CandidateDetails {
     public void setLongitude(String longitude) {
         Longitude = longitude;
     }
+
+    @Override
+    public String toString() {
+        return "CandidateDetails{" +
+                "id=" + id +
+                ", survey_master_id='" + survey_master_id + '\'' +
+                ", survey_section_id='" + survey_section_id + '\'' +
+                ", survey_que_id='" + survey_que_id + '\'' +
+                ", survey_que_option_id='" + survey_que_option_id + '\'' +
+                ", survey_que_values='" + survey_que_values + '\'' +
+                ", FormID='" + FormID + '\'' +
+                ", Current_Form_Status='" + Current_Form_Status + '\'' +
+                ", age_value='" + age_value + '\'' +
+                ", Survey_StartDate='" + Survey_StartDate + '\'' +
+                ", Survey_EndDate='" + Survey_EndDate + '\'' +
+                ", created_by='" + created_by + '\'' +
+                ", Latitude='" + Latitude + '\'' +
+                ", Longitude='" + Longitude + '\'' +
+                '}';
+    }
 }
 
 

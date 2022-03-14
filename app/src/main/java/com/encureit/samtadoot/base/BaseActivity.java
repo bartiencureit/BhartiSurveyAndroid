@@ -71,7 +71,6 @@ public class BaseActivity extends AppCompatActivity {
 //        if (progressDialog != null && progressDialog.isShowing()) {
 //            progressDialog.dismiss();
 //        }
-        view.setEnabled(true);
         if(snackbar != null) {
             snackbar.dismiss();
         }

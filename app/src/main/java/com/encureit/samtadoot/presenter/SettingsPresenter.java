@@ -1,5 +1,8 @@
 package com.encureit.samtadoot.presenter;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.database.DatabaseUtil;
@@ -20,6 +23,8 @@ import com.encureit.samtadoot.network.retrofit.RetrofitClient;
 import java.util.List;
 
 import androidx.databinding.ObservableField;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +42,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     private String userRole;
     private String userId;
     private String loginUserId;
+    private int totuploadedForms = 0;
     private int uploadedForms = 0;
     private int uploadedFormsError = 0;
 
@@ -68,7 +74,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
 
     @Override
     public void syncAll() {
-        getSurveySectionFields();
+        mViewModel.syncFinished();
     }
 
     @Override
@@ -79,40 +85,72 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes();
         for (int i = 0; i < candidateDetails.size(); i++) {
             CandidateDetails details = candidateDetails.get(i);
-            RetrofitClient.getApiService().insertCandidateData(details).enqueue(new Callback<CandidateInsertResponseModel>() {
-                @Override
-                public void onResponse(Call<CandidateInsertResponseModel> call, Response<CandidateInsertResponseModel> response) {
-                    if (response.code() == 200) {
-                        if (response.body().isStatus()) {
-                            DatabaseUtil.on().deleteCandidate(details);
-                            uploadedForms++;
-                        } else {
-                            uploadedFormsError++;
-                        }
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<CandidateInsertResponseModel> call, Throwable t) {
-                    uploadedFormsError++;
-                }
-            });
+            RetrofitClient.getApiService().insertCandidateData(details.getSurvey_master_id(), details.getSurvey_section_id(), details.getSurvey_que_id(), details.getSurvey_que_option_id(), details.getSurvey_que_values(), details.getFormID(), details.getCurrent_Form_Status(), details.getAge_value(), details.getSurvey_StartDate(), details.getSurvey_EndDate(), details.getCreated_by(), details.getLatitude(), details.getLongitude())
+                    .enqueue(new Callback<CandidateInsertResponseModel>() {
+                        @Override
+                        public void onResponse(Call<CandidateInsertResponseModel> call, Response<CandidateInsertResponseModel> response) {
+                            if (response.code() == 200) {
+                                if (response.body().isStatus()) {
+                                    DatabaseUtil.on().deleteCandidate(details);
+                                    uploadedForms++;
+                                    totuploadedForms++;
+                                } else {
+                                    uploadedFormsError++;
+                                    totuploadedForms++;
+                                }
+                            }
+                            if (totuploadedForms >= candidateDetails.size()) {
+                                checkData(candidateDetails.size());
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<CandidateInsertResponseModel> call, Throwable t) {
+                            uploadedFormsError++;
+                            totuploadedForms++;
+                            if (totuploadedForms >= candidateDetails.size()) {
+                                checkData(candidateDetails.size());
+                            }
+                        }
+                    });
+        }
+        if (candidateDetails.size() == 0) {
+            mViewModel.showResponseNoData("No forms to sync");
         }
 
-        if (uploadedForms >= candidateDetails.size()) {
+    }
+
+    private void checkData(int totSize) {
+        if (uploadedForms >= totSize) {
             mViewModel.syncFormsFinished();
-        } else if(uploadedFormsError >= candidateDetails.size()) {
+        } else if(uploadedFormsError >= totSize) {
             mViewModel.showResponseFailed("Error in uploading form try again");
         } else {
-            mViewModel.showResponseFailed("Only "+uploadedForms+" forms are uploaded");
+            mViewModel.showResponseFailed(""+uploadedForms+" forms are uploaded");
         }
     }
 
     @Override
     public void logout() {
-        DatabaseUtil.on().getUserDeviceDetailsDao().nukeTable();
-        mActivity.helper.getSharedPreferencesHelper().clear();
-        mViewModel.logoutFinished();
+        AlertDialog dialog = new AlertDialog.Builder(mActivity).create();
+        dialog.setTitle("Do you want to logout?");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                DatabaseUtil.on().getUserDeviceDetailsDao().nukeTable();
+                mActivity.helper.getSharedPreferencesHelper().clear();
+                mViewModel.logoutFinished();
+            }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
     }
 
     public void getSurveySectionFields() {
