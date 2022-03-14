@@ -28,8 +28,4 @@ public class SurveySectionPresenter implements SurveySectionContract.Presenter {
         mViewModel.setupFields(surveySectionList);
     }
 
-    @Override
-    public void saveForm() {
-
-    }
 }

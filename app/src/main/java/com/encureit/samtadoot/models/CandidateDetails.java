@@ -26,6 +26,15 @@ public class CandidateDetails {
     String created_by;
     String Latitude;
     String Longitude;
+    int index_if_linked_question;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getSurvey_master_id() {
         return survey_master_id;
@@ -131,6 +140,14 @@ public class CandidateDetails {
         Longitude = longitude;
     }
 
+    public int getIndex_if_linked_question() {
+        return index_if_linked_question;
+    }
+
+    public void setIndex_if_linked_question(int index_if_linked_question) {
+        this.index_if_linked_question = index_if_linked_question;
+    }
+
     @Override
     public String toString() {
         return "CandidateDetails{" +
@@ -148,6 +165,7 @@ public class CandidateDetails {
                 ", created_by='" + created_by + '\'' +
                 ", Latitude='" + Latitude + '\'' +
                 ", Longitude='" + Longitude + '\'' +
+                ", index_if_linked_question=" + index_if_linked_question +
                 '}';
     }
 }

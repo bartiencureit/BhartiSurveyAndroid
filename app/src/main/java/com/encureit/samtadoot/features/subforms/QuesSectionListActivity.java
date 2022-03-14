@@ -71,11 +71,6 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     }
 
     @Override
-    public void showFormSaveFailed(String error) {
-
-    }
-
-    @Override
     public void onBackPressed() {
         startActivityOnTop(DashboardActivity.class,false);
     }

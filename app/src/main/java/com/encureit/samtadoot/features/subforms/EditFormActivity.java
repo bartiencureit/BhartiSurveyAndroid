@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -96,6 +97,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void initData() {
         helper = new GlobalHelper(EditFormActivity.this);
         mPresenter = new EditFormPresenter(EditFormActivity.this,this);
+        startCircularProgressDialog();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadViews();
+            }
+        }, 1000);
+    }
+
+    /**
+     * @date 14-3-2022
+     * Load Views according to database
+     */
+    private void loadViews() {
         mBinding.setPresenter(mPresenter);
         mPresenter.startSubForm(section);
 
@@ -126,6 +141,53 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 dialog.show();
             }
         });
+    }
+
+    @Override
+    public void setupSubForms(List<SurveyQuestionWithData> list, SurveySection surveySection) {
+        this.list = list;
+        //set up form tittle
+        mBinding.toolbar.tvToolbarTitle.setText(surveySection.getSectionDescription());
+        addChildViews(surveySection);
+
+    }
+
+    private void addChildViews(SurveySection surveySection) {
+        mBindingChild = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
+        //Add Survey Section as a header
+        HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
+        headerTextView.setText(surveySection.getSectionDescription());
+        mBinding.llFormList.addView(headerTextView);
+
+        //add child views and linked views to linear layout
+        for ( i = 0; i < list.size(); i++) {
+            SurveyQuestionWithData subForm = list.get(i);
+            populateQuestion(subForm);
+            for (int j = 0; j < subForm.getChildQuestions().size(); j++) {
+                populateQuestion(subForm.getChildQuestions().get(j));
+            }
+            if(subForm.getLinkedQuestionInEdit().size() > 0) {
+                for (int j = 0; j < subForm.getLinkedQuestionInEdit().size(); j++) {
+                    HashMap<Integer,List<SurveyQuestionWithData>> map = subForm.getLinkedQuestionInEdit().get(j);
+                    for (Map.Entry<Integer,List<SurveyQuestionWithData>> entry : map.entrySet()) {
+                        int index = entry.getKey();
+                        List<SurveyQuestionWithData> linkedQuestions = entry.getValue();
+                        addLinkedQuestion(linkedQuestions,index);
+                        mBindingChild.btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                addLinkedQuestion(linkedQuestions,index);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        if(sectionHasLinkedQuestion()) {
+            mBinding.llFormList.addView(mBindingChild.getRoot());
+        }
+        mainLinear = mBinding.llFormList;
+        dismissCircularProgressDialog();
     }
 
     private boolean validateData() {
@@ -374,46 +436,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
     }
 
-    @Override
-    public void setupSubForms(List<SurveyQuestionWithData> list, SurveySection surveySection) {
-        this.list = list;
-        //set up form tittle
-        mBinding.toolbar.tvToolbarTitle.setText(surveySection.getSectionDescription());
-        addChildViews(surveySection);
-
-    }
-
-    private void addChildViews(SurveySection surveySection) {
-        mBindingChild = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
-        //Add Survey Section as a header
-        HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
-        headerTextView.setText(surveySection.getSectionDescription());
-        mBinding.llFormList.addView(headerTextView);
-
-        //add child views and linked views to linear layout
-        for ( i = 0; i < list.size(); i++) {
-            SurveyQuestionWithData subForm = list.get(i);
-            CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsByQuestionId(subForm.getSurveyQuestion_ID());
-            populateQuestion(subForm,candidateDetails);
-            for (int j = 0; j < subForm.getChildQuestions().size(); j++) {
-                populateQuestion(subForm.getChildQuestions().get(j),candidateDetails);
-            }
-            if(subForm.getLinkedQuestions().size() > 0) {
-                addLinkedQuestion(subForm, candidateDetails);
-                mBindingChild.btnAddAnother.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        addLinkedQuestion(subForm,candidateDetails);
-                    }
-                });
-            }
-        }
-        if(sectionHasLinkedQuestion()) {
-            mBinding.llFormList.addView(mBindingChild.getRoot());
-        }
-        mainLinear = mBinding.llFormList;
-    }
-
     /**
      * Check if section has linked question or not
      * @return
@@ -421,7 +443,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private boolean sectionHasLinkedQuestion() {
         boolean hasLinkedQuestion = false;
         for (int j = 0; j < list.size(); j++) {
-            if (list.get(j).getLinkedQuestions().size() > 0) {
+            if (list.get(j).getLinkedQuestionInEdit().size() > 0) {
                 hasLinkedQuestion = true;
             }
         }
@@ -429,50 +451,71 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         return hasLinkedQuestion;
     }
 
-    private void addLinkedQuestion(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void addLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList,int index) {
         //inflating layout single_add_another_parent_item
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
-        for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
-            SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
-            populateChildQuestionInput(linkedQuestion,binding.llAddAnotherChild,candidateDetails);
+        for (int j = 0; j < linkedQuestionList.size(); j++) {
+            SurveyQuestionWithData linkedQuestion = linkedQuestionList.get(j);
+            populateChildQuestionInput(linkedQuestion,binding.llAddAnotherChild);
         }
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mBindingChild.llAddAnotherSingleView.removeView(binding.llAddAnother);
+                AlertDialog dialog = new AlertDialog.Builder(EditFormActivity.this).create();
+                dialog.setTitle("Do you want to delete?");
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mBindingChild.llAddAnotherSingleView.removeView(binding.llAddAnother);
+                        deleteLinkedQuestion(linkedQuestionList,index);
+                    }
+                });
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
         mBindingChild.llAddAnotherSingleView.addView(binding.getRoot());
+    }
+
+    private void deleteLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, int index) {
+        for (int j = 0; j < linkedQuestionList.size(); j++) {
+            CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateById(linkedQuestionList.get(j).getSurveyQuestion_ID(),index);
+            DatabaseUtil.on().deleteCandidate(candidateDetails);
+        }
     }
 
     /**
      * @date 7-3-2022
      * populate question
      * @param subForm
-     * @param candidateDetails
      */
-    private void populateQuestion(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateQuestion(SurveyQuestionWithData subForm) {
         switch (subForm.getQuestionType().getQuestionTypes()) {
             case AppKeys.INPUT_TEXT:
-                populateInputText(subForm,candidateDetails);
+                populateInputText(subForm,null);
                 break;
             case AppKeys.RADIO_BUTTON:
-                populateRadioButton(subForm,candidateDetails);
+                populateRadioButton(subForm,null);
                 break;
             case AppKeys.CHECKBOX:
-                populateCheckBox(subForm,candidateDetails);
+                populateCheckBox(subForm,null);
                 break;
             case AppKeys.DROPDOWNLIST:
-                populateDropDown(subForm,candidateDetails);
+                populateDropDown(subForm,null);
                 break;
             case AppKeys.LABEL_TEXT:
-                populateLabelText(subForm,candidateDetails);
+                populateLabelText(subForm,null);
                 break;
             case AppKeys.HEADER_TEXT:
-                populateHeaderText(subForm,candidateDetails);
+                populateHeaderText(subForm,null);
                 break;
             case AppKeys.DROPDOWNMULTISELECT:
-                populateDropDownMultiSelect(subForm,candidateDetails);
+                populateDropDownMultiSelect(subForm,null);
                 break;
         }
     }
@@ -629,11 +672,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      */
     private void populateInputText(SurveyQuestionWithData subForm,CandidateDetails candidateDetails) {
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
-        binding.setSubForm(subForm);
-        binding.edtHeader.setInputType(subForm.getInputValidation());
-        if (candidateDetails != null) {
-            binding.edtHeader.setText(candidateDetails.getSurvey_que_values());
+        if(candidateDetails != null) {
+            subForm.setValue(candidateDetails.getSurvey_que_values());
         }
+        binding.setSubForm(subForm);
         mBinding.llFormList.addView(binding.getRoot());
     }
 
@@ -642,28 +684,28 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * populate linked question
      * @param subForm
      */
-    private void populateChildQuestionInput(SurveyQuestionWithData subForm, LinearLayout rootView,CandidateDetails candidateDetails) {
+    private void populateChildQuestionInput(SurveyQuestionWithData subForm, LinearLayout rootView) {
         switch (subForm.getQuestionType().getQuestionTypes()) {
             case AppKeys.INPUT_TEXT:
-                populateChildInputText(subForm,rootView,candidateDetails);
+                populateChildInputText(subForm,rootView,null);
                 break;
             case AppKeys.RADIO_BUTTON:
-                populateChildRadioButton(subForm,rootView,candidateDetails);
+                populateChildRadioButton(subForm,rootView,null);
                 break;
             case AppKeys.CHECKBOX:
-                populateChildCheckBox(subForm,rootView,candidateDetails);
+                populateChildCheckBox(subForm,rootView,null);
                 break;
             case AppKeys.DROPDOWNLIST:
-                populateChildDropDown(subForm,rootView,candidateDetails);
+                populateChildDropDown(subForm,rootView,null);
                 break;
             case AppKeys.LABEL_TEXT:
-                populateChildLabelText(subForm,rootView,candidateDetails);
+                populateChildLabelText(subForm,rootView,null);
                 break;
             case AppKeys.HEADER_TEXT:
-                populateChildHeaderText(subForm,rootView,candidateDetails);
+                populateChildHeaderText(subForm,rootView,null);
                 break;
             case AppKeys.DROPDOWNMULTISELECT:
-                populateChildDropDownMultiSelect(subForm,rootView,candidateDetails);
+                populateChildDropDownMultiSelect(subForm,rootView,null);
                 break;
         }
 
@@ -822,11 +864,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      */
     private void populateChildInputText(SurveyQuestionWithData subForm, LinearLayout rootView,CandidateDetails candidateDetails) {
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
-        binding.setSubForm(subForm);
-        binding.edtHeader.setInputType(subForm.getInputValidation());
-        if (candidateDetails!= null) {
-            binding.edtHeader.setText(candidateDetails.getSurvey_que_values());
+        if(candidateDetails != null) {
+            subForm.setValue(candidateDetails.getSurvey_que_values());
         }
+        binding.setSubForm(subForm);
         rootView.addView(binding.getRoot());
     }
 

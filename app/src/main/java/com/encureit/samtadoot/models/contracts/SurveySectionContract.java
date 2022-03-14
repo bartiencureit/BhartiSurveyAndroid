@@ -12,10 +12,8 @@ public interface SurveySectionContract {
 
     interface ViewModel {
         void setupFields(List<SurveySection> list);
-        void showFormSaveFailed(String error);
     }
     interface Presenter {
         void startSurveySection();
-        void saveForm();
     }
 }

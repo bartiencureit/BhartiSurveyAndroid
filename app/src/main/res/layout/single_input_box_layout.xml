@@ -5,7 +5,8 @@
 
         <variable
             name="subForm"
-            type="com.encureit.samtadoot.models.SurveyQuestionWithData" />
+            type="com.encureit.samtadoot.models.SurveyQuestionWithData"
+            />
     </data>
 
     <LinearLayout
@@ -26,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:inputType="@{subForm.inputValidation}"
             android:text="@={subForm.value}"
             android:background="@drawable/edittext_rounded_corners"
             android:padding="5dp"/>

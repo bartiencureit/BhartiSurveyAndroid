@@ -218,6 +218,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
+                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
+                }
                 inputCandidateDetails.add(candidateDetails);
             }
         }
@@ -256,6 +259,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (!(spinner.getTag().toString().equalsIgnoreCase("-1"))) {
+                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(spinner.getTag().toString()));
+                }
                 dropDownCandidateDetails.add(candidateDetails);
             }
         }
@@ -306,6 +312,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (!(radioButton.getTag().toString().equalsIgnoreCase("-1"))) {
+                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(radioButton.getTag().toString()));
+                }
                 radioButtonCandidateDetails.add(candidateDetails);
             }
         }
@@ -345,6 +354,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (!(checkBox.getTag().toString().equalsIgnoreCase("-1"))) {
+                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(checkBox.getTag().toString()));
+                }
                 checkBoxCandidateDetails.add(candidateDetails);
             }
         }
@@ -817,13 +829,13 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     getLinkedView(linearLayout);
                 } else {
                     //simple child view
-                    getSimpleChildView(linearLayout);
+                    getSimpleChildView(linearLayout,-1);
                 }
             }
         }
     }
 
-    private void getSimpleChildView(LinearLayout linearLayout) {
+    private void getSimpleChildView(LinearLayout linearLayout, int index_of_child) {
         int ll_count = linearLayout.getChildCount();
 
         for (int k = 0; k <ll_count; k++) {
@@ -837,32 +849,33 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 if( next_view != null) {
                     //check if view next to header is edittext
                     if (next_view instanceof AppCompatEditText) {
-                        addViewToEdittext(headerTextView,next_view);
+                        addViewToEdittext(headerTextView,next_view,index_of_child);
                     }
 
                     //Checks value of editext in case of itar
                     if (next_view instanceof Spinner) {
-                        addViewToSpinner(headerTextView,next_view,view_next_to_header_id,linearLayout);
+                        addViewToSpinner(headerTextView,next_view,view_next_to_header_id,linearLayout,index_of_child);
                     }
 
                     if (next_view instanceof MultiSpinnerSearch) {
-                       addViewToMultiSpinner(headerTextView,next_view);
+                       addViewToMultiSpinner(headerTextView,next_view,index_of_child);
                     }
 
                     if (next_view instanceof RadioGroup) {
-                        addViewToRadioButtonAndCheckBox(headerTextView,next_view,linearLayout);
+                        addViewToRadioButtonAndCheckBox(headerTextView,next_view,linearLayout,index_of_child);
                     }
                 }
             }
         }
     }
 
-    private void addViewToRadioButtonAndCheckBox(HeaderTextView headerTextView, View next_view,LinearLayout linearLayout) {
+    private void addViewToRadioButtonAndCheckBox(HeaderTextView headerTextView, View next_view, LinearLayout linearLayout, int index_of_child) {
         RadioGroup radioGroup = (RadioGroup) next_view;
         View radio_child_view = radioGroup.getChildAt(0);
         if(radio_child_view instanceof RadioButton) {
             int checked_radio_button_id = radioGroup.getCheckedRadioButtonId();
             RadioButton radioButton = linearLayout.findViewById(checked_radio_button_id);
+            radioButton.setTag(index_of_child);
 
             HashMap<String, RadioButton> map = new HashMap<>();
             map.put(headerTextView.getText().toString(), radioButton);
@@ -873,21 +886,25 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             for (int l = 0; l < cb_child_count; l++) {
                 View cb_child_view = radioGroup.getChildAt(l);
                 if (cb_child_view instanceof CheckBox) {
+                    CheckBox checkBox = (CheckBox) cb_child_view;
+                    checkBox.setTag(index_of_child);
                     HashMap<String,CheckBox> map = new HashMap<>();
-                    map.put(headerTextView.getText().toString(),(CheckBox) cb_child_view);
+                    map.put(headerTextView.getText().toString(),checkBox);
                     checkBoxes.add(map);
                 }
             }
         }
     }
 
-    private void addViewToMultiSpinner(HeaderTextView headerTextView, View next_view) {
+    private void addViewToMultiSpinner(HeaderTextView headerTextView, View next_view, int index_of_child) {
+        MultiSpinnerSearch multiSpinnerSearch = (MultiSpinnerSearch) next_view;
+        multiSpinnerSearch.setTag(index_of_child);
         HashMap<String,MultiSpinnerSearch> map = new HashMap<>();
-        map.put(headerTextView.getText().toString(),(MultiSpinnerSearch) next_view);
+        map.put(headerTextView.getText().toString(),multiSpinnerSearch);
         multiSpinnerSearches.add(map);
     }
 
-    private void addViewToSpinner(HeaderTextView headerTextView, View next_view, int view_next_to_header_id, LinearLayout linearLayout) {
+    private void addViewToSpinner(HeaderTextView headerTextView, View next_view, int view_next_to_header_id, LinearLayout linearLayout, int index_of_child) {
         Spinner spinner = (Spinner) next_view;
         QuestionOption questionOption = (QuestionOption) spinner.getSelectedItem();
 
@@ -896,21 +913,27 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             View edit_text_next_to_spinner = linearLayout.getChildAt(edit_text_next_to_spinner_id);
 
             if (edit_text_next_to_spinner instanceof AppCompatEditText) {
+                AppCompatEditText editText = (AppCompatEditText) edit_text_next_to_spinner;
+                editText.setTag(index_of_child);
                 HashMap<String,AppCompatEditText> map = new HashMap<>();
-                map.put(headerTextView.getText().toString(),(AppCompatEditText) edit_text_next_to_spinner);
+                map.put(headerTextView.getText().toString(),editText);
                 editTexts.add(map);
             }
 
         } else {
+            spinner.setTag(index_of_child);
+
             HashMap<String, Spinner> map = new HashMap<>();
-            map.put(headerTextView.getText().toString(), (Spinner) next_view);
+            map.put(headerTextView.getText().toString(), spinner);
             spinners.add(map);
         }
     }
 
-    private void addViewToEdittext(HeaderTextView headerTextView, View next_view) {
+    private void addViewToEdittext(HeaderTextView headerTextView, View next_view, int index_of_child) {
+        AppCompatEditText editText = (AppCompatEditText) next_view;
+        editText.setTag(index_of_child);
         HashMap<String,AppCompatEditText> map = new HashMap<>();
-        map.put(headerTextView.getText().toString(),(AppCompatEditText) next_view);
+        map.put(headerTextView.getText().toString(),editText);
         editTexts.add(map);
     }
 
@@ -929,7 +952,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         for (int k = 0; k < count; k++) {
                             View ll_view = ll_add_another_child.getChildAt(k);
                             if(ll_view instanceof LinearLayout) {
-                                getSimpleChildView((LinearLayout) ll_view);
+                                getSimpleChildView((LinearLayout) ll_view,j);
                             }
                         }
                     }

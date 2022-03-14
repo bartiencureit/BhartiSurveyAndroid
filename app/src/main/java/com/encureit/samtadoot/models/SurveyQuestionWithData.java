@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.InputType;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -32,12 +33,14 @@ public class SurveyQuestionWithData implements Parcelable {
     QuestionType questionType;
     List<SurveyQuestionWithData> childQuestions;
     List<SurveyQuestionWithData> linkedQuestions;
+    List<HashMap<Integer,List<SurveyQuestionWithData>>> linkedQuestionInEdit;
     List<QuestionOption> questionOptions;
     String Value;
 
     public SurveyQuestionWithData() {}
 
-    public SurveyQuestionWithData(Parcel in) {
+
+    protected SurveyQuestionWithData(Parcel in) {
         SurveyQuestion_ID = in.readString();
         SurveySection_ID = in.readString();
         QuestionTypeID = in.readString();
@@ -58,6 +61,8 @@ public class SurveyQuestionWithData implements Parcelable {
         is_section = in.readString();
         IsActive = in.readString();
         childQuestions = in.createTypedArrayList(SurveyQuestionWithData.CREATOR);
+        linkedQuestions = in.createTypedArrayList(SurveyQuestionWithData.CREATOR);
+        Value = in.readString();
     }
 
     public static final Creator<SurveyQuestionWithData> CREATOR = new Creator<SurveyQuestionWithData>() {
@@ -240,14 +245,6 @@ public class SurveyQuestionWithData implements Parcelable {
         this.childQuestions = childQuestions;
     }
 
-    public List<QuestionOption> getQuestionOptions() {
-        return questionOptions;
-    }
-
-    public void setQuestionOptions(List<QuestionOption> questionOptions) {
-        this.questionOptions = questionOptions;
-    }
-
     public List<SurveyQuestionWithData> getLinkedQuestions() {
         return linkedQuestions;
     }
@@ -256,12 +253,32 @@ public class SurveyQuestionWithData implements Parcelable {
         this.linkedQuestions = linkedQuestions;
     }
 
+    public List<HashMap<Integer, List<SurveyQuestionWithData>>> getLinkedQuestionInEdit() {
+        return linkedQuestionInEdit;
+    }
+
+    public void setLinkedQuestionInEdit(List<HashMap<Integer, List<SurveyQuestionWithData>>> linkedQuestionInEdit) {
+        this.linkedQuestionInEdit = linkedQuestionInEdit;
+    }
+
+    public List<QuestionOption> getQuestionOptions() {
+        return questionOptions;
+    }
+
+    public void setQuestionOptions(List<QuestionOption> questionOptions) {
+        this.questionOptions = questionOptions;
+    }
+
     public String getValue() {
         return Value;
     }
 
     public void setValue(String value) {
         Value = value;
+    }
+
+    public static Creator<SurveyQuestionWithData> getCREATOR() {
+        return CREATOR;
     }
 
     @Override
@@ -291,6 +308,8 @@ public class SurveyQuestionWithData implements Parcelable {
         parcel.writeString(is_section);
         parcel.writeString(IsActive);
         parcel.writeTypedList(childQuestions);
+        parcel.writeTypedList(linkedQuestions);
+        parcel.writeString(Value);
     }
 
     public int getInputValidation() {

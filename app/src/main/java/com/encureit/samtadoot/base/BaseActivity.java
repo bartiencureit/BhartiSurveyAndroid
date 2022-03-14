@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.R;
@@ -49,28 +50,34 @@ public class BaseActivity extends AppCompatActivity {
 
     public void startProgressDialog(View view) {
         this.view = view;
-//        String progressMessage = getResources().getString(R.string.loading);
-//        progressDialog = new ProgressDialog(this, android.R.style.Theme_Translucent);
-//        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        progressDialog.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-//        progressDialog.getWindow().requestFeature(Window.FEATURE_PROGRESS);
-//        progressDialog.getWindow().requestFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-//        progressDialog.setIndeterminate(true);
-//        progressDialog.setMessage(progressMessage);
-//        progressDialog.setCancelable(false);
-//        progressDialog.show();
-//        progressDialog.setContentView(R.layout.progress_bar);
-//        TextView tv = (TextView) progressDialog.findViewById(R.id.progress_tv);
-//        tv.setText(progressMessage);
         view.setEnabled(false);
         snackbar = Snackbar.make(view,getResources().getString(R.string.loading), BaseTransientBottomBar.LENGTH_INDEFINITE);
         snackbar.show();
     }
 
+    public void startCircularProgressDialog() {
+        String progressMessage = getResources().getString(R.string.loading);
+        progressDialog = new ProgressDialog(this, android.R.style.Theme_Translucent);
+        progressDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressDialog.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        progressDialog.getWindow().requestFeature(Window.FEATURE_PROGRESS);
+        progressDialog.getWindow().requestFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setMessage(progressMessage);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_bar);
+        TextView tv = (TextView) progressDialog.findViewById(R.id.progress_tv);
+        tv.setText(progressMessage);
+    }
+
+    public void dismissCircularProgressDialog() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+    }
+
     public void dismissProgressDialog() {
-//        if (progressDialog != null && progressDialog.isShowing()) {
-//            progressDialog.dismiss();
-//        }
         if(snackbar != null) {
             snackbar.dismiss();
         }

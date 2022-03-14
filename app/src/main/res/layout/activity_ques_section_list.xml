@@ -25,16 +25,5 @@
         android:padding="10dp"><!--tools:listitem="@layout/adapter_que_section_list"-->
     </androidx.recyclerview.widget.RecyclerView>
 
-    <Button
-        android:id="@+id/btn_submit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:onClick="@{ () -> presenter.saveForm()}"
-        android:background="@color/colorPrimaryDark"
-        android:text="@string/save"
-        android:visibility="gone" />
-
 </LinearLayout>
 </layout>
