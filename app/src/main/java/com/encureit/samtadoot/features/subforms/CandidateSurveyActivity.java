@@ -59,7 +59,7 @@ public class CandidateSurveyActivity extends BaseActivity implements CandidateSu
 
     @Override
     public void startNewFormActivity() {
-        Intent intent = new Intent(CandidateSurveyActivity.this, DashboardActivity.class);
+        Intent intent = new Intent(CandidateSurveyActivity.this, QuesSectionListActivity.class);
         intent.putExtra(AppKeys.SURVEY_TYPE, listModel);
         startActivityOnTop(false, intent);
     }

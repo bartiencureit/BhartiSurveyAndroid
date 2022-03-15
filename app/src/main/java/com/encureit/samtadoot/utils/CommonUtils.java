@@ -1,6 +1,8 @@
 package com.encureit.samtadoot.utils;
 
+import android.content.Context;
 import android.util.Log;
+import android.util.TypedValue;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -117,6 +119,11 @@ public class CommonUtils {
             e.printStackTrace();
             return  0;
         }
+    }
+
+    public static int dip2pix(Context context, int dip) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip,
+                context.getResources().getDisplayMetrics());
     }
 
 }

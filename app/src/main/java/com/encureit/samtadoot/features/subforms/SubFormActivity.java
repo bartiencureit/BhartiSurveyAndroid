@@ -33,6 +33,8 @@ import com.encureit.samtadoot.databinding.SingleCheckBoxesLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownMultiSelectListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleMultipleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleMultipleInputBoxParentLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleRadioButtonsLayoutBinding;
 import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.AppKeys;
@@ -45,8 +47,10 @@ import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.contracts.SubFormContract;
 import com.encureit.samtadoot.presenter.SubFormPresenter;
+import com.encureit.samtadoot.utils.CommonUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -369,7 +373,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         //set up form tittle
         mBinding.toolbar.tvToolbarTitle.setText(surveySection.getSectionDescription());
         addChildViews(surveySection);
-
     }
 
     private void addChildViews(SurveySection surveySection) {
@@ -534,10 +537,76 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void populateLabelText(SurveyQuestionWithData subForm) {
+        if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
+            //add multiple edittext
+            populateMultiInputBox(subForm);
+        } else {
+            HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
+            headerTextView.setText(subForm.getQuestions());
+            mBinding.llFormList.addView(headerTextView);
+        }
+    }
+
+    private void populateMultiInputBox(SurveyQuestionWithData subForm) {
         HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
         headerTextView.setText(subForm.getQuestions());
         mBinding.llFormList.addView(headerTextView);
+
+        SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
+
+        addLabelHeader(subForm,binding.llMultiInputParent);
+        for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
+            addInputOption(subForm.getQuestionOptions().get(j),binding.llMultiInputParent);
+        }
+        mBinding.llFormList.addView(binding.getRoot());
     }
+
+    private void addInputOption(QuestionOption questionOption, LinearLayout llMultiInputParent) {
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        binding.setOption(questionOption);
+
+        int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
+
+        for (int j = 0; j < tot_input_boxes; j++) {
+            AppCompatEditText textView = new AppCompatEditText(SubFormActivity.this);
+            int ten_dp = CommonUtils.dip2pix(SubFormActivity.this,8);
+            textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
+            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            int width = CommonUtils.dip2pix(SubFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(params);
+
+            binding.llInputBox.addView(textView);
+        }
+
+        llMultiInputParent.addView(binding.getRoot());
+    }
+
+    private void addLabelHeader(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
+        String label_header = subForm.getLabelHeader().replaceAll("\".*\"","");
+        List<String> labels = Arrays.asList(label_header.split(","));
+
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        binding.setOption(null);
+
+        for (int j = 0; j < labels.size(); j++) {
+            //add Header To Layout
+            HeaderTextView textView = new HeaderTextView(SubFormActivity.this);
+            int ten_dp = CommonUtils.dip2pix(SubFormActivity.this,10);
+            textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
+            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            int width = CommonUtils.dip2pix(SubFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(params);
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setText(labels.get(j));
+
+            binding.llInputBox.addView(textView);
+        }
+
+        llMultiInputParent.addView(binding.getRoot());
+    }
+
 
     /**
      * @date 8-3-2022
