@@ -6,11 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -73,6 +75,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private List<HashMap<String,MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
     private List<HashMap<String,RadioButton>> radioButtons = new ArrayList<>();
     private List<HashMap<String,CheckBox>> checkBoxes = new ArrayList<>();
+    private List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
     private SurveyType surveyType;
@@ -168,8 +171,42 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         saveDropDownDataToDb();
         saveRadioButtonDataToDb();
         saveCheckBoxDataToDb();
+        saveMultiInputBoxDataToDb();
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),getResources().getString(R.string.data_sync_finished_successfully));
         startActivityOnTop(DashboardActivity.class,false);
+    }
+
+    private void saveMultiInputBoxDataToDb() {
+        List<CandidateDetails> multiInputCandidateDetails = new ArrayList<>();
+
+        //render through multi input hashmap list
+        for (int j = 0; j < multiEditTextValues.size(); j++) {
+            HashMap<String,String> map = multiEditTextValues.get(j);
+            for (Map.Entry<String,String> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                String value = entry.getValue();
+                //Question was saved in hashmap i.e header text value as key
+                //We have get question id using question text from database
+                QuestionOption questionOption = DatabaseUtil.on().getQuestionIdFromQuestionOptionText(str_question);
+
+                CandidateDetails candidateDetails = new CandidateDetails();
+                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+                candidateDetails.setSurvey_que_values(value);
+                candidateDetails.setFormID(formId);
+                candidateDetails.setCurrent_Form_Status("GY");
+                candidateDetails.setAge_value("0");
+                candidateDetails.setSurvey_StartDate(start_date);
+                candidateDetails.setSurvey_EndDate(end_date);
+                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                candidateDetails.setLatitude(Double.toString(latitude));
+                candidateDetails.setLongitude(Double.toString(longitude));
+                multiInputCandidateDetails.add(candidateDetails);
+            }
+        }
+        DatabaseUtil.on().insertAllCandidateDetails(multiInputCandidateDetails);
     }
 
     /**
@@ -248,12 +285,13 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 //We have get question id using question text from database
                 String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
                 String questionValue = getSpinnerValue(spinner);
+                String option_id = DatabaseUtil.on().getOptionId(str_question,questionValue);
 
                 CandidateDetails candidateDetails = new CandidateDetails();
                 candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
                 candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
                 candidateDetails.setSurvey_que_id(questionId);
-                candidateDetails.setSurvey_que_option_id("0");
+                candidateDetails.setSurvey_que_option_id(option_id);
                 candidateDetails.setSurvey_que_values(questionValue);
                 candidateDetails.setFormID(formId);
                 candidateDetails.setCurrent_Form_Status("GY");
@@ -571,6 +609,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             AppCompatEditText textView = new AppCompatEditText(SubFormActivity.this);
             int ten_dp = CommonUtils.dip2pix(SubFormActivity.this,8);
             textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
+            textView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            textView.setText("0");
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -900,8 +940,51 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     //simple child view
                     getSimpleChildView(linearLayout,-1);
                 }
+            } else if(view instanceof HorizontalScrollView) {
+                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView)view);
+                View hsv_child = horizontalScrollView.getChildAt(0);
+                if (hsv_child instanceof LinearLayout) {
+                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
+                    int tot_count = ll_hsv_child.getChildCount();
+                    for (int k = 1; k < tot_count; k++) {
+                        View view_input_box = ll_hsv_child.getChildAt(k);
+                        if (view_input_box instanceof LinearLayout) {
+                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
+                            getMultiChildView(ll_input_box);
+                        }
+                    }
+                }
+                //getSimpleChildView(linearLayout,-1);
             }
         }
+    }
+
+    private void getMultiChildView(LinearLayout linearLayout) {
+        int ll_count = linearLayout.getChildCount();
+        String option = "";
+        StringBuffer stringBuffer = new StringBuffer();
+
+        for (int k = 0; k <ll_count; k++) {
+            View child_view = linearLayout.getChildAt(k);
+            //Check option label
+            if (child_view instanceof HeaderTextView) {
+                HeaderTextView headerTextView = (HeaderTextView) child_view;
+                option = headerTextView.getText().toString();
+                Log.e("Text",option);
+            }
+            if (child_view instanceof AppCompatEditText) {
+                AppCompatEditText editText = (AppCompatEditText) child_view;
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    stringBuffer.append("0,");
+                } else {
+                    stringBuffer.append(editText.getText().toString()+",");
+                }
+            }
+        }
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put(option, stringBuffer.toString());
+        multiEditTextValues.add(map);
     }
 
     private void getSimpleChildView(LinearLayout linearLayout, int index_of_child) {

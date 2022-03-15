@@ -149,7 +149,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         //set up form tittle
         mBinding.toolbar.tvToolbarTitle.setText(surveySection.getSectionDescription());
         addChildViews(surveySection);
-
     }
 
     private void addChildViews(SurveySection surveySection) {

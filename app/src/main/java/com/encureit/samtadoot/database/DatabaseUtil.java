@@ -355,7 +355,7 @@ public class DatabaseUtil {
 
         for (int i = 0; i < allChildQuestions.size(); i++) {
             SurveyQuestion childSurveyQuestion = allChildQuestions.get(i);
-            if (!childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
+            if (!(childSurveyQuestion.getIsLinkedQuestionId() == null || childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true"))) {
                 SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
                 surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
                 surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
@@ -393,8 +393,6 @@ public class DatabaseUtil {
                 childQuestions.add(surveyQuestionWithData);
             }
         }
-
-
         return childQuestions;
     }
 
@@ -576,7 +574,7 @@ public class DatabaseUtil {
 
         for (int i = 0; i < allChildQuestions.size(); i++) {
             SurveyQuestion childSurveyQuestion = allChildQuestions.get(i);
-            if (!childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
+            if (!(childSurveyQuestion.getIsLinkedQuestionId() == null || childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true"))) {
                 SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
                 surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
                 surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
@@ -625,7 +623,7 @@ public class DatabaseUtil {
 
         for (int i = 0; i < allChildQuestions.size(); i++) {
             SurveyQuestion childSurveyQuestion = allChildQuestions.get(i);
-            if (childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
+            if (childSurveyQuestion.getIsLinkedQuestionId() != null && childSurveyQuestion.getIsLinkedQuestionId().equalsIgnoreCase("true")) {
                 SurveyQuestionWithData surveyQuestionWithData = new SurveyQuestionWithData();
                 surveyQuestionWithData.setSurveyQuestion_ID(childSurveyQuestion.getSurveyQuestion_ID());
                 surveyQuestionWithData.setSurveySection_ID(childSurveyQuestion.getSurveySection_ID());
@@ -765,5 +763,9 @@ public class DatabaseUtil {
             }
         }
         return isCandidatePresent;
+    }
+
+    public QuestionOption getQuestionIdFromQuestionOptionText(String str_question) {
+        return getQuestionOptionDao().getQuestionOptionByText(str_question);
     }
 }
