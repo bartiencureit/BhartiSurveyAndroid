@@ -975,9 +975,17 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             if (child_view instanceof AppCompatEditText) {
                 AppCompatEditText editText = (AppCompatEditText) child_view;
                 if (TextUtils.isEmpty(editText.getText().toString())) {
-                    stringBuffer.append("0,");
+                    if (k == (ll_count - 1)) {
+                        stringBuffer.append("0");
+                    } else {
+                        stringBuffer.append("0,");
+                    }
                 } else {
-                    stringBuffer.append(editText.getText().toString()+",");
+                    if (k == (ll_count - 1)) {
+                        stringBuffer.append(editText.getText().toString());
+                    } else {
+                        stringBuffer.append(editText.getText().toString()).append(",");
+                    }
                 }
             }
         }

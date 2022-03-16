@@ -26,6 +26,9 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE FormID =:FormID")
     List<CandidateDetails> getAllDetailsByForm(String FormID);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id")
+    CandidateDetails getCandidateDetailsByQuestionOptionId(String survey_que_option_id);
+
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id")
     List<CandidateDetails> getAllDetailsByQuestionId(String survey_que_id);
 

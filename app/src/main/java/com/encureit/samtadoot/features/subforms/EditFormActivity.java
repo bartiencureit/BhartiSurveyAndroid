@@ -10,11 +10,13 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -37,6 +39,8 @@ import com.encureit.samtadoot.databinding.SingleCheckBoxesLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownMultiSelectListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleMultipleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleMultipleInputBoxParentLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleRadioButtonsLayoutBinding;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.lib.ScreenHelper;
@@ -48,8 +52,10 @@ import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.contracts.EditFormContract;
 import com.encureit.samtadoot.presenter.EditFormPresenter;
+import com.encureit.samtadoot.utils.CommonUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +73,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
     private List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
     private List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
+    private List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
     private SurveyType surveyType;
@@ -165,7 +172,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             for (int j = 0; j < subForm.getChildQuestions().size(); j++) {
                 populateQuestion(subForm.getChildQuestions().get(j));
             }
-            if(subForm.getLinkedQuestionInEdit().size() > 0) {
+            if(subForm.getLinkedQuestionInEdit() != null && subForm.getLinkedQuestionInEdit().size() > 0) {
                 for (int j = 0; j < subForm.getLinkedQuestionInEdit().size(); j++) {
                     HashMap<Integer,List<SurveyQuestionWithData>> map = subForm.getLinkedQuestionInEdit().get(j);
                     for (Map.Entry<Integer,List<SurveyQuestionWithData>> entry : map.entrySet()) {
@@ -180,6 +187,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         });
                     }
                 }
+            } else if(subForm.getLinkedQuestions().size() > 0) {
+                addLinkedQuestion(subForm.getLinkedQuestions(),0);
+                mBindingChild.btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        addLinkedQuestion(subForm.getLinkedQuestions(),0);
+                    }
+                });
             }
         }
         if(sectionHasLinkedQuestion()) {
@@ -226,12 +241,51 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void uploadData() {
         //save data to candidate details survey status
         editCandidateSurveyStatusDetails();
-        saveInputBoxDataToDb();
-        saveDropDownDataToDb();
-        saveRadioButtonDataToDb();
-        saveCheckBoxDataToDb();
+        editInputBoxDataToDb();
+        editDropDownDataToDb();
+        editRadioButtonDataToDb();
+        editCheckBoxDataToDb();
+        editMultiInputBoxDataToDb();
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),getResources().getString(R.string.data_sync_finished_successfully));
         onBackPressed();
+    }
+
+    private void editMultiInputBoxDataToDb() {
+        List<CandidateDetails> multiInputCandidateDetails = new ArrayList<>();
+
+        //render through multi input hashmap list
+        for (int j = 0; j < multiEditTextValues.size(); j++) {
+            HashMap<String,String> map = multiEditTextValues.get(j);
+            for (Map.Entry<String,String> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                String value = entry.getValue();
+                //Question was saved in hashmap i.e header text value as key
+                //We have get question id using question text from database
+                QuestionOption questionOption = DatabaseUtil.on().getQuestionIdFromQuestionOptionText(str_question);
+
+                CandidateDetails candidateDetails = new CandidateDetails();
+                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+                candidateDetails.setSurvey_que_values(value);
+                candidateDetails.setFormID(formId);
+                candidateDetails.setCurrent_Form_Status("GY");
+                candidateDetails.setAge_value("0");
+                candidateDetails.setSurvey_StartDate(start_date);
+                candidateDetails.setSurvey_EndDate(end_date);
+                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                candidateDetails.setLatitude(Double.toString(latitude));
+                candidateDetails.setLongitude(Double.toString(longitude));
+                multiInputCandidateDetails.add(candidateDetails);
+                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                if( id != -1) {
+                    updateCandidate(candidateDetails, id);
+                } else {
+                    DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
+                }
+            }
+        }
     }
 
     /**
@@ -255,7 +309,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 10-3-2022
      * save edittext data to sqlite db
      */
-    private void saveInputBoxDataToDb() {
+    private void editInputBoxDataToDb() {
         List<CandidateDetails> inputCandidateDetails = new ArrayList<>();
 
         //render through edittext hashmap list
@@ -284,8 +338,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
                 inputCandidateDetails.add(candidateDetails);
-                if(DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails)) {
-                    DatabaseUtil.on().getCandidateDetailsDao().update(candidateDetails);
+                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                if( id != -1) {
+                    updateCandidate(candidateDetails,id);
                 } else {
                     DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
                 }
@@ -297,7 +352,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 10-3-2022
      * save drop down data to sqlite db
      */
-    private void saveDropDownDataToDb() {
+    private void editDropDownDataToDb() {
         List<CandidateDetails> dropDownCandidateDetails = new ArrayList<>();
 
         //render through spinner hashmap list
@@ -327,8 +382,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setLongitude(Double.toString(longitude));
                 dropDownCandidateDetails.add(candidateDetails);
 
-                if(DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails)) {
-                    DatabaseUtil.on().getCandidateDetailsDao().update(candidateDetails);
+                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                if( id != -1) {
+                    updateCandidate(candidateDetails, id);
                 } else {
                     DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
                 }
@@ -351,7 +407,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 10-3-2022
      * save radio button data to sqlite db
      */
-    private void saveRadioButtonDataToDb() {
+    private void editRadioButtonDataToDb() {
         List<CandidateDetails> radioButtonCandidateDetails = new ArrayList<>();
 
         //render through radio button hashmap list
@@ -382,8 +438,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setLongitude(Double.toString(longitude));
                 radioButtonCandidateDetails.add(candidateDetails);
 
-                if(DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails)) {
-                    DatabaseUtil.on().getCandidateDetailsDao().update(candidateDetails);
+                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                if( id != -1) {
+                    updateCandidate(candidateDetails, id);
                 } else {
                     DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
                 }
@@ -395,7 +452,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 10-3-2022
      * save check boxes data to sqlite db
      */
-    private void saveCheckBoxDataToDb() {
+    private void editCheckBoxDataToDb() {
         List<CandidateDetails> checkBoxCandidateDetails = new ArrayList<>();
 
         //render through radio button hashmap list
@@ -426,8 +483,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setLongitude(Double.toString(longitude));
                 checkBoxCandidateDetails.add(candidateDetails);
 
-                if(DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails)) {
-                    DatabaseUtil.on().getCandidateDetailsDao().update(candidateDetails);
+                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                if( id != -1) {
+                    updateCandidate(candidateDetails, id);
                 } else {
                     DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
                 }
@@ -442,11 +500,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private boolean sectionHasLinkedQuestion() {
         boolean hasLinkedQuestion = false;
         for (int j = 0; j < list.size(); j++) {
-            if (list.get(j).getLinkedQuestionInEdit().size() > 0) {
-                hasLinkedQuestion = true;
+            if (list.get(j).getLinkedQuestionInEdit() != null) {
+                if (list.get(j).getLinkedQuestionInEdit().size() > 0) {
+                    hasLinkedQuestion = true;
+                }
+            } else {
+                if (list.get(j).getLinkedQuestions().size() > 0) {
+                    hasLinkedQuestion = true;
+                }
             }
         }
-
         return hasLinkedQuestion;
     }
 
@@ -589,9 +652,79 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void populateLabelText(SurveyQuestionWithData subForm,CandidateDetails candidateDetails) {
+        if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
+            //add multiple edittext
+            populateMultiInputBox(subForm);
+        } else {
+            HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
+            headerTextView.setText(subForm.getQuestions());
+            mBinding.llFormList.addView(headerTextView);
+        }
+    }
+
+    private void populateMultiInputBox(SurveyQuestionWithData subForm) {
         HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
         headerTextView.setText(subForm.getQuestions());
         mBinding.llFormList.addView(headerTextView);
+
+        SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
+
+        addLabelHeader(subForm,binding.llMultiInputParent);
+        for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
+            addInputOption(subForm.getQuestionOptions().get(j),binding.llMultiInputParent);
+        }
+        mBinding.llFormList.addView(binding.getRoot());
+    }
+
+    private void addInputOption(QuestionOption questionOption, LinearLayout llMultiInputParent) {
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        binding.setOption(questionOption);
+
+        int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
+        CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+        String value = candidateDetails.getSurvey_que_values();
+        List<String> values = Arrays.asList(value.split(","));
+
+        for (int j = 0; j < tot_input_boxes; j++) {
+            AppCompatEditText textView = new AppCompatEditText(EditFormActivity.this);
+            int ten_dp = CommonUtils.dip2pix(EditFormActivity.this,8);
+            textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
+            textView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            textView.setText(values.get(j));
+            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            int width = CommonUtils.dip2pix(EditFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(params);
+
+            binding.llInputBox.addView(textView);
+        }
+
+        llMultiInputParent.addView(binding.getRoot());
+    }
+
+    private void addLabelHeader(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
+        String label_header = subForm.getLabelHeader().replaceAll("\".*\"","");
+        List<String> labels = Arrays.asList(label_header.split(","));
+
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        binding.setOption(null);
+
+        for (int j = 0; j < labels.size(); j++) {
+            //add Header To Layout
+            HeaderTextView textView = new HeaderTextView(EditFormActivity.this);
+            int ten_dp = CommonUtils.dip2pix(EditFormActivity.this,10);
+            textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
+            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            int width = CommonUtils.dip2pix(EditFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            textView.setLayoutParams(params);
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setText(labels.get(j));
+
+            binding.llInputBox.addView(textView);
+        }
+
+        llMultiInputParent.addView(binding.getRoot());
     }
 
     /**
@@ -890,8 +1023,59 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     //simple child view
                     getSimpleChildView(linearLayout);
                 }
+            } else if(view instanceof HorizontalScrollView) {
+                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView)view);
+                View hsv_child = horizontalScrollView.getChildAt(0);
+                if (hsv_child instanceof LinearLayout) {
+                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
+                    int tot_count = ll_hsv_child.getChildCount();
+                    for (int k = 1; k < tot_count; k++) {
+                        View view_input_box = ll_hsv_child.getChildAt(k);
+                        if (view_input_box instanceof LinearLayout) {
+                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
+                            getMultiChildView(ll_input_box);
+                        }
+                    }
+                }
+                //getSimpleChildView(linearLayout,-1);
             }
         }
+    }
+
+    private void getMultiChildView(LinearLayout linearLayout) {
+        int ll_count = linearLayout.getChildCount();
+        String option = "";
+        StringBuffer stringBuffer = new StringBuffer();
+
+        for (int k = 0; k <ll_count; k++) {
+            View child_view = linearLayout.getChildAt(k);
+            //Check option label
+            if (child_view instanceof HeaderTextView) {
+                HeaderTextView headerTextView = (HeaderTextView) child_view;
+                option = headerTextView.getText().toString();
+                Log.e("Text",option);
+            }
+            if (child_view instanceof AppCompatEditText) {
+                AppCompatEditText editText = (AppCompatEditText) child_view;
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    if (k == (ll_count - 1)) {
+                        stringBuffer.append("0");
+                    } else {
+                        stringBuffer.append("0,");
+                    }
+                } else {
+                    if (k == (ll_count - 1)) {
+                        stringBuffer.append(editText.getText().toString());
+                    } else {
+                        stringBuffer.append(editText.getText().toString()).append(",");
+                    }
+                }
+            }
+        }
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put(option, stringBuffer.toString());
+        multiEditTextValues.add(map);
     }
 
     private void getSimpleChildView(LinearLayout linearLayout) {
@@ -1045,5 +1229,26 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 gpsTracker.showSettingsAlert();
             }
         }
+    }
+
+    /**
+     * @date 16-3-2022
+     * @param candidateDetails
+     * @param id
+     */
+    private void updateCandidate(CandidateDetails candidateDetails, int id) {
+        DatabaseUtil.on().getCandidateDetailsDao().update_survey_master_id(id,candidateDetails.getSurvey_master_id());
+        DatabaseUtil.on().getCandidateDetailsDao().update_survey_section_id(id,candidateDetails.getSurvey_section_id());
+        DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_id(id,candidateDetails.getSurvey_que_id());
+        DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_option_id(id,candidateDetails.getSurvey_que_option_id());
+        DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_values(id,candidateDetails.getSurvey_que_values());
+        DatabaseUtil.on().getCandidateDetailsDao().update_FormID(id,candidateDetails.getFormID());
+        DatabaseUtil.on().getCandidateDetailsDao().update_Current_Form_Status(id,candidateDetails.getCurrent_Form_Status());
+        DatabaseUtil.on().getCandidateDetailsDao().update_age_value(id,candidateDetails.getAge_value());
+        DatabaseUtil.on().getCandidateDetailsDao().update_Survey_StartDate(id,candidateDetails.getSurvey_StartDate());
+        DatabaseUtil.on().getCandidateDetailsDao().update_Survey_EndDate(id,candidateDetails.getSurvey_EndDate());
+        DatabaseUtil.on().getCandidateDetailsDao().update_created_by(id,candidateDetails.getCreated_by());
+        DatabaseUtil.on().getCandidateDetailsDao().update_Latitude(id,candidateDetails.getLatitude());
+        DatabaseUtil.on().getCandidateDetailsDao().update_Longitude(id,candidateDetails.getLongitude());
     }
 }

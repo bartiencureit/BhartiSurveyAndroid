@@ -332,7 +332,13 @@ public class DatabaseUtil {
 
                 //get all linked question and set to parent question
                 List<HashMap<Integer,List<SurveyQuestionWithData>>> linkedQuestions = getAllLinkedQuestionsInEdit(surveyQuestion.getSurveyQuestion_ID());
-                surveyQuestionWithData.setLinkedQuestionInEdit(linkedQuestions);
+                if (linkedQuestions.size() > 0) {
+                    surveyQuestionWithData.setLinkedQuestionInEdit(linkedQuestions);
+                } else {
+                    //get all linked question and set to parent question
+                    List<SurveyQuestionWithData> simple_linkedQuestions = getAllLinkedQuestions(surveyQuestion.getSurveyQuestion_ID());
+                    surveyQuestionWithData.setLinkedQuestions(simple_linkedQuestions);
+                }
 
                 surveyQuestionsWithData.add(surveyQuestionWithData);
             }
@@ -405,7 +411,6 @@ public class DatabaseUtil {
        List<HashMap<Integer,List<SurveyQuestionWithData>>> allLinkedQuestions = new ArrayList<>();
        int tot_candidates = getParentQuestionCandidateCount(questionId);
        List<SurveyQuestion> linkedQuestions = getSurveyQuestionDao().getAllLinkedQuestion(questionId,"true");
-
         for (int i = 0; i < tot_candidates; i++) {
             List<SurveyQuestionWithData> linkedQuestionListForSingleCandidate = new ArrayList<>();
             for (int j = 0; j < linkedQuestions.size(); j++) {
@@ -750,16 +755,23 @@ public class DatabaseUtil {
         return getCandidateDetailsDao().getAllDetailsByForm(formId);
     }
 
-    public boolean isCandidateDetailsPresent(CandidateDetails candidateDetails) {
-        boolean isCandidatePresent = false;
+    /**
+     * @date 16-3-2022
+     * Get Candidate Id If Present
+     * @param candidateDetails
+     * @return
+     */
+    public int isCandidateDetailsPresent(CandidateDetails candidateDetails) {
+        int isCandidatePresent = -1;
         List<CandidateDetails> candidateDetailsList = getCandidateDetailsDao().getAllDetailsByForm(candidateDetails.getFormID());
         for (int i = 0; i < candidateDetailsList.size(); i++) {
             if (
                candidateDetailsList.get(i).getSurvey_master_id().equalsIgnoreCase(candidateDetails.getSurvey_master_id()) &&
                candidateDetailsList.get(i).getSurvey_section_id().equalsIgnoreCase(candidateDetails.getSurvey_section_id()) &&
-               candidateDetailsList.get(i).getSurvey_que_id().equalsIgnoreCase(candidateDetails.getSurvey_que_id())
+               candidateDetailsList.get(i).getSurvey_que_id().equalsIgnoreCase(candidateDetails.getSurvey_que_id()) &&
+               candidateDetailsList.get(i).getSurvey_que_option_id().equalsIgnoreCase(candidateDetails.getSurvey_que_option_id())
             ) {
-                isCandidatePresent = true;
+                isCandidatePresent = candidateDetailsList.get(i).id;
             }
         }
         return isCandidatePresent;
