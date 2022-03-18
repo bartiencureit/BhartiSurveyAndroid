@@ -110,4 +110,9 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
             break;
         }
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
 }

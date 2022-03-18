@@ -778,7 +778,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.multiSelectSpinnerWithSearch.setSearchHint(subForm.getQuestions());
 
         // Set text that will display when search result not found...
-        binding.multiSelectSpinnerWithSearch.setEmptyTitle("Not Data Found!");
+        binding.multiSelectSpinnerWithSearch.setEmptyTitle(getResources().getString(R.string.no_data_found));
 
         // If you will set the limit, this button will not display automatically.
         binding.multiSelectSpinnerWithSearch.setShowSelectAllButton(true);

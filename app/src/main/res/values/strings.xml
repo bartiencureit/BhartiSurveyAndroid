@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Samtadoot</string>
-    <string name="exit_app_string">Do you want to exit app?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
+    <string name="exit_app_string">आपल्याला ऍप बंद करायचा आहे काय?</string>
+    <string name="yes">होय</string>
+    <string name="no">नाही</string>
     <string name="loading">कृपाया प्रतिक्षा करा...</string>
 
     <string name="save">जतन करा</string>
@@ -36,15 +36,20 @@
     <string name="other_than_sodun">वरील व्यतिरिक्त (सोडून गेलेली)</string>
     <string name="other_than_mrut">वरील व्यतिरिक्त (मृत)</string>
     <string name="ramai_awas_yojna_title">रमाई आवास योजना (शहरी विभाग) – लाभार्थी प्रपत्र सन 2020-21</string>
-    <string name="no_internet_connection">No Internet Connection</string>
+    <string name="no_internet_connection">इंटरनेट कनेक्शन नाही</string>
     <string name="dashboard_heading">आदिवासी विकास विभाग, महाराष्ट्र शासन \nआदिवासी संशोधन व प्रशिक्षण संस्थेमार्फत \nबेंचमार्क सर्वेक्षण – २०१९</string>
     <string name="setting_">आस सेटिंग</string>
     <string name="invalid_response">सर्व्हरकडून अवैध प्रतिसाद</string>
     <string name="sucessfull_login">यशस्वी लॉगिन</string>
     <string name="generic_name">%s)</string>
     <string name="add_another">आणखी जोडा</string>
-    <string name="invalid_entry">Please fill all the fields</string>
-    <string name="new_form">New Form</string>
+    <string name="invalid_entry">कृपया सगळी माहिती भरा</string>
+    <string name="new_form">नवीन फॉर्म</string>
     <string name="empty">\t</string>
+    <string name="empty_user_id">यूजर आय डी रिक्त आहे</string>
+    <string name="empty_otp">ओटिपी  रिक्त आहे</string>
+    <string name="please_enable_gps">जीपीएस चालू करा</string>
+    <string name="no_data_found">माहिती मिळत नाहीये!</string>
+    <string name="do_you_want_to_delete">आपल्याला डिलीट करायचं आहे का??</string>
 
 </resources>

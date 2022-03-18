@@ -5,6 +5,7 @@ import android.os.Handler;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.databinding.ActivitySplashBinding;
+import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.models.contracts.SplashContract;
 import com.encureit.samtadoot.presenter.SplashPresenter;
 
@@ -54,5 +55,10 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     protected void onPause() {
         super.onPause();
         mHandler.removeCallbacks(mRunnable);
+    }
+
+    @Override
+    public void onBackPressed() {
+        ScreenHelper.exitAppWithoutDialog(SplashActivity.this);
     }
 }

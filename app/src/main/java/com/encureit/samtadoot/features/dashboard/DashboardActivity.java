@@ -109,7 +109,7 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
                     }
                 } else {
                     locationEnabled = false;
-                    Snackbar.make(mBinding.getRoot(), "Please Enable GPS Location", BaseTransientBottomBar.LENGTH_LONG).show();
+                    Snackbar.make(mBinding.getRoot(), getResources().getString(R.string.please_enable_gps), BaseTransientBottomBar.LENGTH_LONG).show();
                 }
             }
             break;

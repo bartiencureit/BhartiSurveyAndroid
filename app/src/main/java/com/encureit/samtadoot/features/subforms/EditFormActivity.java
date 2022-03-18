@@ -524,15 +524,15 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             @Override
             public void onClick(View view) {
                 AlertDialog dialog = new AlertDialog.Builder(EditFormActivity.this).create();
-                dialog.setTitle("Do you want to delete?");
-                dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+                dialog.setTitle(getResources().getString(R.string.do_you_want_to_delete));
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mBindingChild.llAddAnotherSingleView.removeView(binding.llAddAnother);
                         deleteLinkedQuestion(linkedQuestionList,index);
                     }
                 });
-                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+                dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialog.dismiss();
@@ -598,7 +598,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         binding.multiSelectSpinnerWithSearch.setSearchHint(subForm.getQuestions());
 
         // Set text that will display when search result not found...
-        binding.multiSelectSpinnerWithSearch.setEmptyTitle("Not Data Found!");
+        binding.multiSelectSpinnerWithSearch.setEmptyTitle(getResources().getString(R.string.no_data_found));
 
         // If you will set the limit, this button will not display automatically.
         binding.multiSelectSpinnerWithSearch.setShowSelectAllButton(true);

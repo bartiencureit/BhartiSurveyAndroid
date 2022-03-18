@@ -66,17 +66,7 @@ public class ScreenHelper {
             public void onClick(DialogInterface dialog, int which) {
                 alertDialog.dismiss();
 
-                Intent startMain = new Intent(Intent.ACTION_MAIN);
-                startMain.addCategory(Intent.CATEGORY_HOME);
-                startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(startMain);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    context.finishAffinity();
-                } else {
-                    context.finish();
-                }
 
-                android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
 
@@ -87,6 +77,20 @@ public class ScreenHelper {
             }
         });
         alertDialog.show();
+    }
+
+    public static void exitAppWithoutDialog(Activity context) {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(startMain);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            context.finishAffinity();
+        } else {
+            context.finish();
+        }
+
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 
     public static void goToDialPad(Context context, String number) {

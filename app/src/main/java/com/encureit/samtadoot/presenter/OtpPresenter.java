@@ -41,7 +41,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     private boolean validate() {
         if (TextUtils.isEmpty(mActivity.mBinding.pinview.getValue())) {
-            mViewModel.showOtpFailed("Empty Otp");
+            mViewModel.showOtpFailed(mActivity.getResources().getString(R.string.empty_otp));
             return false;
         }
 
