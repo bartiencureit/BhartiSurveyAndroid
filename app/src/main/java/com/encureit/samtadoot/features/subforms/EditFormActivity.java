@@ -806,6 +806,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
         DropDownArrayAdapter adapter = new DropDownArrayAdapter(EditFormActivity.this, R.layout.single_drop_down_item,subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(adapter);
+        binding.sprQuestionOption.setSelection(getDropDownSelectedPosition(subForm));
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -820,6 +821,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }*/
                 if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
                     binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                    CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+                    if (candidateDetails != null) {
+                        binding.edtDropDownItar.setText(candidateDetails.getSurvey_que_values());
+                    }
                 } else {
                     binding.edtDropDownItar.setVisibility(View.GONE);
                 }
@@ -1068,6 +1073,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
         DropDownArrayAdapter adapter = new DropDownArrayAdapter(EditFormActivity.this, R.layout.single_drop_down_item,subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(adapter);
+        binding.sprQuestionOption.setSelection(getDropDownSelectedPosition(subForm));
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -1082,6 +1088,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }*/
                 if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
                     binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                    CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+                    if (candidateDetails != null) {
+                        binding.edtDropDownItar.setText(candidateDetails.getSurvey_que_values());
+                    }
                 } else {
                     binding.edtDropDownItar.setVisibility(View.GONE);
                 }
@@ -1094,6 +1104,22 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         });
 
         rootView.addView(binding.getRoot());
+    }
+
+    private int getDropDownSelectedPosition(SurveyQuestionWithData subForm) {
+        int position = 0;
+
+        if (subForm != null && subForm.getQuestionOptions() != null && subForm.getQuestionOptions().size() > 0) {
+            for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
+                QuestionOption questionOption = subForm.getQuestionOptions().get(j);
+                CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+                if (candidateDetails != null) {
+                    position = j;
+                }
+            }
+        }
+
+        return position;
     }
 
     /**
