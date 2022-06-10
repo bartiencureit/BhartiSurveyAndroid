@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
@@ -69,6 +70,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private List<SurveyQuestionWithData> list;
     private int i = 0;
     private List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
+    private List<HashMap<String,HashMap<String,AppCompatEditText>>> optionEditTexts = new ArrayList<>();
     private List<HashMap<String, Spinner>> spinners = new ArrayList<>();
     private List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
     private List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
@@ -242,6 +244,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         //save data to candidate details survey status
         editCandidateSurveyStatusDetails();
         editInputBoxDataToDb();
+        editOptionInputBoxDataToDb();
         editDropDownDataToDb();
         editRadioButtonDataToDb();
         editCheckBoxDataToDb();
@@ -343,6 +346,53 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     updateCandidate(candidateDetails,id);
                 } else {
                     DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
+                }
+            }
+        }
+    }
+
+    /**
+     * @date 10-6-2022
+     * save option edittext data to sqlite db
+     */
+    private void editOptionInputBoxDataToDb() {
+        List<CandidateDetails> inputCandidateDetails = new ArrayList<>();
+
+        //render through edittext hashmap list
+        for (int j = 0; j < optionEditTexts.size(); j++) {
+            HashMap<String,HashMap<String,AppCompatEditText>> map = optionEditTexts.get(j);
+            for (Map.Entry<String,HashMap<String,AppCompatEditText>> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                HashMap<String,AppCompatEditText> editTextMap = entry.getValue();
+
+                for (Map.Entry<String,AppCompatEditText> edtEntry : editTextMap.entrySet()) {
+                    //Question was saved in hashmap i.e header text value as key
+                    //We have get question id using question text from database
+                    AppCompatEditText editText = edtEntry.getValue();
+                    String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
+                    String questionValue = editText.getText().toString();
+
+                    CandidateDetails candidateDetails = new CandidateDetails();
+                    candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetails.setSurvey_que_id(questionId);
+                    candidateDetails.setSurvey_que_option_id(edtEntry.getKey());
+                    candidateDetails.setSurvey_que_values(questionValue);
+                    candidateDetails.setFormID(formId);
+                    candidateDetails.setCurrent_Form_Status("GY");
+                    candidateDetails.setAge_value("0");
+                    candidateDetails.setSurvey_StartDate(start_date);
+                    candidateDetails.setSurvey_EndDate(end_date);
+                    candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetails.setLatitude(Double.toString(latitude));
+                    candidateDetails.setLongitude(Double.toString(longitude));
+                    inputCandidateDetails.add(candidateDetails);
+                    int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                    if( id != -1) {
+                        updateCandidate(candidateDetails,id);
+                    } else {
+                        DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
+                    }
                 }
             }
         }
@@ -760,13 +810,18 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                /*if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
                     AppCompatEditText other_editText = new AppCompatEditText(EditFormActivity.this);
                     other_editText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edittext_rounded_corners));
                     LinearLayout.LayoutParams other_editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
                     other_editTextParams.setMargins(0, 10, 0, 10);
                     other_editText.setLayoutParams(other_editTextParams);
                     binding.llInputBox.addView(other_editText);
+                }*/
+                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                } else {
+                    binding.edtDropDownItar.setVisibility(View.GONE);
                 }
             }
 
@@ -793,6 +848,72 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton,i);
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+            if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
+                radioButton.setChecked(true);
+
+                try {
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                        binding.llChildQuestion.removeAllViews();
+                        String childQuesId = questionOption.getChildQuestionId();
+                        if (childQuesId.contains(",")) {
+                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                            for (int j = 0; j < childQuesIds.size(); j++) {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            if (childQues != null) {
+                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+                        binding.llChildQuestion.setVisibility(View.GONE);
+                        binding.llChildQuestion.removeAllViews();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(EditFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            radioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                            binding.llChildQuestion.removeAllViews();
+                            String childQuesId = questionOption.getChildQuestionId();
+                            if (childQuesId.contains(",")) {
+                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                for (int j = 0; j < childQuesIds.size(); j++) {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                    if (childQues != null) {
+                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.llChildQuestion.removeAllViews();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(EditFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
         mBinding.llFormList.addView(binding.getRoot());
     }
@@ -951,13 +1072,18 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                /*if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
                     AppCompatEditText other_editText = new AppCompatEditText(EditFormActivity.this);
                     other_editText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edittext_rounded_corners));
                     LinearLayout.LayoutParams other_editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
                     other_editTextParams.setMargins(0, 10, 0, 10);
                     other_editText.setLayoutParams(other_editTextParams);
                     binding.llInputBox.addView(other_editText);
+                }*/
+                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                } else {
+                    binding.edtDropDownItar.setVisibility(View.GONE);
                 }
             }
 
@@ -984,6 +1110,72 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton,i);
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+            if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
+                radioButton.setChecked(true);
+
+                try {
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                        binding.llChildQuestion.removeAllViews();
+                        String childQuesId = questionOption.getChildQuestionId();
+                        if (childQuesId.contains(",")) {
+                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                            for (int j = 0; j < childQuesIds.size(); j++) {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            if (childQues != null) {
+                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    } else {
+                        binding.llChildQuestion.setVisibility(View.GONE);
+                        binding.llChildQuestion.removeAllViews();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(EditFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+            radioButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    try {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                            binding.llChildQuestion.removeAllViews();
+                            String childQuesId = questionOption.getChildQuestionId();
+                            if (childQuesId.contains(",")) {
+                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                for (int j = 0; j < childQuesIds.size(); j++) {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                    if (childQues != null) {
+                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.llChildQuestion.removeAllViews();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(EditFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
         rootView.addView(binding.getRoot());
     }

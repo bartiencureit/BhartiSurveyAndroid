@@ -29,6 +29,9 @@ public interface QuestionOptionDao extends BaseDao<QuestionOption> {
     @Query("SELECT * FROM " + TableNames.TABLE_QUESTIONS_OPTION+" WHERE QNA_Values =:QNA_Values")
     QuestionOption getQuestionOptionByText(String QNA_Values);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_QUESTIONS_OPTION+" WHERE childQuestionId LIKE :childQuestionId")
+    QuestionOption getChildQuesOption(String childQuestionId);
+
      @Query("UPDATE " + TableNames.TABLE_QUESTIONS_OPTION+" SET QNAOption_ID = :QNAOption_ID WHERE id=:id")
      void update_QNAOption_ID(int id, String QNAOption_ID);
 

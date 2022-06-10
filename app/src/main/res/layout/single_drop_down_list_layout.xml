@@ -27,6 +27,14 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_rounded_corners"/>
 
+        <EditText
+            android:id="@+id/edt_drop_down_itar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:background="@drawable/edittext_rounded_corners"/>
+
     </LinearLayout>
 
 
