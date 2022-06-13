@@ -35,6 +35,14 @@
             android:visibility="gone"
             android:background="@drawable/edittext_rounded_corners"/>
 
+        <LinearLayout
+            android:id="@+id/ll_child_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
     </LinearLayout>
 
 

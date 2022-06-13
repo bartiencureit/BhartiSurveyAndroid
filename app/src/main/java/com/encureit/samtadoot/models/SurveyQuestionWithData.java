@@ -316,7 +316,7 @@ public class SurveyQuestionWithData implements Parcelable {
         switch (ValidationType) {
             case "text":
                 return InputType.TYPE_CLASS_TEXT;
-            case "number":
+            case "numeric":
                 return InputType.TYPE_CLASS_NUMBER;
         }
 

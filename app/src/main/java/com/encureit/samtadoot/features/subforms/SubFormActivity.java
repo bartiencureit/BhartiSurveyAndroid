@@ -66,6 +66,8 @@ import androidx.databinding.DataBindingUtil;
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
 
+import javax.xml.validation.Validator;
+
 public class SubFormActivity extends BaseActivity implements SubFormContract.ViewModel {
     private ActivitySubFormBinding mBinding;
     private SubFormPresenter mPresenter;
@@ -79,6 +81,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private List<HashMap<String,RadioButton>> radioButtons = new ArrayList<>();
     private List<HashMap<String,CheckBox>> checkBoxes = new ArrayList<>();
     private List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
+    private List<Object> requiredFields = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
     private SurveyType surveyType;
@@ -134,23 +137,47 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private boolean validateData() {
-        int filled_edittext_count = 0;
-        for (int j = 0; j < editTexts.size(); j++) {
-            HashMap<String,AppCompatEditText> map = editTexts.get(j);
-            for (Map.Entry<String,AppCompatEditText> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                AppCompatEditText editText = entry.getValue();
-                if (!TextUtils.isEmpty(editText.getText().toString())) {
-                    filled_edittext_count++;
+        /*if (requiredFields.size() > 0) {
+            int isValid = 0;
+            for (int j = 0; j < requiredFields.size(); j++) {
+                Object field = requiredFields.get(j);
+                if (field instanceof AppCompatEditText) {
+                    AppCompatEditText editText = (AppCompatEditText) field;
+                    if(!TextUtils.isEmpty(editText.getText().toString())) {
+                        isValid++;
+                    }
+                } else if (field instanceof RadioGroup) {
+                    RadioGroup radioButton = (RadioGroup) field;
+                    if(radioButton.getCheckedRadioButtonId() != -1) {
+                        isValid++;
+                    }
                 }
             }
-        }
 
-        if (filled_edittext_count == editTexts.size()) {
-            return true;
-        } else {
-            return false;
-        }
+            if (isValid >= requiredFields.size()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {*/
+            int filled_edittext_count = 0;
+            for (int j = 0; j < editTexts.size(); j++) {
+                HashMap<String, AppCompatEditText> map = editTexts.get(j);
+                for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
+                    String str_question = entry.getKey();
+                    AppCompatEditText editText = entry.getValue();
+                    if (!TextUtils.isEmpty(editText.getText().toString())) {
+                        filled_edittext_count++;
+                    }
+                }
+            }
+
+            if (filled_edittext_count == editTexts.size()) {
+                return true;
+            } else {
+                return false;
+            }
+        //}
     }
 
     /**
@@ -726,24 +753,50 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
         DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item,subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(adapter);
+        binding.edtDropDownItar.setVisibility(View.GONE);
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-                /*AppCompatEditText other_editText = new AppCompatEditText(SubFormActivity.this);
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-                    other_editText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edittext_rounded_corners));
-                    LinearLayout.LayoutParams other_editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                    other_editTextParams.setMargins(0, 10, 0, 10);
-                    other_editText.setLayoutParams(other_editTextParams);
-                    binding.llInputBox.addView(other_editText);
-                } else {
-                    binding.llInputBox.removeView(other_editText);
-                }*/
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                } else {
-                    binding.edtDropDownItar.setVisibility(View.GONE);
+                try {
+                    QuestionOption questionOption = subForm.getQuestionOptions().get(i);
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        binding.llChildQuestion.removeAllViews();
+                        String childQuesId = questionOption.getChildQuestionId();
+                        if (childQuesId.contains(",")) {
+                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                            for (int j = 0; j < childQuesIds.size(); j++) {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    binding.edtDropDownItar.setVisibility(View.GONE);
+                                }
+                            }
+                        } else {
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            if (childQues != null) {
+                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                binding.edtDropDownItar.setVisibility(View.GONE);
+                            }
+                        }
+                    } else {
+                        if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                            binding.llChildQuestion.removeAllViews();
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                                requiredFields.add(binding.edtDropDownItar);
+                            }
+                        } else {
+                            binding.llChildQuestion.removeAllViews();
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.edtDropDownItar.setVisibility(View.GONE);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(SubFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -765,11 +818,18 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
+        if (subForm.getQuestionOptions().size() > 0) {
+            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                requiredFields.add(binding.rgQuestionOptions);
+            }
+        }
+
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             RadioButton radioButton = new RadioButton(SubFormActivity.this);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton,i);
+
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -803,8 +863,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     }
                 }
             });
-
-
         }
         mBinding.llFormList.addView(binding.getRoot());
     }
@@ -818,6 +876,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
         binding.edtHeader.setInputType(subForm.getInputValidation());
+        if (subForm.getRequired().equalsIgnoreCase("true")) {
+            requiredFields.add(binding.edtHeader);
+        }
         mBinding.llFormList.addView(binding.getRoot());
     }
 
@@ -957,24 +1018,51 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
         DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item,subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(adapter);
+        binding.edtDropDownItar.setVisibility(View.GONE);
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-                /*AppCompatEditText other_editText = new AppCompatEditText(SubFormActivity.this);
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-                    other_editText.setBackgroundDrawable(getResources().getDrawable(R.drawable.edittext_rounded_corners));
-                    LinearLayout.LayoutParams other_editTextParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-                    other_editTextParams.setMargins(0, 10, 0, 10);
-                    other_editText.setLayoutParams(other_editTextParams);
-                    binding.llInputBox.addView(other_editText);
-                } else {
-                    binding.llInputBox.removeView(other_editText);
-                }*/
-                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                } else {
-                    binding.edtDropDownItar.setVisibility(View.GONE);
+                try {
+                    QuestionOption questionOption = subForm.getQuestionOptions().get(i);
+
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        binding.llChildQuestion.removeAllViews();
+                        String childQuesId = questionOption.getChildQuestionId();
+                        if (childQuesId.contains(",")) {
+                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                            for (int j = 0; j < childQuesIds.size(); j++) {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                if (childQues != null) {
+                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    binding.edtDropDownItar.setVisibility(View.GONE);
+                                }
+                            }
+                        } else {
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            if (childQues != null) {
+                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                binding.edtDropDownItar.setVisibility(View.GONE);
+                            }
+                        }
+                    } else {
+                        if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                            binding.llChildQuestion.removeAllViews();
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                                requiredFields.add(binding.edtDropDownItar);
+                            }
+                        } else {
+                            binding.llChildQuestion.removeAllViews();
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.edtDropDownItar.setVisibility(View.GONE);
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(SubFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -996,6 +1084,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateChildRadioButton(SurveyQuestionWithData subForm,LinearLayout rootView) {
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
+
+        if (subForm.getQuestionOptions().size() > 0) {
+            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                requiredFields.add(binding.rgQuestionOptions);
+            }
+        }
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
@@ -1050,6 +1144,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
         binding.edtHeader.setInputType(subForm.getInputValidation());
+        if (subForm.getRequired().equalsIgnoreCase("true")) {
+            requiredFields.add(binding.edtHeader);
+        }
         rootView.addView(binding.getRoot());
     }
 
