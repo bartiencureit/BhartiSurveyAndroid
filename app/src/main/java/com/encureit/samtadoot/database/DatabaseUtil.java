@@ -2,6 +2,10 @@ package com.encureit.samtadoot.database;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.RadioButton;
+
+import androidx.appcompat.widget.AppCompatEditText;
 
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
 import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
@@ -28,6 +32,7 @@ import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.UserDeviceDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -854,4 +859,30 @@ public class DatabaseUtil {
         return surveyQuestionWithData;
     }
 
+    public boolean validateRadio(String header_text, RadioButton radioButton, AppCompatEditText editText) {
+        boolean isValid = false;
+
+        SurveyQuestion question = getSurveyQuestionDao().getQuestionFromText(header_text);
+        List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(question.getSurveyQuestion_ID());
+        for (int i = 0; i < questionOptions.size(); i++) {
+            if (questionOptions.get(i).getQNA_Values().equalsIgnoreCase(radioButton.getText().toString())) {
+                if (questionOptions.get(i).getChildQuestionId() != null && !questionOptions.get(i).getChildQuestionId().equalsIgnoreCase("")) {
+                    String childQuesId = questionOptions.get(i).getChildQuestionId();
+                    if (childQuesId.contains(",")) {
+                        List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                        for (int j = 0; j < childQuesIds.size(); j++) {
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                            /*if (childQues != null && childQues.getValue().equalsIgnoreCase(editText)) {
+
+                            }*/
+                        }
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        return isValid;
+    }
 }

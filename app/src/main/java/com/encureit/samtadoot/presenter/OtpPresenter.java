@@ -2,7 +2,9 @@ package com.encureit.samtadoot.presenter;
 
 import android.content.DialogInterface;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.base.BaseActivity;
@@ -51,41 +53,45 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void sendOtp() {
-        if (validate()) {
-            ScreenHelper.hideKeyboard(mActivity);
-            if(mActivity.isInternetConnected()) {
-                mActivity.startProgressDialog(rootView);
-                //mActivity.disableForm();
+        try {
+            if (validate()) {
+                ScreenHelper.hideKeyboard(mActivity);
+                if(mActivity.isInternetConnected()) {
+                    mActivity.startProgressDialog(rootView);
+                    //mActivity.disableForm();
 
-                RetrofitClientLogin.getApiService().getOtpCheckResponse(loginId,mActivity.mBinding.pinview.getValue()).enqueue(new Callback<OtpCheckResponseModel>() {
-                    @Override
-                    public void onResponse(Call<OtpCheckResponseModel> call, Response<OtpCheckResponseModel> response) {
-                        if (response.code() == 200 || response.code() == 201) {
-                            if (response.body().isStatus()) {
-                                mViewModel.getOtp(response.body());
+                    RetrofitClientLogin.getApiService().getOtpCheckResponse(loginId,mActivity.mBinding.pinview.getValue()).enqueue(new Callback<OtpCheckResponseModel>() {
+                        @Override
+                        public void onResponse(Call<OtpCheckResponseModel> call, Response<OtpCheckResponseModel> response) {
+                            if (response.code() == 200 || response.code() == 201) {
+                                if (response.body().isStatus()) {
+                                    mViewModel.getOtp(response.body());
+                                } else {
+                                    mViewModel.showOtpFailed(response.body().getMessage());
+                                }
                             } else {
-                                mViewModel.showOtpFailed(response.body().getMessage());
+                                mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                             }
-                        } else {
-                            mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<OtpCheckResponseModel> call, Throwable t) {
-                        mViewModel.showOtpFailed(t.getMessage());
-                    }
-                });
+                        @Override
+                        public void onFailure(Call<OtpCheckResponseModel> call, Throwable t) {
+                            mViewModel.showOtpFailed(t.getMessage());
+                        }
+                    });
 
 
-            } else {
-                mActivity.showNotInternetConnected(new BaseActivity.OnInternetConnectedListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+                } else {
+                    mActivity.showNotInternetConnected(new BaseActivity.OnInternetConnectedListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                }
             }
+        } catch (Exception e) {
+            Toast.makeText(mActivity, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -54,19 +54,14 @@ import com.encureit.samtadoot.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.databinding.DataBindingUtil;
 
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
-
-import javax.xml.validation.Validator;
 
 public class SubFormActivity extends BaseActivity implements SubFormContract.ViewModel {
     private ActivitySubFormBinding mBinding;
@@ -137,14 +132,25 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private boolean validateData() {
-        /*if (requiredFields.size() > 0) {
+        if (requiredFields.size() > 0) {
             int isValid = 0;
             for (int j = 0; j < requiredFields.size(); j++) {
                 Object field = requiredFields.get(j);
                 if (field instanceof AppCompatEditText) {
                     AppCompatEditText editText = (AppCompatEditText) field;
-                    if(!TextUtils.isEmpty(editText.getText().toString())) {
+                    LinearLayout parent = (LinearLayout) editText.getParent().getParent();
+                    if(parent == null) {
                         isValid++;
+                    } else if (parent.getId() == R.id.ll_child_question) {
+                       if (parent.getVisibility() == View.GONE) {
+                           isValid++;
+                       } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                           isValid++;
+                       }
+                    } else {
+                        if (!TextUtils.isEmpty(editText.getText().toString())) {
+                            isValid++;
+                        }
                     }
                 } else if (field instanceof RadioGroup) {
                     RadioGroup radioButton = (RadioGroup) field;
@@ -154,12 +160,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 }
             }
 
-            if (isValid >= requiredFields.size()) {
+            if (isValid >= requiredFields.size() - 1) {
                 return true;
             } else {
                 return false;
             }
-        } else {*/
+        } else {
             int filled_edittext_count = 0;
             for (int j = 0; j < editTexts.size(); j++) {
                 HashMap<String, AppCompatEditText> map = editTexts.get(j);
@@ -177,7 +183,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             } else {
                 return false;
             }
-        //}
+        }
     }
 
     /**
@@ -758,6 +764,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
+                    if (subForm.getRequired().equalsIgnoreCase("true") && requiredFields.contains(binding.edtDropDownItar)) {
+                        requiredFields.remove(binding.edtDropDownItar);
+                    }
                     QuestionOption questionOption = subForm.getQuestionOptions().get(i);
                     if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                         binding.llChildQuestion.removeAllViews();
@@ -792,6 +801,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.GONE);
+                            if (subForm.getRequired().equalsIgnoreCase("true") && requiredFields.contains(binding.edtDropDownItar)) {
+                                requiredFields.remove(binding.edtDropDownItar);
+                            }
                         }
                     }
 
@@ -1025,6 +1037,10 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 try {
                     QuestionOption questionOption = subForm.getQuestionOptions().get(i);
 
+                    if (subForm.getRequired().equalsIgnoreCase("true") && requiredFields.contains(binding.edtDropDownItar)) {
+                        requiredFields.remove(binding.edtDropDownItar);
+                    }
+
                     if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                         binding.llChildQuestion.removeAllViews();
                         String childQuesId = questionOption.getChildQuestionId();
@@ -1055,6 +1071,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                 requiredFields.add(binding.edtDropDownItar);
                             }
                         } else {
+                            if (subForm.getRequired().equalsIgnoreCase("true") && requiredFields.contains(binding.edtDropDownItar)) {
+                                requiredFields.remove(binding.edtDropDownItar);
+                            }
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.GONE);
@@ -1081,7 +1100,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      * Insert radio button in layout
      * @param subForm
      */
-    private void populateChildRadioButton(SurveyQuestionWithData subForm,LinearLayout rootView) {
+    private void populateChildRadioButton(SurveyQuestionWithData subForm, LinearLayout rootView) {
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
@@ -1090,7 +1109,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 requiredFields.add(binding.rgQuestionOptions);
             }
         }
-
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             RadioButton radioButton = new RadioButton(SubFormActivity.this);
@@ -1142,12 +1160,14 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      */
     private void populateChildInputText(SurveyQuestionWithData subForm, LinearLayout rootView) {
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
-        binding.setSubForm(subForm);
-        binding.edtHeader.setInputType(subForm.getInputValidation());
-        if (subForm.getRequired().equalsIgnoreCase("true")) {
-            requiredFields.add(binding.edtHeader);
+        if (subForm != null) {
+            binding.setSubForm(subForm);
+            binding.edtHeader.setInputType(subForm.getInputValidation());
+            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                requiredFields.add(binding.edtHeader);
+            }
+            rootView.addView(binding.getRoot());
         }
-        rootView.addView(binding.getRoot());
     }
 
     /**

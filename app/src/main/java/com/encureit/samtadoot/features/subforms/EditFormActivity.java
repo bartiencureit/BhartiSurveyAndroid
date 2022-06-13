@@ -208,14 +208,25 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private boolean validateData() {
-       /* if (requiredFields.size() > 0) {
+        if (requiredFields.size() > 0) {
             int isValid = 0;
             for (int j = 0; j < requiredFields.size(); j++) {
                 Object field = requiredFields.get(j);
                 if (field instanceof AppCompatEditText) {
                     AppCompatEditText editText = (AppCompatEditText) field;
-                    if(!TextUtils.isEmpty(editText.getText().toString())) {
+                    LinearLayout parent = (LinearLayout) editText.getParent().getParent();
+                    if(parent == null) {
                         isValid++;
+                    } else if (parent.getId() == R.id.ll_child_question) {
+                        if (parent.getVisibility() == View.GONE) {
+                            isValid++;
+                        } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                            isValid++;
+                        }
+                    } else {
+                        if (!TextUtils.isEmpty(editText.getText().toString())) {
+                            isValid++;
+                        }
                     }
                 } else if (field instanceof RadioGroup) {
                     RadioGroup radioButton = (RadioGroup) field;
@@ -225,12 +236,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }
             }
 
-            if (isValid >= requiredFields.size()) {
+            if (isValid >= requiredFields.size() - 1) {
                 return true;
             } else {
                 return false;
             }
-        } else {*/
+        }  else {
             int filled_edittext_count = 0;
             for (int j = 0; j < editTexts.size(); j++) {
                 HashMap<String, AppCompatEditText> map = editTexts.get(j);
@@ -248,7 +259,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             } else {
                 return false;
             }
-        //}
+        }
     }
 
     /**

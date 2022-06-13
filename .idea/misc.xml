@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/encur/AndroidStudioProjects/BhartiSurveyAndroidLatestest/app/src/main/res/layout/activity_login.xml" value="0.22291666666666668" />
+        <entry key="..\:/Users/encur/AndroidStudioProjects/BhartiSurveyAndroidLatestest/app/src/main/res/layout/activity_otp_check.xml" value="0.22291666666666668" />
         <entry key="..\:/Users/encur/AndroidStudioProjects/BhartiSurveyAndroidLatestest/app/src/main/res/layout/activity_sub_form.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/encur/AndroidStudioProjects/BhartiSurveyAndroidLatestest/app/src/main/res/layout/single_add_another_parent_item.xml" value="0.22826086956521738" />
         <entry key="..\:/Users/encur/AndroidStudioProjects/BhartiSurveyAndroidLatestest/app/src/main/res/layout/single_drop_down_list_layout.xml" value="0.15885416666666666" />
