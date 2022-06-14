@@ -22,9 +22,9 @@ public class EditFormPresenter implements EditFormContract.Presenter {
     }
 
     @Override
-    public void startSubForm(SurveySection surveySection) {
+    public void startSubForm(SurveySection surveySection,String FormId) {
 
-        List<SurveyQuestionWithData> subFormList = DatabaseUtil.on().getAllQuestionsInEdit(surveySection.getSurveySection_ID());
+        List<SurveyQuestionWithData> subFormList = DatabaseUtil.on().getAllQuestionsInEdit(surveySection.getSurveySection_ID(),FormId);
         mViewModel.setupSubForms(subFormList,surveySection);
     }
 

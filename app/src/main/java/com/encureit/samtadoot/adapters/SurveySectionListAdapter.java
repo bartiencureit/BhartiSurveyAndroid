@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.SingleSurveySectionItemBinding;
-import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.SurveySection;
 
 import java.util.List;
@@ -20,12 +19,14 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
     private List<SurveySection> stateList;
     private OnItemClickListener mListener;
     private boolean isEditMode;
+    private String formId;
 
-    public SurveySectionListAdapter(Context context,boolean isEditMode, List<SurveySection> stateList, OnItemClickListener mListener) {
+    public SurveySectionListAdapter(Context context,String formId,boolean isEditMode, List<SurveySection> stateList, OnItemClickListener mListener) {
         this.context = context;
         this.stateList = stateList;
         this.mListener = mListener;
         this.isEditMode = isEditMode;
+        this.formId = formId;
     }
 
     @NonNull
@@ -38,9 +39,8 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
     public void onBindViewHolder(@NonNull SurveySectionHolder holder, int position) {
         SurveySection listItem = stateList.get(position);
         holder.binding.setSurveySection(listItem);
-        if (isEditMode) {
-            CandidateSurveyStatusDetails candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getCandidateDetails(listItem.getSurveySection_ID());
-            if (candidateSurveyStatusDetails != null) {
+        if (isEditMode && formId != null) {
+            if (DatabaseUtil.on().isSectionFilled(listItem,formId)) {
                 holder.binding.setImgVisibility(View.VISIBLE);
             } else {
                 holder.binding.setImgVisibility(View.GONE);

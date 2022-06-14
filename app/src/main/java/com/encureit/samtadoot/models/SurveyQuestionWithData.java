@@ -2,7 +2,9 @@ package com.encureit.samtadoot.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.Html;
 import android.text.InputType;
+import android.text.Spanned;
 
 import java.util.HashMap;
 import java.util.List;
@@ -323,11 +325,12 @@ public class SurveyQuestionWithData implements Parcelable {
         return InputType.TYPE_CLASS_TEXT;
     }
 
-    public String getRequiredLabel() {
+    public Spanned getRequiredLabel() {
+        String astrict = "<font color='#EE0000'>*</font>";
         if (getRequired().equalsIgnoreCase("true")) {
-            return getQuestions()+" *";
+            return Html.fromHtml(getQuestions()+" " + astrict);
         } else {
-            return getQuestions();
+            return Html.fromHtml(getQuestions());
         }
     }
 }

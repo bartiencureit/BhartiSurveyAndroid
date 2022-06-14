@@ -37,6 +37,14 @@
 
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btn_add_another"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_another"
+            android:visibility="gone"
+            android:layout_marginTop="10dp" />
+
     </LinearLayout>
 
 

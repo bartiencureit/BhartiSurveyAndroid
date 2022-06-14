@@ -29,8 +29,17 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id")
     CandidateDetails getCandidateDetailsByQuestionOptionId(String survey_que_option_id);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID =:FormId")
+    CandidateDetails getCandidateDetailsByQuestionIdFormId(String survey_que_id,String FormId);
+
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id")
     List<CandidateDetails> getAllDetailsByQuestionId(String survey_que_id);
+
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID=:FormId")
+    List<CandidateDetails> getAllDetailsByQuestionIdFormId(String survey_que_id,String FormId);
+
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_section_id =:survey_section_id AND FormID =:formId")
+    List<CandidateDetails> getAllDetailsBySectionIdFormId(String survey_section_id,String formId);
 
     @Query("UPDATE " + TableNames.TABLE_CANDIDATE_DETAILS+" SET survey_master_id =:survey_master_id WHERE id =:id")
     void update_survey_master_id(int id,String survey_master_id);

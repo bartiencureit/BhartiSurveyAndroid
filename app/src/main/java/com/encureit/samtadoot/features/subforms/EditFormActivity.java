@@ -105,6 +105,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void initData() {
+        if (candidateSurveyStatusDetails != null && candidateSurveyStatusDetails.getFormID() != null) {
+            formId = candidateSurveyStatusDetails.getFormID();
+        }
         helper = new GlobalHelper(EditFormActivity.this);
         mPresenter = new EditFormPresenter(EditFormActivity.this,this);
         startCircularProgressDialog();
@@ -122,9 +125,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      */
     private void loadViews() {
         mBinding.setPresenter(mPresenter);
-        mPresenter.startSubForm(section);
+        mPresenter.startSubForm(section,formId);
 
-        formId = candidateSurveyStatusDetails.getFormID();
         start_date = candidateSurveyStatusDetails.getStart_date();
 
         mBinding.btnNext.setOnClickListener(new View.OnClickListener() {
@@ -615,7 +617,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         mBindingChild.llAddAnotherSingleView.removeView(binding.llAddAnother);
-                        deleteLinkedQuestion(linkedQuestionList,index);
+                        deleteLinkedQuestion(linkedQuestionList,index,formId);
                     }
                 });
                 dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -630,9 +632,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         mBindingChild.llAddAnotherSingleView.addView(binding.getRoot());
     }
 
-    private void deleteLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, int index) {
+    private void deleteLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, int index,String FormId) {
         for (int j = 0; j < linkedQuestionList.size(); j++) {
-            CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateById(linkedQuestionList.get(j).getSurveyQuestion_ID(),index);
+            CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateById(linkedQuestionList.get(j).getSurveyQuestion_ID(),index,FormId);
             DatabaseUtil.on().deleteCandidate(candidateDetails);
         }
     }
@@ -872,7 +874,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -880,7 +882,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                                 }
                             }
                         } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                             if (childQues != null) {
                                 populateChildQuestionInput(childQues,binding.llChildQuestion);
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -894,6 +896,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
                             if (subForm.getRequired().equalsIgnoreCase("true")) {
                                 requiredFields.add(binding.edtDropDownItar);
+                            }
+                            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
+                            if (details != null) {
+                                binding.edtDropDownItar.setText(details.getSurvey_que_values());
                             }
                         } else {
                             binding.llChildQuestion.removeAllViews();
@@ -948,14 +954,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 }
                             }
                         } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                             if (childQues != null) {
                                 populateChildQuestionInput(childQues,binding.llChildQuestion);
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -980,14 +986,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             if (childQuesId.contains(",")) {
                                 List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                                 for (int j = 0; j < childQuesIds.size(); j++) {
-                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                     if (childQues != null) {
                                         populateChildQuestionInput(childQues,binding.llChildQuestion);
                                         binding.llChildQuestion.setVisibility(View.VISIBLE);
                                     }
                                 }
                             } else {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -1015,6 +1021,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         if(candidateDetails != null) {
             subForm.setValue(candidateDetails.getSurvey_que_values());
+        } else {
+            String quesId = subForm.getSurveyQuestion_ID();
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(quesId,formId);
+            if (details != null) {
+                subForm.setValue(details.getSurvey_que_values());
+            }
         }
         binding.setSubForm(subForm);
         mBinding.llFormList.addView(binding.getRoot());
@@ -1168,7 +1180,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -1176,7 +1188,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                                 }
                             }
                         } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                             if (childQues != null) {
                                 populateChildQuestionInput(childQues,binding.llChildQuestion);
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -1190,6 +1202,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
                             if (subForm.getRequired().equalsIgnoreCase("true")) {
                                 requiredFields.add(binding.edtDropDownItar);
+                            }
+                            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
+                            if (details != null) {
+                                binding.edtDropDownItar.setText(details.getSurvey_que_values());
                             }
                         } else {
                             binding.llChildQuestion.removeAllViews();
@@ -1260,14 +1276,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 }
                             }
                         } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                             if (childQues != null) {
                                 populateChildQuestionInput(childQues,binding.llChildQuestion);
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -1292,14 +1308,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             if (childQuesId.contains(",")) {
                                 List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                                 for (int j = 0; j < childQuesIds.size(); j++) {
-                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j),formId);
                                     if (childQues != null) {
                                         populateChildQuestionInput(childQues,binding.llChildQuestion);
                                         binding.llChildQuestion.setVisibility(View.VISIBLE);
                                     }
                                 }
                             } else {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId,formId);
                                 if (childQues != null) {
                                     populateChildQuestionInput(childQues,binding.llChildQuestion);
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
@@ -1328,6 +1344,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         if(candidateDetails != null) {
             subForm.setValue(candidateDetails.getSurvey_que_values());
+        } else {
+            String quesId = subForm.getSurveyQuestion_ID();
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(quesId,formId);
+            if (details != null) {
+                subForm.setValue(details.getSurvey_que_values());
+            }
         }
         binding.setSubForm(subForm);
         rootView.addView(binding.getRoot());
@@ -1596,7 +1618,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_id(id,candidateDetails.getSurvey_que_id());
         DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_option_id(id,candidateDetails.getSurvey_que_option_id());
         DatabaseUtil.on().getCandidateDetailsDao().update_survey_que_values(id,candidateDetails.getSurvey_que_values());
-        DatabaseUtil.on().getCandidateDetailsDao().update_FormID(id,candidateDetails.getFormID());
+        DatabaseUtil.on().getCandidateDetailsDao().update_FormID(id,formId);
         DatabaseUtil.on().getCandidateDetailsDao().update_Current_Form_Status(id,candidateDetails.getCurrent_Form_Status());
         DatabaseUtil.on().getCandidateDetailsDao().update_age_value(id,candidateDetails.getAge_value());
         DatabaseUtil.on().getCandidateDetailsDao().update_Survey_StartDate(id,candidateDetails.getSurvey_StartDate());

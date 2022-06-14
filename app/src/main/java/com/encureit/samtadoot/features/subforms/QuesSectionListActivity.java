@@ -33,7 +33,6 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         setContentView(mBinding.getRoot());
         mPresenter = new SurveySectionPresenter(QuesSectionListActivity.this,this);
         mPresenter.rootView = mBinding.getRoot();
-        mPresenter.startSurveySection();
         Intent intent = getIntent();
         if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
             surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
@@ -43,6 +42,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
             inEditMode = true;
             candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
         }
+        mPresenter.startSurveySection();
 
     }
 
@@ -53,19 +53,23 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     @Override
     public void setupFields(List<SurveySection> list) {
         mBinding.rvQueSections.setLayoutManager(new LinearLayoutManager(QuesSectionListActivity.this));
-        mAdapter = new SurveySectionListAdapter(this, inEditMode, list, (listModel, position) -> {
+        String FormId = null;
+        if (candidateSurveyStatusDetails != null) {
+            FormId = candidateSurveyStatusDetails.getFormID();
+        }
+        mAdapter = new SurveySectionListAdapter(this, FormId, inEditMode, list, (listModel, position) -> {
+            Intent intent;
             if (inEditMode) {
-                Intent intent = new Intent(QuesSectionListActivity.this,EditFormActivity.class);
+                intent = new Intent(QuesSectionListActivity.this, EditFormActivity.class);
                 intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
                 intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
                 intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS,candidateSurveyStatusDetails);
-                startActivityOnTop(true,intent);
             } else {
-                Intent intent = new Intent(QuesSectionListActivity.this,SubFormActivity.class);
+                intent = new Intent(QuesSectionListActivity.this, SubFormActivity.class);
                 intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
                 intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
-                startActivityOnTop(true,intent);
             }
+            startActivityOnTop(true,intent);
         });
         mBinding.rvQueSections.setAdapter(mAdapter);
     }
