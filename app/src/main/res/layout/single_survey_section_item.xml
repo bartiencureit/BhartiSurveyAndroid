@@ -7,6 +7,9 @@
             name="surveySection"
             type="com.encureit.samtadoot.models.SurveySection"
             />
+        <variable
+            name="imgVisibility"
+            type="Integer" />
     </data>
 
     <LinearLayout
@@ -28,6 +31,13 @@
                 android:padding="5dp"
                 android:layout_margin="5dp"
                 android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:src="@drawable/ic_check_circle"
+                    android:visibility="@{imgVisibility}"/>
 
                 <TextView
                     android:id="@+id/tv_que_section_count"

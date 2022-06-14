@@ -322,4 +322,12 @@ public class SurveyQuestionWithData implements Parcelable {
 
         return InputType.TYPE_CLASS_TEXT;
     }
+
+    public String getRequiredLabel() {
+        if (getRequired().equalsIgnoreCase("true")) {
+            return getQuestions()+" *";
+        } else {
+            return getQuestions();
+        }
+    }
 }

@@ -53,7 +53,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     @Override
     public void setupFields(List<SurveySection> list) {
         mBinding.rvQueSections.setLayoutManager(new LinearLayoutManager(QuesSectionListActivity.this));
-        mAdapter = new SurveySectionListAdapter(this, list, (listModel, position) -> {
+        mAdapter = new SurveySectionListAdapter(this, inEditMode, list, (listModel, position) -> {
             if (inEditMode) {
                 Intent intent = new Intent(QuesSectionListActivity.this,EditFormActivity.class);
                 intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);

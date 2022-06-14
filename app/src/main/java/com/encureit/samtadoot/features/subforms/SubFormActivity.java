@@ -652,7 +652,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
     private void populateHeaderText(SurveyQuestionWithData subForm) {
         HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
-        headerTextView.setText(subForm.getQuestions());
+        if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+            headerTextView.setText(subForm.getQuestions()+" *");
+        } else {
+            headerTextView.setText(subForm.getQuestions());
+        }
         mBinding.llFormList.addView(headerTextView);
     }
 
@@ -846,7 +850,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 @Override
                 public void onClick(View view) {
                     try {
-                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                             //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
                             binding.llChildQuestion.removeAllViews();
                             String childQuesId = questionOption.getChildQuestionId();
@@ -991,7 +995,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
     private void populateChildHeaderText(SurveyQuestionWithData subForm,LinearLayout rootView) {
         HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
-        headerTextView.setText(subForm.getQuestions());
+        if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+            headerTextView.setText(subForm.getQuestions()+" *");
+        } else {
+            headerTextView.setText(subForm.getQuestions());
+        }
         rootView.addView(headerTextView);
     }
 
@@ -1118,7 +1126,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 @Override
                 public void onClick(View view) {
                     try {
-                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                             //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
                             binding.llChildQuestion.removeAllViews();
                             String childQuesId = questionOption.getChildQuestionId();
@@ -1219,7 +1227,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             //Check option label
             if (child_view instanceof HeaderTextView) {
                 HeaderTextView headerTextView = (HeaderTextView) child_view;
-                option = headerTextView.getText().toString();
+                option = headerTextView.getText().toString().replace("*","").trim();
                 Log.e("Text",option);
             }
             if (child_view instanceof AppCompatEditText) {
@@ -1290,7 +1298,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             radioButton.setTag(index_of_child);
 
             HashMap<String, RadioButton> map = new HashMap<>();
-            map.put(headerTextView.getText().toString(), radioButton);
+            map.put(headerTextView.getText().toString().replace("*","").trim(), radioButton);
             radioButtons.add(map);
 
 
@@ -1303,7 +1311,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     CheckBox checkBox = (CheckBox) cb_child_view;
                     checkBox.setTag(index_of_child);
                     HashMap<String,CheckBox> map = new HashMap<>();
-                    map.put(headerTextView.getText().toString(),checkBox);
+                    map.put(headerTextView.getText().toString().replace("*","").trim(),checkBox);
                     checkBoxes.add(map);
                 }
             }
@@ -1314,7 +1322,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         MultiSpinnerSearch multiSpinnerSearch = (MultiSpinnerSearch) next_view;
         multiSpinnerSearch.setTag(index_of_child);
         HashMap<String,MultiSpinnerSearch> map = new HashMap<>();
-        map.put(headerTextView.getText().toString(),multiSpinnerSearch);
+        map.put(headerTextView.getText().toString().replace("*","").trim(),multiSpinnerSearch);
         multiSpinnerSearches.add(map);
     }
 
@@ -1332,7 +1340,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 HashMap<String,HashMap<String,AppCompatEditText>> map = new HashMap<>();
                 HashMap<String,AppCompatEditText> edtMap = new HashMap<>();
                 edtMap.put(questionOption.getQNAOption_ID(),editText);
-                map.put(headerTextView.getText().toString(),edtMap);
+                map.put(headerTextView.getText().toString().replace("*","").trim(),edtMap);
                 optionEditTexts.add(map);
             }
 
@@ -1340,7 +1348,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             spinner.setTag(index_of_child);
 
             HashMap<String, Spinner> map = new HashMap<>();
-            map.put(headerTextView.getText().toString(), spinner);
+            map.put(headerTextView.getText().toString().replace("*","").trim(), spinner);
             spinners.add(map);
         }
     }
@@ -1349,7 +1357,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         AppCompatEditText editText = (AppCompatEditText) next_view;
         editText.setTag(index_of_child);
         HashMap<String,AppCompatEditText> map = new HashMap<>();
-        map.put(headerTextView.getText().toString(),editText);
+        map.put(headerTextView.getText().toString().replace("*","").trim(),editText);
         editTexts.add(map);
     }
 

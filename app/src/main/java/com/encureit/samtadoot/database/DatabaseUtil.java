@@ -700,6 +700,10 @@ public class DatabaseUtil {
      * @return Question id
      */
     public String getQuestionIdFromQuestion(String str_question) {
+        if (str_question.contains("*")) {
+            str_question = str_question.replace("*","");
+            str_question = str_question.trim();
+        }
         SurveyQuestion question = getSurveyQuestionDao().getQuestionFromText(str_question);
         if (question != null) {
             return question.getSurveyQuestion_ID();
@@ -754,6 +758,10 @@ public class DatabaseUtil {
      * @return
      */
     public String getOptionId(String question,String option) {
+        if (question.contains("*")) {
+            question = question.replace("*","");
+            question = question.trim();
+        }
         SurveyQuestion surveyQuestion = getSurveyQuestionDao().getQuestionFromText(question);
         List<QuestionOption> options = getQuestionOptionDao().getAllQuestionOption(surveyQuestion.getSurveyQuestion_ID());
         for (int i = 0; i < options.size(); i++) {
@@ -857,32 +865,5 @@ public class DatabaseUtil {
             }
         //}
         return surveyQuestionWithData;
-    }
-
-    public boolean validateRadio(String header_text, RadioButton radioButton, AppCompatEditText editText) {
-        boolean isValid = false;
-
-        SurveyQuestion question = getSurveyQuestionDao().getQuestionFromText(header_text);
-        List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(question.getSurveyQuestion_ID());
-        for (int i = 0; i < questionOptions.size(); i++) {
-            if (questionOptions.get(i).getQNA_Values().equalsIgnoreCase(radioButton.getText().toString())) {
-                if (questionOptions.get(i).getChildQuestionId() != null && !questionOptions.get(i).getChildQuestionId().equalsIgnoreCase("")) {
-                    String childQuesId = questionOptions.get(i).getChildQuestionId();
-                    if (childQuesId.contains(",")) {
-                        List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
-                        for (int j = 0; j < childQuesIds.size(); j++) {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
-                            /*if (childQues != null && childQues.getValue().equalsIgnoreCase(editText)) {
-
-                            }*/
-                        }
-                    } else {
-
-                    }
-                }
-            }
-        }
-
-        return isValid;
     }
 }

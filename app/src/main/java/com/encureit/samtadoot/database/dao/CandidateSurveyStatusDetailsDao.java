@@ -32,4 +32,6 @@ public interface CandidateSurveyStatusDetailsDao extends BaseDao<CandidateSurvey
     @Query("UPDATE " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" SET survey_status =:survey_status WHERE id =:id")
     void update_survey_status(int id, String survey_status);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" WHERE survey_section_id=:survey_section_id")
+    CandidateSurveyStatusDetails getCandidateDetails(String survey_section_id);
 }

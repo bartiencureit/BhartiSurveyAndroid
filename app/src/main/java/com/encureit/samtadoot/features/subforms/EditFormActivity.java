@@ -941,7 +941,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 radioButton.setChecked(true);
 
                 try {
-                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                         //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
                         binding.llChildQuestion.removeAllViews();
                         String childQuesId = questionOption.getChildQuestionId();
@@ -1253,7 +1253,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 radioButton.setChecked(true);
 
                 try {
-                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                         //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
                         binding.llChildQuestion.removeAllViews();
                         String childQuesId = questionOption.getChildQuestionId();

@@ -19,7 +19,7 @@
             android:id="@+id/tv_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={subForm.questions}"/>
+            android:text="@{subForm.requiredLabel}"/>
 
         <RadioGroup
             android:id="@+id/rg_checkbox_question_options"
