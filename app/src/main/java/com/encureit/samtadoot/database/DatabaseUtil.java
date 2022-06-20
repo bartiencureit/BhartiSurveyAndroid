@@ -514,7 +514,9 @@ public class DatabaseUtil {
         surveyQuestionWithData.setUpdatedDate(childSurveyQuestion.getUpdatedDate());
         surveyQuestionWithData.setIs_section(childSurveyQuestion.getIs_section());
         surveyQuestionWithData.setIsActive(childSurveyQuestion.getIsActive());
-        surveyQuestionWithData.setValue(candidateDetails.getSurvey_que_values());
+        if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
+            surveyQuestionWithData.setValue(candidateDetails.getSurvey_que_values());
+        }
 
         //get question type of given child question
         QuestionType questionType = getQuestionTypeOfQuestion(childSurveyQuestion);
@@ -702,15 +704,30 @@ public class DatabaseUtil {
      * Get question id from question
      */
     public String getQuestionIdFromQuestion(String str_question) {
+        SurveyQuestion question = getSurveyQuestionFromQuestion(str_question);
+        if (question != null) {
+            return question.getSurveyQuestion_ID();
+        }
+        return null;
+    }
+
+    /**
+     * @param str_question
+     * @return Question id
+     * @date 10-3-2022
+     * Get question id from question
+     */
+    public SurveyQuestion getSurveyQuestionFromQuestion(String str_question) {
         if (str_question.contains("*")) {
             str_question = str_question.replace("*", "");
             str_question = str_question.trim();
         }
         SurveyQuestion question = getSurveyQuestionDao().getQuestionFromText(str_question);
-        if (question != null) {
-            return question.getSurveyQuestion_ID();
+        if (question == null) {
+            str_question = str_question.substring(0,10);
+            question = getSurveyQuestionDao().getQuestionFromTextUsingLike('%'+str_question+'%');
         }
-        return null;
+        return question;
     }
 
     /**
@@ -764,7 +781,7 @@ public class DatabaseUtil {
             question = question.replace("*", "");
             question = question.trim();
         }
-        SurveyQuestion surveyQuestion = getSurveyQuestionDao().getQuestionFromText(question);
+        SurveyQuestion surveyQuestion = getSurveyQuestionFromQuestion(question);
         List<QuestionOption> options = getQuestionOptionDao().getAllQuestionOption(surveyQuestion.getSurveyQuestion_ID());
         for (int i = 0; i < options.size(); i++) {
             if (options.get(i).getQNA_Values().equalsIgnoreCase(option)) {

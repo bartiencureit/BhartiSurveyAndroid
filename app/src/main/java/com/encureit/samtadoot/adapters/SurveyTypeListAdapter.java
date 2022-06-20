@@ -32,7 +32,7 @@ public class SurveyTypeListAdapter extends RecyclerView.Adapter<SurveyTypeListAd
     }
     @Override
     public void onBindViewHolder(@NonNull SurveyTypeHolder holder, int position) {
-        SurveyType listItem = stateList.get(position);
+        SurveyType listItem = stateList.get(holder.getAdapterPosition());
         holder.binding.setSurveyType(listItem);
         holder.binding.form1TitleAdapter.setOnClickListener(new View.OnClickListener() {
             @Override

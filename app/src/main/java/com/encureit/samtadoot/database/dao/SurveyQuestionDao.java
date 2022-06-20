@@ -38,6 +38,9 @@ public interface SurveyQuestionDao extends BaseDao<SurveyQuestion> {
     @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE Questions =:Questions")
     SurveyQuestion getQuestionFromText(String Questions);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE Questions LIKE :Questions")
+    SurveyQuestion getQuestionFromTextUsingLike(String Questions);
+
      @Query("UPDATE " + TableNames.TABLE_SURVEY_QUESTIONS+" SET SurveyQuestion_ID =:SurveyQuestion_ID WHERE id =:id")
      void update_SurveyQuestion_ID(int id, String SurveyQuestion_ID);
 
@@ -95,4 +98,6 @@ public interface SurveyQuestionDao extends BaseDao<SurveyQuestion> {
      @Query("UPDATE " + TableNames.TABLE_SURVEY_QUESTIONS+" SET IsActive =:IsActive WHERE id =:id")
     void update_IsActive(int id, String IsActive);
 
+    @Query("SELECT COUNT(QuestionTypeID) FROM " + TableNames.TABLE_SURVEY_QUESTIONS+" WHERE SurveySection_ID =:Survey_section_id AND QuestionTypeID = 1 AND Required = 'true' AND OptionDependent = 0")
+    int getEditTextCount(String Survey_section_id);
 }

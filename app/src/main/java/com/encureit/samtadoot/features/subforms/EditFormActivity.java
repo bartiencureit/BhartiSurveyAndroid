@@ -48,6 +48,7 @@ import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.models.CandidateDetails;
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.QuestionOption;
+import com.encureit.samtadoot.models.SurveyQuestion;
 import com.encureit.samtadoot.models.SurveyQuestionWithData;
 import com.encureit.samtadoot.models.SurveySection;
 import com.encureit.samtadoot.models.SurveyType;
@@ -66,7 +67,7 @@ import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 public class EditFormActivity extends BaseActivity implements EditFormContract.ViewModel {
     private ActivityEditFormBinding mBinding;
     private EditFormPresenter mPresenter;
-    private SingleAddAnotherItemBinding mBindingChild;
+    private SingleAddAnotherItemBinding[] mBindingChild;
     private List<SurveyQuestionWithData> list;
     private int i = 0;
     private List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
@@ -76,7 +77,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
     private List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
     private List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
-    private List<Object> requiredFields = new ArrayList<>();
+    //private List<Object> requiredFields = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
     private SurveyType surveyType;
@@ -164,11 +165,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void addChildViews(SurveySection surveySection) {
-        mBindingChild = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
         //Add Survey Section as a header
         HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
         headerTextView.setText(surveySection.getSectionDescription());
         mBinding.llFormList.addView(headerTextView);
+
+        mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
         //add child views and linked views to linear layout
         for ( i = 0; i < list.size(); i++) {
@@ -177,39 +179,42 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             for (int j = 0; j < subForm.getChildQuestions().size(); j++) {
                 populateQuestion(subForm.getChildQuestions().get(j));
             }
+            int finalI = i;
             if(subForm.getLinkedQuestionInEdit() != null && subForm.getLinkedQuestionInEdit().size() > 0) {
+                mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
                 for (int j = 0; j < subForm.getLinkedQuestionInEdit().size(); j++) {
                     HashMap<Integer,List<SurveyQuestionWithData>> map = subForm.getLinkedQuestionInEdit().get(j);
                     for (Map.Entry<Integer,List<SurveyQuestionWithData>> entry : map.entrySet()) {
                         int index = entry.getKey();
                         List<SurveyQuestionWithData> linkedQuestions = entry.getValue();
-                        addLinkedQuestion(linkedQuestions,index);
-                        mBindingChild.btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                        addLinkedQuestion(linkedQuestions,index,finalI);
+                        mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                addLinkedQuestion(linkedQuestions,index);
+                                addLinkedQuestion(linkedQuestions,index,finalI);
                             }
                         });
                     }
                 }
+                mBinding.llFormList.addView(mBindingChild[i].getRoot());
             } else if(subForm.getLinkedQuestions().size() > 0) {
-                addLinkedQuestion(subForm.getLinkedQuestions(),0);
-                mBindingChild.btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
+                addLinkedQuestion(subForm.getLinkedQuestions(),0,finalI);
+                mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        addLinkedQuestion(subForm.getLinkedQuestions(),0);
+                        addLinkedQuestion(subForm.getLinkedQuestions(),0,finalI);
                     }
                 });
+                mBinding.llFormList.addView(mBindingChild[i].getRoot());
             }
         }
-        if(sectionHasLinkedQuestion()) {
-            mBinding.llFormList.addView(mBindingChild.getRoot());
-        }
+
         mainLinear = mBinding.llFormList;
         dismissCircularProgressDialog();
     }
 
-    private boolean validateData() {
+    /*private boolean validateData() {
         if (requiredFields.size() > 0) {
             int isValid = 0;
             for (int j = 0; j < requiredFields.size(); j++) {
@@ -262,6 +267,71 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 return false;
             }
         }
+    }*/
+
+
+    private boolean validateData() {
+        getAllChildView();
+
+        int filled_edittext_count = 0;
+        for (int j = 0; j < editTexts.size(); j++) {
+            HashMap<String, AppCompatEditText> map = editTexts.get(j);
+            for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                    AppCompatEditText editText = entry.getValue();
+                    if (!TextUtils.isEmpty(editText.getText().toString())) {
+                        filled_edittext_count++;
+                    }
+                } else {
+                    filled_edittext_count++;
+                }
+            }
+        }
+
+        int filled_option_edittext_count = 0;
+        for (int j = 0; j < optionEditTexts.size(); j++) {
+            HashMap<String, HashMap<String,AppCompatEditText>> map = optionEditTexts.get(j);
+            for (Map.Entry<String, HashMap<String,AppCompatEditText>> entry : map.entrySet()) {
+                for (Map.Entry<String,AppCompatEditText> entry1 : entry.getValue().entrySet()) {
+                    String str_question = entry.getKey();
+                    SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                        AppCompatEditText editText = entry1.getValue();
+                        if (!TextUtils.isEmpty(editText.getText().toString())) {
+                            filled_option_edittext_count++;
+                        }
+                    } else {
+                        filled_option_edittext_count++;
+                    }
+                }
+            }
+        }
+
+        int filled_radio_count = 0;
+        for (int j = 0; j < radioButtons.size(); j++) {
+            HashMap<String, RadioButton> map = radioButtons.get(j);
+            for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
+                String str_question = entry.getKey();
+                SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                    RadioButton radioButton = entry.getValue();
+                    if (radioButton.isChecked()) {
+                        filled_radio_count++;
+                    }
+                } else {
+                    filled_radio_count++;
+                }
+            }
+        }
+
+        if (filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size()) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     /**
@@ -270,7 +340,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      */
     private void saveData() {
         end_date = getCurrentDate();
-        getAllChildView();
+        //getAllChildView();
         uploadData();
     }
 
@@ -601,7 +671,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         return hasLinkedQuestion;
     }
 
-    private void addLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList,int index) {
+    private void addLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList,int index,int finalI) {
         //inflating layout single_add_another_parent_item
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < linkedQuestionList.size(); j++) {
@@ -616,7 +686,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        mBindingChild.llAddAnotherSingleView.removeView(binding.llAddAnother);
+                        mBindingChild[finalI].llAddAnotherSingleView.removeView(binding.llAddAnother);
                         deleteLinkedQuestion(linkedQuestionList,index,formId);
                     }
                 });
@@ -629,7 +699,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 dialog.show();
             }
         });
-        mBindingChild.llAddAnotherSingleView.addView(binding.getRoot());
+        mBindingChild[finalI].llAddAnotherSingleView.addView(binding.getRoot());
     }
 
     private void deleteLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, int index,String FormId) {
@@ -894,9 +964,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                           /* if (subForm.getRequired().equalsIgnoreCase("true")) {
                                 requiredFields.add(binding.edtDropDownItar);
-                            }
+                            }*/
                             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
                             if (details != null) {
                                 binding.edtDropDownItar.setText(details.getSurvey_que_values());
@@ -931,12 +1001,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
-        if (subForm.getQuestionOptions().size() > 0) {
+      /*  if (subForm.getQuestionOptions().size() > 0) {
             if (subForm.getRequired().equalsIgnoreCase("true")) {
                 requiredFields.add(binding.rgQuestionOptions);
             }
         }
-
+*/
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
@@ -1200,9 +1270,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                            if (subForm.getRequired().equalsIgnoreCase("true")) {
+                            /*if (subForm.getRequired().equalsIgnoreCase("true")) {
                                 requiredFields.add(binding.edtDropDownItar);
-                            }
+                            }*/
                             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
                             if (details != null) {
                                 binding.edtDropDownItar.setText(details.getSurvey_que_values());
@@ -1252,12 +1322,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void populateChildRadioButton(SurveyQuestionWithData subForm,LinearLayout rootView,CandidateDetails candidateDetails) {
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-
-        if (subForm.getQuestionOptions().size() > 0) {
-            if (subForm.getRequired().equalsIgnoreCase("true")) {
-                requiredFields.add(binding.rgQuestionOptions);
-            }
-        }
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
@@ -1355,11 +1419,22 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         rootView.addView(binding.getRoot());
     }
 
+    private void emptyAllLists() {
+        editTexts.clear();
+        optionEditTexts.clear();
+        spinners.clear();
+        multiSpinnerSearches.clear();
+        radioButtons.clear();
+        checkBoxes.clear();
+        multiEditTextValues.clear();
+    }
+
     /**
      * @date 9-3-2022 and 10-3-2022
      * get all child views
      */
     private void getAllChildView() {
+        emptyAllLists();
         //get the count of main linear layout
         int count = mainLinear.getChildCount();
         for (int j = 0; j < count; j++) {
