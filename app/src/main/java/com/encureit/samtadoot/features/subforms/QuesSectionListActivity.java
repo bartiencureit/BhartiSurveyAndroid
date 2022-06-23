@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.encureit.samtadoot.adapters.SurveySectionListAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
@@ -25,6 +26,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
     private SurveyType surveyType;
     private boolean inEditMode = false;
     private CandidateSurveyStatusDetails candidateSurveyStatusDetails;
+    private static final String TAG = "QuesSectionListActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +35,20 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         setContentView(mBinding.getRoot());
         mPresenter = new SurveySectionPresenter(QuesSectionListActivity.this,this);
         mPresenter.rootView = mBinding.getRoot();
-        Intent intent = getIntent();
-        if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
-            surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
-            mBinding.toolbar.tvToolbarTitle.setText(surveyType.getForm_description());
+        try {
+            Intent intent = getIntent();
+            if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
+                surveyType = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
+                mBinding.toolbar.tvToolbarTitle.setText(surveyType.getForm_description());
+            }
+            if(intent.hasExtra(AppKeys.CANDIDATE_SURVEY_DETAILS)) {
+                inEditMode = true;
+                candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
+            }
+            mPresenter.startSurveySection();
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: "+e.getMessage());
         }
-        if(intent.hasExtra(AppKeys.CANDIDATE_SURVEY_DETAILS)) {
-            inEditMode = true;
-            candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
-        }
-        mPresenter.startSurveySection();
-
     }
 
     /**
@@ -57,21 +62,25 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
         if (candidateSurveyStatusDetails != null) {
             FormId = candidateSurveyStatusDetails.getFormID();
         }
-        mAdapter = new SurveySectionListAdapter(this, FormId, inEditMode, list, (listModel, position) -> {
-            Intent intent;
-            if (inEditMode) {
-                intent = new Intent(QuesSectionListActivity.this, EditFormActivity.class);
-                intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
-                intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
-                intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS,candidateSurveyStatusDetails);
-            } else {
-                intent = new Intent(QuesSectionListActivity.this, SubFormActivity.class);
-                intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
-                intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
-            }
-            startActivityOnTop(true,intent);
-        });
-        mBinding.rvQueSections.setAdapter(mAdapter);
+        try {
+            mAdapter = new SurveySectionListAdapter(this, FormId, inEditMode, list, (listModel, position) -> {
+                Intent intent;
+                if (inEditMode) {
+                    intent = new Intent(QuesSectionListActivity.this, EditFormActivity.class);
+                    intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
+                    intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
+                    intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS,candidateSurveyStatusDetails);
+                } else {
+                    intent = new Intent(QuesSectionListActivity.this, SubFormActivity.class);
+                    intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
+                    intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
+                }
+                startActivityOnTop(true,intent);
+            });
+            mBinding.rvQueSections.setAdapter(mAdapter);
+        } catch (Exception e) {
+            Log.e(TAG, "setupFields: "+e.getMessage());
+        }
     }
 
     @Override
