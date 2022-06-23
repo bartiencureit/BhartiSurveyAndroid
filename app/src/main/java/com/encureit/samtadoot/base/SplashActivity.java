@@ -2,6 +2,8 @@ package com.encureit.samtadoot.base;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.databinding.ActivitySplashBinding;
@@ -16,6 +18,7 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     private Handler mHandler;
     private final static long SPLASH_INTERVAL_IN_MILLIS = 500;
     private GlobalHelper helper;
+    private static final String TAG = "SplashActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +51,21 @@ public class SplashActivity extends BaseActivity implements SplashContract.ViewM
     @Override
     protected void onResume() {
         super.onResume();
-        mHandler.postDelayed(mRunnable, SPLASH_INTERVAL_IN_MILLIS);
+        try {
+            mHandler.postDelayed(mRunnable, SPLASH_INTERVAL_IN_MILLIS);
+        } catch (Exception e) {
+            Toast.makeText(mActivity, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mHandler.removeCallbacks(mRunnable);
+        try {
+            mHandler.removeCallbacks(mRunnable);
+        } catch (Exception e) {
+            Toast.makeText(mActivity, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
