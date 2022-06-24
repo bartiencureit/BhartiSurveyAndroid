@@ -909,9 +909,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                           /* if (subForm.getRequired().equalsIgnoreCase("true")) {
-                                requiredFields.add(binding.edtDropDownItar);
-                            }*/
+
                             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
                             if (details != null) {
                                 binding.edtDropDownItar.setText(details.getSurvey_que_values());
@@ -946,12 +944,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
-      /*  if (subForm.getQuestionOptions().size() > 0) {
-            if (subForm.getRequired().equalsIgnoreCase("true")) {
-                requiredFields.add(binding.rgQuestionOptions);
-            }
-        }
-*/
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
@@ -1224,9 +1216,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                            /*if (subForm.getRequired().equalsIgnoreCase("true")) {
-                                requiredFields.add(binding.edtDropDownItar);
-                            }*/
+
                             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(subForm.getSurveyQuestion_ID(),formId);
                             if (details != null) {
                                 binding.edtDropDownItar.setText(details.getSurvey_que_values());
