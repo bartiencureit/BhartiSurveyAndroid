@@ -102,7 +102,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
             initData();
         }
-
     }
 
     private void initData() {
@@ -127,9 +126,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void loadViews() {
         mBinding.setPresenter(mPresenter);
         mPresenter.startSubForm(section,formId);
-
         start_date = candidateSurveyStatusDetails.getStart_date();
-
         mBinding.btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -169,9 +166,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
         headerTextView.setText(surveySection.getSectionDescription());
         mBinding.llFormList.addView(headerTextView);
-
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
-
         //add child views and linked views to linear layout
         for ( i = 0; i < list.size(); i++) {
             SurveyQuestionWithData subForm = list.get(i);
@@ -213,62 +208,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         mainLinear = mBinding.llFormList;
         dismissCircularProgressDialog();
     }
-
-    /*private boolean validateData() {
-        if (requiredFields.size() > 0) {
-            int isValid = 0;
-            for (int j = 0; j < requiredFields.size(); j++) {
-                Object field = requiredFields.get(j);
-                if (field instanceof AppCompatEditText) {
-                    AppCompatEditText editText = (AppCompatEditText) field;
-                    LinearLayout parent = (LinearLayout) editText.getParent().getParent();
-                    if(parent == null) {
-                        isValid++;
-                    } else if (parent.getId() == R.id.ll_child_question) {
-                        if (parent.getVisibility() == View.GONE) {
-                            isValid++;
-                        } else if (!TextUtils.isEmpty(editText.getText().toString())) {
-                            isValid++;
-                        }
-                    } else {
-                        if (!TextUtils.isEmpty(editText.getText().toString())) {
-                            isValid++;
-                        }
-                    }
-                } else if (field instanceof RadioGroup) {
-                    RadioGroup radioButton = (RadioGroup) field;
-                    if(radioButton.getCheckedRadioButtonId() != -1) {
-                        isValid++;
-                    }
-                }
-            }
-
-            if (isValid >= requiredFields.size() - 1) {
-                return true;
-            } else {
-                return false;
-            }
-        }  else {
-            int filled_edittext_count = 0;
-            for (int j = 0; j < editTexts.size(); j++) {
-                HashMap<String, AppCompatEditText> map = editTexts.get(j);
-                for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
-                    String str_question = entry.getKey();
-                    AppCompatEditText editText = entry.getValue();
-                    if (!TextUtils.isEmpty(editText.getText().toString())) {
-                        filled_edittext_count++;
-                    }
-                }
-            }
-
-            if (filled_edittext_count == editTexts.size()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }*/
-
 
     private boolean validateData() {
         getAllChildView();
@@ -372,28 +311,30 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 String value = entry.getValue();
                 //Question was saved in hashmap i.e header text value as key
                 //We have get question id using question text from database
-                QuestionOption questionOption = DatabaseUtil.on().getQuestionIdFromQuestionOptionText(str_question);
+                QuestionOption questionOption = DatabaseUtil.on().getQuestionOptionDao().getQuestionOptionByID(str_question);
+                if (questionOption != null) {
 
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(value);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                multiInputCandidateDetails.add(candidateDetails);
-                int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
-                if( id != -1) {
-                    updateCandidate(candidateDetails, id);
-                } else {
-                    DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
+                    CandidateDetails candidateDetails = new CandidateDetails();
+                    candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+                    candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+                    candidateDetails.setSurvey_que_values(value);
+                    candidateDetails.setFormID(formId);
+                    candidateDetails.setCurrent_Form_Status("GY");
+                    candidateDetails.setAge_value("0");
+                    candidateDetails.setSurvey_StartDate(start_date);
+                    candidateDetails.setSurvey_EndDate(end_date);
+                    candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetails.setLatitude(Double.toString(latitude));
+                    candidateDetails.setLongitude(Double.toString(longitude));
+                    multiInputCandidateDetails.add(candidateDetails);
+                    int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+                    if (id != -1) {
+                        updateCandidate(candidateDetails, id);
+                    } else {
+                        DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
+                    }
                 }
             }
         }
@@ -812,7 +753,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void populateLabelText(SurveyQuestionWithData subForm,CandidateDetails candidateDetails) {
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
-            populateMultiInputBox(subForm);
+            populateMultiInputBox(subForm,mBinding.llFormList);
         } else {
             HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
@@ -820,26 +761,26 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
     }
 
-    private void populateMultiInputBox(SurveyQuestionWithData subForm) {
+    private void populateMultiInputBox(SurveyQuestionWithData subForm,LinearLayout linearLayout) {
         HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
         headerTextView.setText(subForm.getQuestions());
-        mBinding.llFormList.addView(headerTextView);
+        linearLayout.addView(headerTextView);
 
         SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
 
         addLabelHeader(subForm,binding.llMultiInputParent);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
-            addInputOption(subForm.getQuestionOptions().get(j),binding.llMultiInputParent);
+            addInputOption(subForm.getInputValidation(),subForm.getQuestionOptions().get(j),binding.llMultiInputParent);
         }
-        mBinding.llFormList.addView(binding.getRoot());
+        linearLayout.addView(binding.getRoot());
     }
 
-    private void addInputOption(QuestionOption questionOption, LinearLayout llMultiInputParent) {
+    private void addInputOption(int validation,QuestionOption questionOption, LinearLayout llMultiInputParent) {
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
 
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
-        CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+        CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             String value = candidateDetails.getSurvey_que_values();
             List<String> values = Arrays.asList(value.split(","));
@@ -848,8 +789,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 AppCompatEditText textView = new AppCompatEditText(EditFormActivity.this);
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this,8);
                 textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
-                textView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                textView.setInputType(validation);
                 textView.setText(values.get(j));
+                textView.setTag(questionOption.getQNAOption_ID());
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -864,8 +806,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 AppCompatEditText textView = new AppCompatEditText(EditFormActivity.this);
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this,8);
                 textView.setPadding(ten_dp,ten_dp,ten_dp,ten_dp);
-                textView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                textView.setText("0");
+                textView.setInputType(validation);
+                textView.setTag(questionOption.getQNAOption_ID());
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this,getResources().getDimensionPixelSize(R.dimen.multi_input_width));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -917,6 +859,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             CheckBox checkBox = new CheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
             binding.rgCheckboxQuestionOptions.addView(checkBox,i);
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
+            if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
+                checkBox.setChecked(true);
+            }
         }
         mBinding.llFormList.addView(binding.getRoot());
     }
@@ -1012,7 +958,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton,i);
-            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 radioButton.setChecked(true);
 
@@ -1204,9 +1150,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void populateChildLabelText(SurveyQuestionWithData subForm,LinearLayout rootView,CandidateDetails candidateDetails) {
-        HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
-        headerTextView.setText(subForm.getQuestions());
-        rootView.addView(headerTextView);
+        if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
+            //add multiple edittext
+            populateMultiInputBox(subForm,rootView);
+        } else {
+            HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
+            headerTextView.setText(subForm.getQuestions());
+            rootView.addView(headerTextView);
+        }
     }
 
     /**
@@ -1223,6 +1174,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             CheckBox checkBox = new CheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
             binding.rgCheckboxQuestionOptions.addView(checkBox,i);
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
+            if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
+                checkBox.setChecked(true);
+            }
         }
         rootView.addView(binding.getRoot());
     }
@@ -1304,7 +1259,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         if (subForm != null && subForm.getQuestionOptions() != null && subForm.getQuestionOptions().size() > 0) {
             for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
                 QuestionOption questionOption = subForm.getQuestionOptions().get(j);
-                CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+                CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
                 if (candidateDetails != null) {
                     position = j;
                 }
@@ -1328,7 +1283,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             RadioButton radioButton = new RadioButton(EditFormActivity.this);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton,i);
-            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID());
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(),formId);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 radioButton.setChecked(true);
 
@@ -1472,6 +1427,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void getMultiChildView(LinearLayout linearLayout) {
         int ll_count = linearLayout.getChildCount();
         String option = "";
+        String optionId = "";
         StringBuffer stringBuffer = new StringBuffer();
 
         for (int k = 0; k <ll_count; k++) {
@@ -1484,6 +1440,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
             if (child_view instanceof AppCompatEditText) {
                 AppCompatEditText editText = (AppCompatEditText) child_view;
+                optionId = (String) editText.getTag();
                 if (TextUtils.isEmpty(editText.getText().toString())) {
                     if (k == (ll_count - 1)) {
                         stringBuffer.append("0");
@@ -1501,7 +1458,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
 
         HashMap<String, String> map = new HashMap<>();
-        map.put(option, stringBuffer.toString());
+        map.put(optionId, stringBuffer.toString());
         multiEditTextValues.add(map);
     }
 
@@ -1537,6 +1494,21 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         addViewToRadioButtonAndCheckBox(headerTextView,next_view,linearLayout);
                     }
                 }
+            }  else if(child_view instanceof HorizontalScrollView) {
+                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView)child_view);
+                View hsv_child = horizontalScrollView.getChildAt(0);
+                if (hsv_child instanceof LinearLayout) {
+                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
+                    int tot_count = ll_hsv_child.getChildCount();
+                    for (int j = 1; j < tot_count; j++) {
+                        View view_input_box = ll_hsv_child.getChildAt(j);
+                        if (view_input_box instanceof LinearLayout) {
+                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
+                            getMultiChildView(ll_input_box);
+                        }
+                    }
+                }
+                //getSimpleChildView(linearLayout,-1);
             }
         }
     }

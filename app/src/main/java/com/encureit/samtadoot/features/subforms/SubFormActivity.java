@@ -239,22 +239,25 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 String value = entry.getValue();
                 //Question was saved in hashmap i.e header text value as key
                 //We have get question id using question text from database
-                QuestionOption questionOption = DatabaseUtil.on().getQuestionIdFromQuestionOptionText(str_question);
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(value);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                multiInputCandidateDetails.add(candidateDetails);
+                //QuestionOption questionOption = DatabaseUtil.on().getQuestionIdFromQuestionOptionText(str_question);
+                QuestionOption questionOption = DatabaseUtil.on().getQuestionOptionDao().getQuestionOptionByID(str_question);
+                if (questionOption != null) {
+                    CandidateDetails candidateDetails = new CandidateDetails();
+                    candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+                    candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+                    candidateDetails.setSurvey_que_values(value);
+                    candidateDetails.setFormID(formId);
+                    candidateDetails.setCurrent_Form_Status("GY");
+                    candidateDetails.setAge_value("0");
+                    candidateDetails.setSurvey_StartDate(start_date);
+                    candidateDetails.setSurvey_EndDate(end_date);
+                    candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetails.setLatitude(Double.toString(latitude));
+                    candidateDetails.setLongitude(Double.toString(longitude));
+                    multiInputCandidateDetails.add(candidateDetails);
+                }
             }
         }
         DatabaseUtil.on().insertAllCandidateDetails(multiInputCandidateDetails);
@@ -716,7 +719,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateLabelText(SurveyQuestionWithData subForm) {
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
-            populateMultiInputBox(subForm);
+            populateMultiInputBox(subForm,mBinding.llFormList);
         } else {
             HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
@@ -724,21 +727,21 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
     }
 
-    private void populateMultiInputBox(SurveyQuestionWithData subForm) {
+    private void populateMultiInputBox(SurveyQuestionWithData subForm, LinearLayout linearLayout) {
         HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
         headerTextView.setText(subForm.getQuestions());
-        mBinding.llFormList.addView(headerTextView);
+        linearLayout.addView(headerTextView);
 
         SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
 
         addLabelHeader(subForm, binding.llMultiInputParent);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
-            addInputOption(subForm.getQuestionOptions().get(j), binding.llMultiInputParent);
+            addInputOption(subForm.getInputValidation(),subForm.getQuestionOptions().get(j), binding.llMultiInputParent);
         }
-        mBinding.llFormList.addView(binding.getRoot());
+        linearLayout.addView(binding.getRoot());
     }
 
-    private void addInputOption(QuestionOption questionOption, LinearLayout llMultiInputParent) {
+    private void addInputOption(int validation,QuestionOption questionOption, LinearLayout llMultiInputParent) {
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
 
@@ -748,8 +751,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             AppCompatEditText textView = new AppCompatEditText(SubFormActivity.this);
             int ten_dp = CommonUtils.dip2pix(SubFormActivity.this, 8);
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
-            textView.setInputType(InputType.TYPE_CLASS_NUMBER);
-            textView.setText("0");
+            textView.setInputType(validation);
+            textView.setTag(questionOption.getQNAOption_ID());
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -1043,9 +1046,15 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void populateChildLabelText(SurveyQuestionWithData subForm, LinearLayout rootView) {
-        HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
-        headerTextView.setText(subForm.getQuestions());
-        rootView.addView(headerTextView);
+        if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
+            //add multiple edittext
+            populateMultiInputBox(subForm,rootView);
+        } else {
+            HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
+            headerTextView.setText(subForm.getQuestions());
+            rootView.addView(headerTextView);
+        }
+
     }
 
     /**
@@ -1255,6 +1264,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void getMultiChildView(LinearLayout linearLayout) {
         int ll_count = linearLayout.getChildCount();
         String option = "";
+        String optionId = "";
         StringBuffer stringBuffer = new StringBuffer();
 
         for (int k = 0; k < ll_count; k++) {
@@ -1267,6 +1277,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
             if (child_view instanceof AppCompatEditText) {
                 AppCompatEditText editText = (AppCompatEditText) child_view;
+                optionId = (String) editText.getTag();
                 if (TextUtils.isEmpty(editText.getText().toString())) {
                     if (k == (ll_count - 1)) {
                         stringBuffer.append("0");
@@ -1284,7 +1295,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
 
         HashMap<String, String> map = new HashMap<>();
-        map.put(option, stringBuffer.toString());
+        map.put(optionId, stringBuffer.toString());
         multiEditTextValues.add(map);
     }
 
@@ -1320,6 +1331,21 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         addViewToRadioButtonAndCheckBox(headerTextView, next_view, linearLayout, index_of_child);
                     }
                 }
+            } else if (child_view instanceof HorizontalScrollView) {
+                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView) child_view);
+                View hsv_child = horizontalScrollView.getChildAt(0);
+                if (hsv_child instanceof LinearLayout) {
+                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
+                    int tot_count = ll_hsv_child.getChildCount();
+                    for (int j = 0; j < tot_count; j++) {
+                        View view_input_box = ll_hsv_child.getChildAt(j);
+                        if (view_input_box instanceof LinearLayout) {
+                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
+                            getMultiChildView(ll_input_box);
+                        }
+                    }
+                }
+                //getSimpleChildView(linearLayout,-1);
             }
         }
     }
