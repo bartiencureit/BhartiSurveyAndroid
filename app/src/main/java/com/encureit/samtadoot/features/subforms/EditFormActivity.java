@@ -270,7 +270,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         } else {
             return false;
         }
-
     }
 
     /**
