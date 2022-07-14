@@ -39,18 +39,23 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
     private LocationManager locationManager;
     private static final int REQUESTLocation = 113;
     boolean locationEnabled = false;
+    private static final String TAG = "DashboardActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityDashboardBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-        mBinding.toolbar.toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
-        mPresenter = new DashboardPresenter(DashboardActivity.this,this);
-        helper = new GlobalHelper(DashboardActivity.this);
-        mBinding.setPresenter(mPresenter);
-        mPresenter.startDashboard(helper.getSharedPreferencesHelper().getLoginUserRole());
-        mPresenter.getUserDeviceDetails(helper.getSharedPreferencesHelper().getLoginUserId());
+        try {
+            mBinding = ActivityDashboardBinding.inflate(getLayoutInflater());
+            setContentView(mBinding.getRoot());
+            mBinding.toolbar.toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
+            mPresenter = new DashboardPresenter(DashboardActivity.this,this);
+            helper = new GlobalHelper(DashboardActivity.this);
+            mBinding.setPresenter(mPresenter);
+            mPresenter.startDashboard(helper.getSharedPreferencesHelper().getLoginUserRole());
+            mPresenter.getUserDeviceDetails(helper.getSharedPreferencesHelper().getLoginUserId());
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: "+e.getMessage());
+        }
     }
 
 

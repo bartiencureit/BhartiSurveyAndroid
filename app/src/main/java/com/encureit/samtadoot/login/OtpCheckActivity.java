@@ -41,38 +41,47 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
     private String loginUserId;
     private OtpPresenter mPresenter;
     private GlobalHelper helper;
+    private static final String TAG = "OtpCheckActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityOtpCheckBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-        Intent intent = getIntent();
-        if(intent.hasExtra(AppKeys.loginUserId)) {
-            loginUserId = intent.getStringExtra(AppKeys.loginUserId);
+        try {
+            mBinding = ActivityOtpCheckBinding.inflate(getLayoutInflater());
+            setContentView(mBinding.getRoot());
+            Intent intent = getIntent();
+            if(intent.hasExtra(AppKeys.loginUserId)) {
+                loginUserId = intent.getStringExtra(AppKeys.loginUserId);
+            }
+            mBinding.pinview.setValue("1111");
+            helper = new GlobalHelper(this);
+            mPresenter = new OtpPresenter(this,OtpCheckActivity.this);
+            mPresenter.rootView = mBinding.getRoot();
+            mPresenter.loginId = loginUserId;
+            mBinding.setPresenter(mPresenter);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: "+e.getMessage());
         }
-        mBinding.pinview.setValue("1111");
-        helper = new GlobalHelper(this);
-        mPresenter = new OtpPresenter(this,OtpCheckActivity.this);
-        mPresenter.rootView = mBinding.getRoot();
-        mPresenter.loginId = loginUserId;
-        mBinding.setPresenter(mPresenter);
     }
 
     @Override
     public void getOtp(OtpCheckResponseModel otpCheckResponseModel) {
         //save date to shared preference
-        helper.getSharedPreferencesHelper().setLoginDateTimeData(otpCheckResponseModel.getLoginDate());
-        if(isInternetConnected()) {
-            //startProgressDialog(mBinding.getRoot());
-            mPresenter.getSurveySectionFields();
-        } else {
-            showNotInternetConnected(new OnInternetConnectedListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+        try {
+            helper.getSharedPreferencesHelper().setLoginDateTimeData(otpCheckResponseModel.getLoginDate());
+            if(isInternetConnected()) {
+                //startProgressDialog(mBinding.getRoot());
+                mPresenter.getSurveySectionFields();
+            } else {
+                showNotInternetConnected(new OnInternetConnectedListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getOtp: "+e.getMessage());
         }
     }
 

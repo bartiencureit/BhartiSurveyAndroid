@@ -35,6 +35,7 @@ public class OtpPresenter implements OtpContract.Presenter {
     private OtpCheckActivity mActivity;
     public String loginId;
     public View rootView;
+    private static final String TAG = "OtpPresenter";
 
     public OtpPresenter(OtpContract.ViewModel mViewModel, OtpCheckActivity mActivity) {
         this.mViewModel = mViewModel;
@@ -55,30 +56,38 @@ public class OtpPresenter implements OtpContract.Presenter {
     public void sendOtp() {
         try {
             if (validate()) {
-                ScreenHelper.hideKeyboard(mActivity);
+                try {
+                    ScreenHelper.hideKeyboard(mActivity);
+                } catch (Exception e) {
+                    Log.e(TAG, "sendOtp: "+e.getMessage());
+                }
                 if(mActivity.isInternetConnected()) {
-                    mActivity.startProgressDialog(rootView);
-                    //mActivity.disableForm();
+                    try {
+                        mActivity.startProgressDialog(rootView);
+                        //mActivity.disableForm();
 
-                    RetrofitClientLogin.getApiService().getOtpCheckResponse(loginId,mActivity.mBinding.pinview.getValue()).enqueue(new Callback<OtpCheckResponseModel>() {
-                        @Override
-                        public void onResponse(Call<OtpCheckResponseModel> call, Response<OtpCheckResponseModel> response) {
-                            if (response.code() == 200 || response.code() == 201) {
-                                if (response.body().isStatus()) {
-                                    mViewModel.getOtp(response.body());
+                        RetrofitClientLogin.getApiService().getOtpCheckResponse(loginId,mActivity.mBinding.pinview.getValue()).enqueue(new Callback<OtpCheckResponseModel>() {
+                            @Override
+                            public void onResponse(Call<OtpCheckResponseModel> call, Response<OtpCheckResponseModel> response) {
+                                if (response.code() == 200 || response.code() == 201) {
+                                    if (response.body().isStatus()) {
+                                        mViewModel.getOtp(response.body());
+                                    } else {
+                                        mViewModel.showOtpFailed(response.body().getMessage());
+                                    }
                                 } else {
-                                    mViewModel.showOtpFailed(response.body().getMessage());
+                                    mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                                 }
-                            } else {
-                                mViewModel.showOtpFailed(""+mActivity.getResources().getString(R.string.invalid_response));
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<OtpCheckResponseModel> call, Throwable t) {
-                            mViewModel.showOtpFailed(t.getMessage());
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<OtpCheckResponseModel> call, Throwable t) {
+                                mViewModel.showOtpFailed(t.getMessage());
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e(TAG, "sendOtp: "+e.getMessage());
+                    }
 
 
                 } else {

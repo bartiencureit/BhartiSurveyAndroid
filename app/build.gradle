@@ -18,6 +18,22 @@ android {
     }
 
     buildTypes {
+
+        android.applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = ""
+
+                if (variant.buildType.name == "release") {
+                    outputFileName += new Date().format('-dd_MM_yy')
+                    outputFileName += ".apk";
+                } else {
+                    outputFileName += "barti_samatadhoot_app";
+                    outputFileName += new Date().format('_dd_MM_yyyy_hh_mm_a')
+                    outputFileName += ".apk";
+                }
+            }
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -69,7 +85,5 @@ dependencies {
 
     //library for table view
     implementation 'com.github.HYY-yu:TableRecyclerView:v1.0.0'
-
-
 
 }

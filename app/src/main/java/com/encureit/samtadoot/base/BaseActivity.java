@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -49,10 +51,14 @@ public class BaseActivity extends AppCompatActivity {
 
 
     public void startProgressDialog(View view) {
-        this.view = view;
-        view.setEnabled(false);
-        snackbar = Snackbar.make(view,getResources().getString(R.string.loading), BaseTransientBottomBar.LENGTH_INDEFINITE);
-        snackbar.show();
+        try {
+            this.view = view;
+            view.setEnabled(false);
+            snackbar = Snackbar.make(view,getResources().getString(R.string.loading), BaseTransientBottomBar.LENGTH_INDEFINITE);
+            snackbar.show();
+        } catch (Resources.NotFoundException e) {
+            Log.e("TAG", "startProgressDialog: "+e.getMessage());
+        }
     }
 
     public void startCircularProgressDialog() {

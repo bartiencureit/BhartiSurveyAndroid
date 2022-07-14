@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ScreenHelper {
+    private static final String TAG = "ScreenHelper";
 
     public static int getWidthInPercentage(Context context, int percentage) {
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -169,10 +171,14 @@ public class ScreenHelper {
     }
 
     public static void showErrorSnackBar(View view,String text) {
-        Snackbar snackbar = Snackbar.make(view,""+text, BaseTransientBottomBar.LENGTH_LONG);
-        View snackBarView = snackbar.getView();
-        snackBarView.setBackgroundColor(Color.RED);
-        snackbar.show();
+        try {
+            Snackbar snackbar = Snackbar.make(view,""+text, BaseTransientBottomBar.LENGTH_LONG);
+            View snackBarView = snackbar.getView();
+            snackBarView.setBackgroundColor(Color.RED);
+            snackbar.show();
+        } catch (Exception e) {
+            Log.e(TAG, "showErrorSnackBar: "+e.getMessage());
+        }
     }
 
 }

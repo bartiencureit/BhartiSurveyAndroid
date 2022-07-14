@@ -20,7 +20,7 @@ import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDateOnly;
 public class SplashPresenter implements SplashContract.Presenter {
     private SplashContract.ViewModel mViewModel;
     public View rootView;
-
+    private static final String TAG = "SplashPresenter";
 
     public SplashPresenter(SplashContract.ViewModel mViewModel) {
         this.mViewModel = mViewModel;
@@ -48,7 +48,11 @@ public class SplashPresenter implements SplashContract.Presenter {
                    mViewModel.startAnotherActivity(DashboardActivity.class, true);
                     Log.i("SplashActivity::", "direct start");
                 } else {
-                    mViewModel.startAnotherActivity(LoginActivity.class, true);
+                    try {
+                        mViewModel.startAnotherActivity(LoginActivity.class, true);
+                    } catch (Exception e) {
+                        Log.e(TAG, "checkLastLoginDate: "+e.getMessage() );
+                    }
                     Log.i("SplashActivity::", "login expired start");
                 }
             } catch (Exception e) {
@@ -56,7 +60,11 @@ public class SplashPresenter implements SplashContract.Presenter {
             }
         } else {
             // todo direct login screen
-            mViewModel.startAnotherActivity(LoginActivity.class, true);
+            try {
+                mViewModel.startAnotherActivity(LoginActivity.class, true);
+            } catch (Exception e) {
+                Log.e(TAG, "checkLastLoginDate: "+e.getMessage());
+            }
             Log.i("SplashActivity::", "Freshly start");
         }
     }

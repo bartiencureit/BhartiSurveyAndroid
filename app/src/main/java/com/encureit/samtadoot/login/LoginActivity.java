@@ -32,14 +32,18 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-        helper = new GlobalHelper(this);
-        mPresenter = new LoginPresenter(this,this);
-        mPresenter.rootView = mBinding.getRoot();
-        mPresenter.userId.set("1111");
-        askPermission();
-        mBinding.setPresenter(mPresenter);
+        try {
+            mBinding = ActivityLoginBinding.inflate(getLayoutInflater());
+            setContentView(mBinding.getRoot());
+            helper = new GlobalHelper(this);
+            mPresenter = new LoginPresenter(this,this);
+            mPresenter.rootView = mBinding.getRoot();
+            mPresenter.userId.set("1111");
+            askPermission();
+            mBinding.setPresenter(mPresenter);
+        } catch (Exception e) {
+            Log.e(TAG, "onCreate: "+e.getMessage());
+        }
     }
 
     @Override
