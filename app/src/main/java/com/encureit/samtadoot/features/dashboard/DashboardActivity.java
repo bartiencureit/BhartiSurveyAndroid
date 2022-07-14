@@ -121,7 +121,6 @@ public class DashboardActivity extends BaseActivity implements DashboardContract
         }
     }
 
-
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (R.id.menu_setting == menuItem.getItemId()) {
