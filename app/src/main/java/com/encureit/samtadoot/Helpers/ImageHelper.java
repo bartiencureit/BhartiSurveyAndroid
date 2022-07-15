@@ -47,7 +47,7 @@ public class ImageHelper {
         return inSampleSize;
     }
 
-    public Bitmap compressImage(String imagePath) throws FileNotFoundException, IOException  {
+    public Bitmap compressImage(String imagePath) throws IOException  {
         Bitmap scaledBitmap = null;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -140,6 +140,6 @@ public class ImageHelper {
     }
 
     public String getFilename() {
-        return Contants.DEFAULT_FILENAME + String.valueOf(System.currentTimeMillis()) + ".png";
+        return Contants.DEFAULT_FILENAME + System.currentTimeMillis() + ".png";
     }
 }

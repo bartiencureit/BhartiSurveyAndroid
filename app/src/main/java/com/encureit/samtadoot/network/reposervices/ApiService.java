@@ -1,7 +1,6 @@
 package com.encureit.samtadoot.network.reposervices;
 
 
-import com.encureit.samtadoot.models.CandidateDetails;
 import com.encureit.samtadoot.network.responsemodel.CandidateInsertResponseModel;
 import com.encureit.samtadoot.network.responsemodel.LoginResponseModel;
 import com.encureit.samtadoot.network.responsemodel.OtherValuesResponseModel;
@@ -15,9 +14,7 @@ import com.encureit.samtadoot.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.SurveyTypeResponseModel;
 import com.encureit.samtadoot.network.responsemodel.UserAssignedDetailsResponseModel;
 
-import okhttp3.RequestBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;

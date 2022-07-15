@@ -17,6 +17,5 @@ public interface EditFormContract {
     }
     interface Presenter {
         void startSubForm(SurveySection surveySection,String FormId);
-        void saveForm();
     }
 }

@@ -14,9 +14,9 @@ import java.util.List;
  * Created by Swapna Thakur on 3/15/2022.
  */
 public class FixTableAdapter implements IDataAdapter {
-    private Context mContext;
-    private List<String> titles;
-    private List<QuestionOption> questionOptions;
+    private final Context mContext;
+    private final List<String> titles;
+    private final List<QuestionOption> questionOptions;
 
     public FixTableAdapter(Context mContext, List<String> titles, List<QuestionOption> questionOptions) {
         this.mContext = mContext;

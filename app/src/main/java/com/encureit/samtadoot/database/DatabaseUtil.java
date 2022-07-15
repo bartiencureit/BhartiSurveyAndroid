@@ -1,11 +1,6 @@
 package com.encureit.samtadoot.database;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.View;
-import android.widget.RadioButton;
-
-import androidx.appcompat.widget.AppCompatEditText;
 
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
 import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
@@ -32,7 +27,6 @@ import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.UserDeviceDetails;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -744,11 +738,7 @@ public class DatabaseUtil {
     public boolean isLastSurveySection(String Survey_section_id, String form_id) {
         List<SurveySection> surveySections = getSurveySectionDao().getAllFlowableCodes();
         if (surveySections.get(surveySections.size() - 1).getSurveySection_ID().equalsIgnoreCase(Survey_section_id)) {
-            if (surveySections.size() == getCandidateDetailsDao().getAllDetailsByForm(form_id).size()) {
-                return true;
-            } else {
-                return false;
-            }
+            return surveySections.size() == getCandidateDetailsDao().getAllDetailsByForm(form_id).size();
         } else {
             return false;
         }
@@ -762,11 +752,7 @@ public class DatabaseUtil {
      */
     public boolean isPresentInOtherValues(QuestionOption questionOption) {
         OtherValues values = getOtherValuesDao().checkValue(questionOption.getQNA_Values());
-        if (values != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return values != null;
     }
 
     /**
@@ -934,11 +920,7 @@ public class DatabaseUtil {
     public boolean isSectionFilled(SurveySection listItem, String FormId) {
         if (listItem != null && FormId != null) {
             List<CandidateDetails> candidateDetails = getCandidateDetailsDao().getAllDetailsBySectionIdFormId(listItem.getSurveySection_ID(), FormId);
-            if (candidateDetails != null && candidateDetails.size() > 0) {
-                return true;
-            } else {
-                return false;
-            }
+            return candidateDetails != null && candidateDetails.size() > 0;
         } else {
             return false;
         }

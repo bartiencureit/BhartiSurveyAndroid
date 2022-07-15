@@ -1,7 +1,6 @@
 package com.encureit.samtadoot.features.subforms;
 
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.LinearLayoutCompat;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,7 +9,6 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -70,13 +68,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private SingleAddAnotherItemBinding[] mBindingChild;
     private List<SurveyQuestionWithData> list;
     private int i = 0;
-    private List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
-    private List<HashMap<String,HashMap<String,AppCompatEditText>>> optionEditTexts = new ArrayList<>();
-    private List<HashMap<String, Spinner>> spinners = new ArrayList<>();
-    private List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
-    private List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
-    private List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
-    private List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
+    private final List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
+    private final List<HashMap<String,HashMap<String,AppCompatEditText>>> optionEditTexts = new ArrayList<>();
+    private final List<HashMap<String, Spinner>> spinners = new ArrayList<>();
+    private final List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
+    private final List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
+    private final List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
+    private final List<HashMap<String,String>> multiEditTextValues = new ArrayList<>();
     //private List<Object> requiredFields = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
@@ -265,11 +263,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
         }
 
-        if (filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size()) {
-            return true;
-        } else {
-            return false;
-        }
+        return filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size();
     }
 
     /**

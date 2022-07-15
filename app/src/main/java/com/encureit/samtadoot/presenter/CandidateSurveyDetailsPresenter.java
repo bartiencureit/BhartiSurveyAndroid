@@ -11,8 +11,8 @@ import java.util.List;
  * Created by Swapna Thakur on 3/11/2022.
  */
 public class CandidateSurveyDetailsPresenter implements CandidateSurveyDetailsContract.Presenter {
-    private CandidateSurveyActivity mActivity;
-    private CandidateSurveyDetailsContract.ViewModel mViewModel;
+    private final CandidateSurveyActivity mActivity;
+    private final CandidateSurveyDetailsContract.ViewModel mViewModel;
 
     public CandidateSurveyDetailsPresenter(CandidateSurveyActivity mActivity, CandidateSurveyDetailsContract.ViewModel mViewModel) {
         this.mActivity = mActivity;

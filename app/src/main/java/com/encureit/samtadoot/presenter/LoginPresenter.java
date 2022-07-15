@@ -13,6 +13,7 @@ import com.encureit.samtadoot.models.contracts.LoginContract;
 import com.encureit.samtadoot.models.viewmodelobj.UserLoginObject;
 import com.encureit.samtadoot.network.retrofit.RetrofitClientLogin;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.ObservableField;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,8 +23,8 @@ import retrofit2.Response;
  * Created by Swapna Thakur on 3/1/2022.
  */
 public class LoginPresenter implements LoginContract.Presenter {
-    private LoginActivity mActivity;
-    private LoginContract.ViewModel mViewModel;
+    private final LoginActivity mActivity;
+    private final LoginContract.ViewModel mViewModel;
     public ObservableField<String> userId;
     public View rootView;
 
@@ -60,7 +61,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
                 RetrofitClientLogin.getApiService().getLoginResponse(userId.get()).enqueue(new Callback<LoginResponseModel>() {
                     @Override
-                    public void onResponse(Call<LoginResponseModel> call, Response<LoginResponseModel> response) {
+                    public void onResponse(@NonNull Call<LoginResponseModel> call, @NonNull Response<LoginResponseModel> response) {
                         if (response.code() == 200 || response.code() == 201) {
                             if (response.body().isStatus()) {
                                 UserLoginObject obj = new UserLoginObject();
@@ -79,7 +80,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     }
 
                     @Override
-                    public void onFailure(Call<LoginResponseModel> call, Throwable t) {
+                    public void onFailure(@NonNull Call<LoginResponseModel> call, @NonNull Throwable t) {
                         mActivity.dismissProgressDialog();
                         mViewModel.showLoginFailed(t.getMessage());
                     }

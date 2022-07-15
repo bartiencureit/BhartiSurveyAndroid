@@ -1,7 +1,6 @@
 package com.encureit.samtadoot.models.contracts;
 
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
-import com.encureit.samtadoot.models.SurveyType;
 
 import java.util.List;
 

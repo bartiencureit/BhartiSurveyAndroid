@@ -13,8 +13,8 @@ import java.util.List;
  * Created by Swapna Thakur on 3/4/2022.
  */
 public class SurveySectionPresenter implements SurveySectionContract.Presenter {
-    private QuesSectionListActivity mActivity;
-    private SurveySectionContract.ViewModel mViewModel;
+    private final QuesSectionListActivity mActivity;
+    private final SurveySectionContract.ViewModel mViewModel;
     public View rootView;
 
     public SurveySectionPresenter(QuesSectionListActivity mActivity, SurveySectionContract.ViewModel mViewModel) {

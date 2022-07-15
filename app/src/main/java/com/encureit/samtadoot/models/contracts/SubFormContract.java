@@ -17,6 +17,5 @@ public interface SubFormContract {
     }
     interface Presenter {
         void startSubForm(SurveySection surveySection);
-        void saveForm();
     }
 }

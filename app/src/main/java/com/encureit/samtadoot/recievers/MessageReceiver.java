@@ -23,8 +23,8 @@ public class MessageReceiver extends BroadcastReceiver {
             Bundle data = intent.getExtras();
             Object[] pdus = (Object[]) data.get("pdus"); //Protocol Data Unit
 
-            for(int i=0; i<pdus.length; i++){
-                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdus[i]);
+            for (Object o : pdus) {
+                SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) o);
                 String message = smsMessage.getMessageBody();
                 Log.e("act_MR::", "otpMessage_: " + message);
                 mListener.messageReceived(message);

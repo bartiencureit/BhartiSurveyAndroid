@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
-import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivitySettingsBinding;

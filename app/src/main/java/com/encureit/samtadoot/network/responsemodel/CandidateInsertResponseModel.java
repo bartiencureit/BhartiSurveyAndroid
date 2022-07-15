@@ -1,9 +1,5 @@
 package com.encureit.samtadoot.network.responsemodel;
 
-import com.encureit.samtadoot.models.OtherValues;
-
-import java.util.List;
-
 /**
  * Created by Swapna Thakur on 3/11/2022.
  */

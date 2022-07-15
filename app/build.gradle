@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.encureit.samtadoot"
         minSdkVersion 19
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
@@ -25,17 +25,18 @@ android {
 
                 if (variant.buildType.name == "release") {
                     outputFileName += new Date().format('-dd_MM_yy')
-                    outputFileName += ".apk";
+                    outputFileName += ".apk"
                 } else {
-                    outputFileName += "barti_samatadhoot_app";
+                    outputFileName += "barti_samatadhoot_app"
                     outputFileName += new Date().format('_dd_MM_yyyy_hh_mm_a')
-                    outputFileName += ".apk";
+                    outputFileName += ".apk"
                 }
             }
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }

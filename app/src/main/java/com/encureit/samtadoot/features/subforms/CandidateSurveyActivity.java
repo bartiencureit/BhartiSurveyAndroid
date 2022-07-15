@@ -1,17 +1,13 @@
 package com.encureit.samtadoot.features.subforms;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 
-import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.adapters.CandidateSurveyDetailsListAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
 import com.encureit.samtadoot.databinding.ActivityCandidateSurveyBinding;
-import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.SurveyType;

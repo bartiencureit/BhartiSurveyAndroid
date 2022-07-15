@@ -28,8 +28,8 @@ import androidx.core.content.ContextCompat;
  * Created by Swapna Thakur on 3/2/2022.
  */
 public class DashboardPresenter implements DashboardContract.Presenter {
-    private DashboardActivity mActivity;
-    private DashboardContract.ViewModel mViewModel;
+    private final DashboardActivity mActivity;
+    private final DashboardContract.ViewModel mViewModel;
 
     public DashboardPresenter(DashboardActivity mActivity, DashboardContract.ViewModel mViewModel) {
         this.mActivity = mActivity;
@@ -53,13 +53,6 @@ public class DashboardPresenter implements DashboardContract.Presenter {
         List<SurveyType> surveyTypes = DatabaseUtil.on().getAllSurveyType();
         mViewModel.setupDashboardFields(surveyTypes, loginRole);
 
-    }
-
-    /**
-     * to sync server data to local database
-     */
-    private void syncData() {
-        //getSurveyMaster();
     }
 
     @Override

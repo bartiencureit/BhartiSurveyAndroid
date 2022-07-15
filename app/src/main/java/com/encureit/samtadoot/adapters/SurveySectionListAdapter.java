@@ -15,11 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySectionListAdapter.SurveySectionHolder> {
-    private Context context;
-    private List<SurveySection> stateList;
-    private OnItemClickListener mListener;
-    private boolean isEditMode;
-    private String formId;
+    private final Context context;
+    private final List<SurveySection> stateList;
+    private final OnItemClickListener mListener;
+    private final boolean isEditMode;
+    private final String formId;
 
     public SurveySectionListAdapter(Context context,String formId,boolean isEditMode, List<SurveySection> stateList, OnItemClickListener mListener) {
         this.context = context;
@@ -61,7 +61,7 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
     }
 
     public class SurveySectionHolder extends RecyclerView.ViewHolder {
-        private SingleSurveySectionItemBinding binding;
+        private final SingleSurveySectionItemBinding binding;
 
         public SurveySectionHolder(SingleSurveySectionItemBinding binding) {
             super(binding.getRoot());

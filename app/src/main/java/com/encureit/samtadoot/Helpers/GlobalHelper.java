@@ -111,7 +111,7 @@ public class GlobalHelper {
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");
             digest.update(s.getBytes());
-            byte messageDigest[] = digest.digest();
+            byte[] messageDigest = digest.digest();
             StringBuffer hexString = new StringBuffer();
             for (int i = 0; i < messageDigest.length; i++) {
                 String h = Integer.toHexString(0xFF & messageDigest[i]);
@@ -190,7 +190,7 @@ public class GlobalHelper {
         }
     }
 
-    public File createFileFromBitmap(Bitmap bitmap, String file_name) throws FileNotFoundException, IOException {
+    public File createFileFromBitmap(Bitmap bitmap, String file_name) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
         File destination = null;

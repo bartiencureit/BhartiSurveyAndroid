@@ -14,9 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SurveyTypeListAdapter extends RecyclerView.Adapter<SurveyTypeListAdapter.SurveyTypeHolder> {
-    private Context context;
-    private List<SurveyType> stateList;
-    private OnItemClickListener mListener;
+    private final Context context;
+    private final List<SurveyType> stateList;
+    private final OnItemClickListener mListener;
 
     public SurveyTypeListAdapter(Context context, List<SurveyType> stateList, OnItemClickListener mListener) {
         this.context = context;
@@ -50,7 +50,7 @@ public class SurveyTypeListAdapter extends RecyclerView.Adapter<SurveyTypeListAd
     }
 
     public class SurveyTypeHolder extends RecyclerView.ViewHolder {
-        private SingleSurveyTypeItemBinding binding;
+        private final SingleSurveyTypeItemBinding binding;
 
         public SurveyTypeHolder(SingleSurveyTypeItemBinding binding) {
             super(binding.getRoot());

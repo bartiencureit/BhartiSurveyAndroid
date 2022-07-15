@@ -6,11 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -62,7 +60,6 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.appcompat.widget.AppCompatSpinner;
 
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
@@ -73,13 +70,13 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private SingleAddAnotherItemBinding[] mBindingChild;
     private List<SurveyQuestionWithData> list;
     private int i = 0;
-    private List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
-    private List<HashMap<String, HashMap<String, AppCompatEditText>>> optionEditTexts = new ArrayList<>();
-    private List<HashMap<String, Spinner>> spinners = new ArrayList<>();
-    private List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
-    private List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
-    private List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
-    private List<HashMap<String, String>> multiEditTextValues = new ArrayList<>();
+    private final List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
+    private final List<HashMap<String, HashMap<String, AppCompatEditText>>> optionEditTexts = new ArrayList<>();
+    private final List<HashMap<String, Spinner>> spinners = new ArrayList<>();
+    private final List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
+    private final List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
+    private final List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
+    private final List<HashMap<String, String>> multiEditTextValues = new ArrayList<>();
     //private List<Object> requiredFields = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
@@ -90,8 +87,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private String start_date;
     private String end_date;
     private GlobalHelper helper;
-    private int isValidEditText = 0;
-    private int isValidRadioGroup = 0;
+    private final int isValidEditText = 0;
+    private final int isValidRadioGroup = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,11 +190,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
         }
 
-        if (filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size()) {
-            return true;
-        } else {
-            return false;
-        }
+        return filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size();
 
     }
 

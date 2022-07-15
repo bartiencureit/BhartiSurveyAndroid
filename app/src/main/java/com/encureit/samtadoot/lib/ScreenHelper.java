@@ -42,7 +42,7 @@ public class ScreenHelper {
         return control_height;
     }
 
-    public static void redirectToClass(Activity context, Class cls) {
+    public static void redirectToClass(Activity context, @SuppressWarnings("rawtypes") Class cls) {
         Intent intent = new Intent(context, cls);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -50,7 +50,7 @@ public class ScreenHelper {
         context.overridePendingTransition(0, 0);
     }
 
-    public static void redirectToClass(Activity context, Class cls, Bundle bundle) {
+    public static void redirectToClass(Activity context, @SuppressWarnings("rawtypes") Class cls, Bundle bundle) {
         Intent intent = new Intent(context, cls);
         intent.putExtras(bundle);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

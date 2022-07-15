@@ -15,9 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class CandidateSurveyDetailsListAdapter extends RecyclerView.Adapter<CandidateSurveyDetailsListAdapter.CandidateSurveyDetailsHolder> {
-    private Context context;
-    private List<CandidateSurveyStatusDetails> candidateSurveyDetailsList;
-    private OnItemClickListener mListener;
+    private final Context context;
+    private final List<CandidateSurveyStatusDetails> candidateSurveyDetailsList;
+    private final OnItemClickListener mListener;
 
     public CandidateSurveyDetailsListAdapter(Context context, List<CandidateSurveyStatusDetails> candidateSurveyDetailsList, OnItemClickListener mListener) {
         this.context = context;
@@ -53,7 +53,7 @@ public class CandidateSurveyDetailsListAdapter extends RecyclerView.Adapter<Cand
     }
 
     public class CandidateSurveyDetailsHolder extends RecyclerView.ViewHolder {
-        private SingleCandidateSurveyDetailsItemBinding binding;
+        private final SingleCandidateSurveyDetailsItemBinding binding;
 
         public CandidateSurveyDetailsHolder(SingleCandidateSurveyDetailsItemBinding binding) {
             super(binding.getRoot());

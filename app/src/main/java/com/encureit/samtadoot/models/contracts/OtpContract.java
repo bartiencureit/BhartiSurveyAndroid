@@ -1,6 +1,5 @@
 package com.encureit.samtadoot.models.contracts;
 
-import com.encureit.samtadoot.models.OtherValues;
 import com.encureit.samtadoot.network.responsemodel.OtherValuesResponseModel;
 import com.encureit.samtadoot.network.responsemodel.OtpCheckResponseModel;
 import com.encureit.samtadoot.network.responsemodel.QuestionOptionResponseModel;

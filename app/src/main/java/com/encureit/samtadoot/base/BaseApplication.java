@@ -34,8 +34,8 @@ public class BaseApplication extends MultiDexApplication {
     }
 
     public void onCreate() {
-        this.appsContext = this;
-        this.instances = this;
+        appsContext = this;
+        instances = this;
 
         super.onCreate();
         DatabaseUtil.init(getApplicationContext());
@@ -49,9 +49,9 @@ public class BaseApplication extends MultiDexApplication {
     }*/
 
     public GlobalHelper getGlobalHelper() {
-        if (this.globalHelper == null) {
-            this.globalHelper = new GlobalHelper(this);
+        if (globalHelper == null) {
+            globalHelper = new GlobalHelper(this);
         }
-        return this.globalHelper;
+        return globalHelper;
     }
 }

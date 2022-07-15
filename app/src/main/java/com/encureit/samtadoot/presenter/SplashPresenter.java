@@ -18,7 +18,7 @@ import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDateOnly;
  * Presenter for splash to check last login date
  */
 public class SplashPresenter implements SplashContract.Presenter {
-    private SplashContract.ViewModel mViewModel;
+    private final SplashContract.ViewModel mViewModel;
     public View rootView;
     private static final String TAG = "SplashPresenter";
 

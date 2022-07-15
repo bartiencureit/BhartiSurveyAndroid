@@ -1,8 +1,8 @@
 package com.encureit.samtadoot.base;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
@@ -11,6 +11,7 @@ import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.models.contracts.SplashContract;
 import com.encureit.samtadoot.presenter.SplashPresenter;
 
+@SuppressLint("CustomSplashScreen")
 public class SplashActivity extends BaseActivity implements SplashContract.ViewModel {
     private ActivitySplashBinding mBinding;
     private SplashPresenter mPresenter;
