@@ -9,13 +9,17 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 import com.encureit.samtadoot.R;
+import com.encureit.samtadoot.models.SurveyQuestionWithData;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -181,4 +185,14 @@ public class ScreenHelper {
         }
     }
 
+    public static void setEditTextValidation(SurveyQuestionWithData subForm,EditText editText) {
+        editText.setInputType(subForm.getInputValidation());
+        if (subForm.getQuestions().equalsIgnoreCase("मोबाईल") || subForm.getQuestions().contains("मोबाईल")) {
+            editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
+        } else if (subForm.getQuestions().equalsIgnoreCase("आधार क्रमांक") || subForm.getQuestions().contains("आधार क्रमांक")) {
+            editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(12) });
+        } else if (subForm.getQuestions().equalsIgnoreCase("ईमेल") || subForm.getQuestions().contains("ईमेल")) {
+            editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        }
+    }
 }

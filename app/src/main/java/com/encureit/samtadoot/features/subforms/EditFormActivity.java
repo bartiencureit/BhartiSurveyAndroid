@@ -1029,6 +1029,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 subForm.setValue(details.getSurvey_que_values());
             }
         }
+        ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
         binding.setSubForm(subForm);
         mBinding.llFormList.addView(binding.getRoot());
     }
@@ -1353,6 +1354,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 subForm.setValue(details.getSurvey_que_values());
             }
         }
+        ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
         binding.setSubForm(subForm);
         rootView.addView(binding.getRoot());
     }

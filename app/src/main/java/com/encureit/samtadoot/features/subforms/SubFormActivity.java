@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -63,6 +65,8 @@ import androidx.appcompat.widget.AppCompatEditText;
 
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
+
+import javax.xml.validation.Validator;
 
 public class SubFormActivity extends BaseActivity implements SubFormContract.ViewModel {
     private ActivitySubFormBinding mBinding;
@@ -929,7 +933,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateInputText(SurveyQuestionWithData subForm) {
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        binding.edtHeader.setInputType(subForm.getInputValidation());
+        ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
         mBinding.llFormList.addView(binding.getRoot());
     }
 
@@ -1199,7 +1203,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         if (subForm != null) {
             binding.setSubForm(subForm);
-            binding.edtHeader.setInputType(subForm.getInputValidation());
+            /*binding.edtHeader.setInputType(subForm.getInputValidation());*/
+            ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
             rootView.addView(binding.getRoot());
         }
     }
