@@ -165,7 +165,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 for (Map.Entry<String,AppCompatEditText> entry1 : entry.getValue().entrySet()) {
                     String str_question = entry.getKey();
                     SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                    if (question != null && question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
                         AppCompatEditText editText = entry1.getValue();
                         if (!TextUtils.isEmpty(editText.getText().toString())) {
                             filled_option_edittext_count++;
@@ -549,8 +549,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             Button btnAddAnother = parent.findViewById(R.id.btn_add_another);
 
             if (btnAddAnother != null) {
-                btnAddAnother.setVisibility(View.VISIBLE);
                 addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
+                btnAddAnother.setVisibility(View.VISIBLE);
                 btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
