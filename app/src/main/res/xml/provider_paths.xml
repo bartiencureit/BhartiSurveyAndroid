@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <files-path
+        name="external_files"
+        path="." />
+    <external-path name="my_images" path="Android/data/com.encureit.samtadoot/files/Pictures"/>
+</paths>

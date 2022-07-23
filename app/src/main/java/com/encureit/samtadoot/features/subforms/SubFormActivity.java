@@ -4,8 +4,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -26,6 +30,7 @@ import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
 import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
 import com.encureit.samtadoot.Helpers.GPSTracker;
 import com.encureit.samtadoot.Helpers.GlobalHelper;
+import com.encureit.samtadoot.Helpers.PermissionsUtil;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.adapters.DropDownArrayAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
@@ -37,7 +42,9 @@ import com.encureit.samtadoot.databinding.SingleAddAnotherParentItemBinding;
 import com.encureit.samtadoot.databinding.SingleCheckBoxesLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownMultiSelectListLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleFotoViewBinding;
 import com.encureit.samtadoot.databinding.SingleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleLinkedChildDataBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxParentLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleRadioButtonsLayoutBinding;
@@ -55,13 +62,26 @@ import com.encureit.samtadoot.models.contracts.SubFormContract;
 import com.encureit.samtadoot.presenter.SubFormPresenter;
 import com.encureit.samtadoot.utils.CommonUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.content.FileProvider;
+import androidx.databinding.DataBindingUtil;
 
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
@@ -91,8 +111,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private String start_date;
     private String end_date;
     private GlobalHelper helper;
-    private final int isValidEditText = 0;
-    private final int isValidRadioGroup = 0;
+
+    private File fileImage = null;
+    private Uri uri;
+    private ActivityResultLauncher<Uri> openCamera;
+    private boolean hasFoto = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,62 +162,70 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private boolean validateData() {
-        getAllChildView();
-
-        int filled_edittext_count = 0;
-        for (int j = 0; j < editTexts.size(); j++) {
-            HashMap<String, AppCompatEditText> map = editTexts.get(j);
-            for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                    AppCompatEditText editText = entry.getValue();
-                    if (!TextUtils.isEmpty(editText.getText().toString())) {
-                        filled_edittext_count++;
-                    }
-                } else {
-                    filled_edittext_count++;
-                }
+        if (hasFoto) {
+            if (fileImage != null) {
+                return true;
+            } else {
+                return false;
             }
-        }
+        } else {
+            getAllChildView();
 
-        int filled_option_edittext_count = 0;
-        for (int j = 0; j < optionEditTexts.size(); j++) {
-            HashMap<String, HashMap<String,AppCompatEditText>> map = optionEditTexts.get(j);
-            for (Map.Entry<String, HashMap<String,AppCompatEditText>> entry : map.entrySet()) {
-                for (Map.Entry<String,AppCompatEditText> entry1 : entry.getValue().entrySet()) {
+            int filled_edittext_count = 0;
+            for (int j = 0; j < editTexts.size(); j++) {
+                HashMap<String, AppCompatEditText> map = editTexts.get(j);
+                for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
                     String str_question = entry.getKey();
                     SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                    if (question != null && question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                        AppCompatEditText editText = entry1.getValue();
+                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                        AppCompatEditText editText = entry.getValue();
                         if (!TextUtils.isEmpty(editText.getText().toString())) {
-                            filled_option_edittext_count++;
+                            filled_edittext_count++;
                         }
                     } else {
-                        filled_option_edittext_count++;
+                        filled_edittext_count++;
                     }
                 }
             }
-        }
 
-        int filled_radio_count = 0;
-        for (int j = 0; j < radioButtons.size(); j++) {
-            HashMap<String, RadioButton> map = radioButtons.get(j);
-            for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                    RadioButton radioButton = entry.getValue();
-                    if (radioButton.isChecked()) {
+            int filled_option_edittext_count = 0;
+            for (int j = 0; j < optionEditTexts.size(); j++) {
+                HashMap<String, HashMap<String,AppCompatEditText>> map = optionEditTexts.get(j);
+                for (Map.Entry<String, HashMap<String,AppCompatEditText>> entry : map.entrySet()) {
+                    for (Map.Entry<String,AppCompatEditText> entry1 : entry.getValue().entrySet()) {
+                        String str_question = entry.getKey();
+                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                        if (question != null && question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                            AppCompatEditText editText = entry1.getValue();
+                            if (!TextUtils.isEmpty(editText.getText().toString())) {
+                                filled_option_edittext_count++;
+                            }
+                        } else {
+                            filled_option_edittext_count++;
+                        }
+                    }
+                }
+            }
+
+            int filled_radio_count = 0;
+            for (int j = 0; j < radioButtons.size(); j++) {
+                HashMap<String, RadioButton> map = radioButtons.get(j);
+                for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
+                    String str_question = entry.getKey();
+                    SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                        RadioButton radioButton = entry.getValue();
+                        if (radioButton.isChecked()) {
+                            filled_radio_count++;
+                        }
+                    } else {
                         filled_radio_count++;
                     }
-                } else {
-                    filled_radio_count++;
                 }
             }
-        }
 
-        return filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size();
+            return filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size() && filled_radio_count == radioButtons.size();
+        }
 
     }
 
@@ -215,14 +246,38 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void uploadData() {
         //save data to candidate details survey status
         saveCandidateSurveyStatusDetails();
-        saveInputBoxDataToDb();
-        saveOptionInputBoxDataToDb();
-        saveDropDownDataToDb();
-        saveRadioButtonDataToDb();
-        saveCheckBoxDataToDb();
-        saveMultiInputBoxDataToDb();
-        ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
-        startActivityOnTop(DashboardActivity.class, false);
+        if (hasFoto) {
+            saveFotoToDb();
+            ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
+            startActivityOnTop(DashboardActivity.class, false);
+        } else {
+            saveInputBoxDataToDb();
+            saveOptionInputBoxDataToDb();
+            saveDropDownDataToDb();
+            saveRadioButtonDataToDb();
+            saveCheckBoxDataToDb();
+            saveMultiInputBoxDataToDb();
+            ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
+            startActivityOnTop(DashboardActivity.class, false);
+        }
+    }
+
+    private void saveFotoToDb() {
+        CandidateDetails candidateDetails = new CandidateDetails();
+        candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetails.setSurvey_que_id("");
+        candidateDetails.setSurvey_que_option_id("0");
+        candidateDetails.setSurvey_que_values(fileImage.getAbsolutePath());
+        candidateDetails.setFormID(formId);
+        candidateDetails.setCurrent_Form_Status("GY");
+        candidateDetails.setAge_value("0");
+        candidateDetails.setSurvey_StartDate(start_date);
+        candidateDetails.setSurvey_EndDate(end_date);
+        candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetails.setLatitude(Double.toString(latitude));
+        candidateDetails.setLongitude(Double.toString(longitude));
+        DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
     }
 
     private void saveMultiInputBoxDataToDb() {
@@ -512,6 +567,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         headerTextView.setText(surveySection.getSectionDescription());
         mBinding.llFormList.addView(headerTextView);
 
+        if (surveySection.getSectionDescription().contains("फोटो")) {
+            hasFoto = true;
+            addPhotoView(mBinding.llFormList);
+        }
+
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
         //add child views and linked views to linear layout
@@ -538,6 +598,48 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         mainLinear = mBinding.llFormList;
     }
 
+    private void addPhotoView(LinearLayout llFormList) {
+        requestPermissions();
+        SingleFotoViewBinding binding = SingleFotoViewBinding.inflate(getLayoutInflater());
+        binding.imgCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    fileImage = createImageFile();
+                    uri =  FileProvider.getUriForFile(SubFormActivity.this, "com.encureit.samtadoot.fileprovider", fileImage);
+                    openCamera.launch(uri);
+                } catch (Exception e) {
+                    Toast.makeText(SubFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        openCamera = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                new ActivityResultCallback<Boolean>() {
+                    @Override
+                    public void onActivityResult(Boolean result) {
+                        if (result) {
+                            if(fileImage != null) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
+                                binding.imgViewFoto.setImageBitmap(bitmap);
+                            }
+                        } else {
+                            fileImage = null;
+                        }
+                    }
+                }
+        );
+
+        llFormList.addView(binding.getRoot());
+    }
+
+    private File createImageFile() throws IOException {
+        File image = File.createTempFile("image", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
+        this.fileImage = new File(image.getAbsolutePath());
+        return image;
+    }
+
     private void addSingleChildViews(SurveyQuestionWithData subForm, LinearLayout linearLayout, View parent) {
         populateChildQuestionInput(subForm, linearLayout);
         if (subForm.getChildQuestions() != null) {
@@ -545,8 +647,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 populateChildQuestionInput(subForm.getChildQuestions().get(j), linearLayout);
             }
         }
+        Button btnAddAnother = parent.findViewById(R.id.btn_add_another);
         if (subForm.getLinkedQuestions() != null && subForm.getLinkedQuestions().size() > 0) {
-            Button btnAddAnother = parent.findViewById(R.id.btn_add_another);
 
             if (btnAddAnother != null) {
                 addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
@@ -558,6 +660,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     }
                 });
             }
+        } else {
+            btnAddAnother.setVisibility(View.GONE);
         }
     }
 
@@ -828,14 +932,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
+                                SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                 if (childQues != null) {
-//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
-                                    addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                    binding.edtDropDownItar.setVisibility(View.GONE);
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                 }
+                                binding.llChildQuestion.addView(singleBinding.getRoot());
                             }
+                            binding.llChildQuestion.setVisibility(View.VISIBLE);
+                            binding.edtDropDownItar.setVisibility(View.GONE);
                         } else {
                             SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                             if (childQues != null) {
@@ -895,14 +1001,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             binding.llChildQuestion.removeAllViews();
                             String childQuesId = questionOption.getChildQuestionId();
                             if (childQuesId.contains(",")) {
+                                //binding.btnAddAnother.setVisibility(View.GONE);
                                 List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                                 for (int j = 0; j < childQuesIds.size(); j++) {
+                                    SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                     if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
-                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
-                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                        addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                     }
+                                    binding.llChildQuestion.addView(singleBinding.getRoot());
                                 }
                             } else {
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
@@ -1096,14 +1204,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         if (childQuesId.contains(",")) {
                             List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                             for (int j = 0; j < childQuesIds.size(); j++) {
+                                SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                 if (childQues != null) {
-//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
-                                    addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                    binding.edtDropDownItar.setVisibility(View.GONE);
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                 }
+                                binding.llChildQuestion.addView(singleBinding.getRoot());
                             }
+                            binding.llChildQuestion.setVisibility(View.VISIBLE);
+                            binding.edtDropDownItar.setVisibility(View.GONE);
                         } else {
                             SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                             if (childQues != null) {
@@ -1164,13 +1274,15 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             if (childQuesId.contains(",")) {
                                 List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
                                 for (int j = 0; j < childQuesIds.size(); j++) {
+                                    SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                     if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
-                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
-                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                        addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                     }
+                                    binding.llChildQuestion.addView(singleBinding.getRoot());
                                 }
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
                             } else {
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                                 if (childQues != null) {
@@ -1480,6 +1592,35 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 gpsTracker.showSettingsAlert();
             }
         }
+    }
+
+    /**
+     * Request permissions.
+     */
+    /* access modifiers changed from: private */
+    public void requestPermissions() {
+        ActivityCompat.requestPermissions(this, PermissionsUtil.permissions, 455);
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (!PermissionsUtil.permissionsGranted(grantResults)) {
+            showAlertDialog();
+        }
+    }
+
+    private void showAlertDialog() {
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle((int) R.string.missing_permissions).setMessage((int) R.string.you_have_to_grant_permissions).setPositiveButton((CharSequence) "OK", (DialogInterface.OnClickListener) new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                requestPermissions();
+            }
+        }).setNegativeButton((int) R.string.no_close_the_app, (DialogInterface.OnClickListener) new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.show();
     }
 
 }

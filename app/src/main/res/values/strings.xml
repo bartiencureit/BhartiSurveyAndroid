@@ -51,5 +51,9 @@
     <string name="please_enable_gps">जीपीएस चालू करा</string>
     <string name="no_data_found">माहिती मिळत नाहीये!</string>
     <string name="do_you_want_to_delete">आपल्याला डिलीट करायचं आहे का??</string>
+    <string name="capture_image">फोटो काढण्यासाठी शेजारील बटण वर क्लिक करा</string>
+    <string name="you_have_to_grant_permissions">You have to grant permissions in order to use this App</string>
+    <string name="missing_permissions">Missing Permissions</string>
+    <string name="no_close_the_app">NO Close The App</string>
 
 </resources>

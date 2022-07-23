@@ -22,7 +22,6 @@ public class SubFormPresenter implements SubFormContract.Presenter {
 
     @Override
     public void startSubForm(SurveySection surveySection) {
-
         List<SurveyQuestionWithData> subFormList = DatabaseUtil.on().getAllQuestions(surveySection.getSurveySection_ID());
         mViewModel.setupSubForms(subFormList,surveySection);
     }
