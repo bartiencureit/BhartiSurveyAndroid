@@ -276,8 +276,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 fileImage = null;
             }
         }
-    }
-        );
+    });
 
     private File createImageFile() throws IOException {
         File image = File.createTempFile("image", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
