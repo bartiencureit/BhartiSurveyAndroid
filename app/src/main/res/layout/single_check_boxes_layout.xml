@@ -29,6 +29,30 @@
 
         </RadioGroup>
 
+        <EditText
+            android:id="@+id/edt_drop_down_itar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:background="@drawable/edittext_rounded_corners"/>
+
+        <LinearLayout
+            android:id="@+id/ll_child_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_add_another"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_another"
+            android:visibility="gone"
+            android:layout_marginTop="10dp" />
+
     </LinearLayout>
 
 

@@ -116,6 +116,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private Uri uri;
     private ActivityResultLauncher<Uri> openCamera;
     private boolean hasFoto = false;
+    private SurveyQuestionWithData imageSubForm = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,7 +267,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         CandidateDetails candidateDetails = new CandidateDetails();
         candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
         candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-        candidateDetails.setSurvey_que_id("");
+        candidateDetails.setSurvey_que_id(imageSubForm.getSurveyQuestion_ID());
         candidateDetails.setSurvey_que_option_id("0");
         candidateDetails.setSurvey_que_values(fileImage.getAbsolutePath());
         candidateDetails.setFormID(formId);
@@ -568,11 +569,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         headerTextView.setText(surveySection.getSectionDescription());
         mBinding.llFormList.addView(headerTextView);
 
-        if (surveySection.getSectionDescription().contains("फोटो")) {
-            hasFoto = true;
-            addPhotoView(mBinding.llFormList);
-        }
-
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
         //add child views and linked views to linear layout
@@ -599,7 +595,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         mainLinear = mBinding.llFormList;
     }
 
-    private void addPhotoView(LinearLayout llFormList) {
+    private void addPhotoView(LinearLayout llFormList, SurveyQuestionWithData subForm) {
+        imageSubForm = subForm;
         requestPermissions();
         SingleFotoViewBinding binding = SingleFotoViewBinding.inflate(getLayoutInflater());
         binding.imgCapture.setOnClickListener(new View.OnClickListener() {
@@ -664,22 +661,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         } else {
             btnAddAnother.setVisibility(View.GONE);
         }
-    }
-
-    /**
-     * Check if section has linked question or not
-     *
-     * @return
-     */
-    private boolean sectionHasLinkedQuestion() {
-        boolean hasLinkedQuestion = false;
-        for (int j = 0; j < list.size(); j++) {
-            if (list.get(j).getLinkedQuestions().size() > 0) {
-                hasLinkedQuestion = true;
-            }
-        }
-
-        return hasLinkedQuestion;
     }
 
     private void addLinkedQuestion(SurveyQuestionWithData subForm,int index) {
@@ -816,6 +797,10 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             headerTextView.setText(subForm.getQuestions());
         }
         mBinding.llFormList.addView(headerTextView);
+        if (subForm.getQuestions().contains("फोटो")) {
+            hasFoto = true;
+            addPhotoView(mBinding.llFormList,subForm);
+        }
     }
 
     private void populateLabelText(SurveyQuestionWithData subForm) {
@@ -826,6 +811,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
             mBinding.llFormList.addView(headerTextView);
+
+            /*if (subForm.getQuestions().contains("फोटो")) {
+                hasFoto = true;
+                addPhotoView(mBinding.llFormList);
+            }*/
         }
     }
 
@@ -905,6 +895,56 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CheckBox checkBox = new CheckBox(SubFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkBox.isChecked()) {
+                        try {
+                            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                                //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                                binding.llChildQuestion.removeAllViews();
+                                String childQuesId = questionOption.getChildQuestionId();
+                                if (childQuesId.contains(",")) {
+                                    //binding.btnAddAnother.setVisibility(View.GONE);
+                                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                    for (int j = 0; j < childQuesIds.size(); j++) {
+                                        SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                        if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                        }
+                                        binding.llChildQuestion.addView(singleBinding.getRoot());
+                                    }
+                                } else {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                    if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                                    binding.llChildQuestion.removeAllViews();
+                                    binding.llChildQuestion.setVisibility(View.GONE);
+                                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                                } else {
+                                    binding.llChildQuestion.removeAllViews();
+                                    binding.llChildQuestion.setVisibility(View.GONE);
+                                    binding.edtDropDownItar.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(SubFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }else {
+                        binding.llChildQuestion.setVisibility(View.GONE);
+                        binding.llChildQuestion.removeAllViews();
+                        binding.edtDropDownItar.setVisibility(View.GONE);
+                    }
+                }
+            });
             binding.rgCheckboxQuestionOptions.addView(checkBox, i);
         }
         mBinding.llFormList.addView(binding.getRoot());
@@ -1012,6 +1052,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                         addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                     }
                                     binding.llChildQuestion.addView(singleBinding.getRoot());
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
@@ -1176,6 +1217,57 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CheckBox checkBox = new CheckBox(SubFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (checkBox.isChecked()) {
+                        try {
+                            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                                //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                                binding.llChildQuestion.removeAllViews();
+                                String childQuesId = questionOption.getChildQuestionId();
+                                if (childQuesId.contains(",")) {
+                                    //binding.btnAddAnother.setVisibility(View.GONE);
+                                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                    for (int j = 0; j < childQuesIds.size(); j++) {
+                                        SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                                        if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                        }
+                                        binding.llChildQuestion.addView(singleBinding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                                    if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                                    binding.llChildQuestion.removeAllViews();
+                                    binding.llChildQuestion.setVisibility(View.GONE);
+                                    binding.edtDropDownItar.setVisibility(View.VISIBLE);
+                                } else {
+                                    binding.llChildQuestion.removeAllViews();
+                                    binding.llChildQuestion.setVisibility(View.GONE);
+                                    binding.edtDropDownItar.setVisibility(View.GONE);
+                                }
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(SubFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }else {
+                        binding.llChildQuestion.setVisibility(View.GONE);
+                        binding.llChildQuestion.removeAllViews();
+                        binding.edtDropDownItar.setVisibility(View.GONE);
+                    }
+                }
+            });
             binding.rgCheckboxQuestionOptions.addView(checkBox, i);
         }
         rootView.addView(binding.getRoot());
@@ -1212,6 +1304,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                 }
                                 binding.llChildQuestion.addView(singleBinding.getRoot());
+                                binding.llChildQuestion.setVisibility(View.VISIBLE);
                             }
                             binding.llChildQuestion.setVisibility(View.VISIBLE);
                             binding.edtDropDownItar.setVisibility(View.GONE);

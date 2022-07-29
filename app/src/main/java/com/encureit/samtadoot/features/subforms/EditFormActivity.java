@@ -22,7 +22,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,6 +52,7 @@ import com.encureit.samtadoot.databinding.SingleDropDownListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleDropDownMultiSelectListLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleFotoViewBinding;
 import com.encureit.samtadoot.databinding.SingleInputBoxLayoutBinding;
+import com.encureit.samtadoot.databinding.SingleLinkedChildDataBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxParentLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleRadioButtonsLayoutBinding;
@@ -102,6 +105,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private GlobalHelper helper;
 
     private File fileImage = null;
+    private SurveyQuestionWithData imageSubForm = null;
     private Uri uri;
     private boolean hasFoto = false;
 
@@ -184,10 +188,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         mBinding.llFormList.addView(headerTextView);
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
-        if (surveySection.getSectionDescription().contains("फोटो")) {
+       /* if (surveySection.getSectionDescription().contains("फोटो")) {
             hasFoto = true;
             addPhotoView(mBinding.llFormList);
-        }
+        }*/
         //add child views and linked views to linear layout
         for (i = 0; i < list.size(); i++) {
             SurveyQuestionWithData subForm = list.get(i);
@@ -230,7 +234,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         dismissCircularProgressDialog();
     }
 
-    private void addPhotoView(LinearLayout llFormList) {
+    private void addPhotoView(LinearLayout llFormList, SurveyQuestionWithData subForm) {
+        imageSubForm = subForm;
         requestPermissions();
         SingleFotoViewBinding binding = SingleFotoViewBinding.inflate(getLayoutInflater());
         List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySectionIdFormId(section.getSurveySection_ID(), formId);
@@ -282,6 +287,47 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         File image = File.createTempFile("image", ".jpg", getExternalFilesDir(Environment.DIRECTORY_PICTURES));
         this.fileImage = new File(image.getAbsolutePath());
         return image;
+    }
+
+    private void addSingleChildViews(SurveyQuestionWithData subForm, LinearLayout linearLayout, View parent) {
+        populateChildQuestionInput(subForm, linearLayout);
+        if (subForm.getChildQuestions() != null) {
+            for (int j = 0; j < subForm.getChildQuestions().size(); j++) {
+                populateChildQuestionInput(subForm.getChildQuestions().get(j), linearLayout);
+            }
+        }
+        Button btnAddAnother = parent.findViewById(R.id.btn_add_another);
+        if (subForm.getLinkedQuestions() != null && subForm.getLinkedQuestions().size() > 0) {
+
+            if (btnAddAnother != null) {
+                addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
+                btnAddAnother.setVisibility(View.VISIBLE);
+                btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
+                    }
+                });
+            }
+        } else {
+            btnAddAnother.setVisibility(View.GONE);
+        }
+    }
+
+    private void addChildLinkedQuestion(SurveyQuestionWithData subForm, LinearLayout rootView, LinearLayout parent) {
+        //inflating layout single_add_another_parent_item
+        SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
+        for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
+            SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
+            populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
+        }
+        binding.imgDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rootView.removeView(binding.getRoot());
+            }
+        });
+        rootView.addView(binding.getRoot());
     }
 
     private boolean validateData() {
@@ -386,7 +432,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         CandidateDetails candidateDetails = new CandidateDetails();
         candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
         candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-        candidateDetails.setSurvey_que_id("");
+        candidateDetails.setSurvey_que_id(imageSubForm.getSurveyQuestion_ID());
         candidateDetails.setSurvey_que_option_id("0");
         candidateDetails.setSurvey_que_values(fileImage.getAbsolutePath());
         candidateDetails.setFormID(formId);
@@ -854,8 +900,17 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
     private void populateHeaderText(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
         HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
-        headerTextView.setText(subForm.getQuestions());
+        if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+            headerTextView.setText(subForm.getQuestions() + " *");
+        } else {
+            headerTextView.setText(subForm.getQuestions());
+        }
         mBinding.llFormList.addView(headerTextView);
+
+        if (subForm.getQuestions().contains("फोटो")) {
+            hasFoto = true;
+            addPhotoView(mBinding.llFormList,subForm);
+        }
     }
 
     private void populateLabelText(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
@@ -866,6 +921,11 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
             mBinding.llFormList.addView(headerTextView);
+
+            /*if (subForm.getQuestions().contains("फोटो")) {
+                hasFoto = true;
+                addPhotoView(mBinding.llFormList);
+            }*/
         }
     }
 
@@ -966,14 +1026,75 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CheckBox checkBox = new CheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
-            binding.rgCheckboxQuestionOptions.addView(checkBox, i);
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 checkBox.setChecked(true);
+                checkBoxOnClick(checkBox,questionOption,binding.edtDropDownItar,binding.llChildQuestion,binding.getRoot());
+                if (binding.edtDropDownItar.getVisibility() == View.VISIBLE) {
+                    binding.edtDropDownItar.setText(""+details.getSurvey_que_values());
+                }
             }
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkBoxOnClick(checkBox,questionOption,binding.edtDropDownItar,binding.llChildQuestion,binding.getRoot());
+                }
+            });
+            binding.rgCheckboxQuestionOptions.addView(checkBox, i);
         }
         mBinding.llFormList.addView(binding.getRoot());
     }
+
+    private void checkBoxOnClick(CheckBox checkBox, QuestionOption questionOption, EditText edtDropDownItar, LinearLayout llChildQuestion, View root) {
+        if (checkBox.isChecked()) {
+            try {
+                if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                    //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                    llChildQuestion.removeAllViews();
+                    String childQuesId = questionOption.getChildQuestionId();
+                    if (childQuesId.contains(",")) {
+                        //btnAddAnother.setVisibility(View.GONE);
+                        List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                        for (int j = 0; j < childQuesIds.size(); j++) {
+                            SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                            if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,llChildQuestion);
+                                addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                            }
+                            llChildQuestion.addView(singleBinding.getRoot());
+                            llChildQuestion.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                        if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,llChildQuestion);
+                            addSingleChildViews(childQues, llChildQuestion, root);
+                            llChildQuestion.setVisibility(View.VISIBLE);
+                        }
+                    }
+                } else {
+                    if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
+                        llChildQuestion.removeAllViews();
+                        llChildQuestion.setVisibility(View.GONE);
+                        edtDropDownItar.setVisibility(View.VISIBLE);
+
+                    } else {
+                        llChildQuestion.removeAllViews();
+                        llChildQuestion.setVisibility(View.GONE);
+                        edtDropDownItar.setVisibility(View.GONE);
+                    }
+                }
+            } catch (Exception e) {
+                Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            llChildQuestion.setVisibility(View.GONE);
+            llChildQuestion.removeAllViews();
+            edtDropDownItar.setVisibility(View.GONE);
+        }
+    }
+
 
     /**
      * @param subForm
@@ -1061,71 +1182,52 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 radioButton.setChecked(true);
-
-                try {
-                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
-                        //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
-                        binding.llChildQuestion.removeAllViews();
-                        String childQuesId = questionOption.getChildQuestionId();
-                        if (childQuesId.contains(",")) {
-                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
-                            for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j), formId);
-                                if (childQues != null) {
-                                    populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId, formId);
-                            if (childQues != null) {
-                                populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                binding.llChildQuestion.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    } else {
-                        binding.llChildQuestion.setVisibility(View.GONE);
-                        binding.llChildQuestion.removeAllViews();
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                radioButtonOnClick(questionOption,binding.llChildQuestion,binding.getRoot());
             }
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
-                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
-                            binding.llChildQuestion.removeAllViews();
-                            String childQuesId = questionOption.getChildQuestionId();
-                            if (childQuesId.contains(",")) {
-                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
-                                for (int j = 0; j < childQuesIds.size(); j++) {
-                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j), formId);
-                                    if (childQues != null) {
-                                        populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            } else {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId, formId);
-                                if (childQues != null) {
-                                    populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            binding.llChildQuestion.setVisibility(View.GONE);
-                            binding.llChildQuestion.removeAllViews();
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    radioButtonOnClick(questionOption,binding.llChildQuestion,binding.getRoot());
                 }
             });
         }
         mBinding.llFormList.addView(binding.getRoot());
+    }
+
+    private void radioButtonOnClick(QuestionOption questionOption, LinearLayout llChildQuestion, View root) {
+        try {
+            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                llChildQuestion.removeAllViews();
+                String childQuesId = questionOption.getChildQuestionId();
+                if (childQuesId.contains(",")) {
+                    //binding.btnAddAnother.setVisibility(View.GONE);
+                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                    for (int j = 0; j < childQuesIds.size(); j++) {
+                        SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
+                        if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                            addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                        }
+                        llChildQuestion.addView(singleBinding.getRoot());
+                        llChildQuestion.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
+                    if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                        addSingleChildViews(childQues, llChildQuestion, root);
+                        llChildQuestion.setVisibility(View.VISIBLE);
+                    }
+                }
+            } else {
+                llChildQuestion.setVisibility(View.GONE);
+                llChildQuestion.removeAllViews();
+            }
+        } catch (Exception e) {
+            Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -1269,16 +1371,27 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void populateChildCheckBox(SurveyQuestionWithData subForm, LinearLayout rootView, CandidateDetails candidateDetails) {
         SingleCheckBoxesLayoutBinding binding = SingleCheckBoxesLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
+
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CheckBox checkBox = new CheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
-            binding.rgCheckboxQuestionOptions.addView(checkBox, i);
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 checkBox.setChecked(true);
+                checkBoxOnClick(checkBox,questionOption,binding.edtDropDownItar,binding.llChildQuestion,binding.getRoot());
+                if (binding.edtDropDownItar.getVisibility() == View.VISIBLE) {
+                    binding.edtDropDownItar.setText(""+details.getSurvey_que_values());
+                }
             }
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    checkBoxOnClick(checkBox,questionOption,binding.edtDropDownItar,binding.llChildQuestion,binding.getRoot());
+                }
+            });
+            binding.rgCheckboxQuestionOptions.addView(checkBox, i);
+
         }
         rootView.addView(binding.getRoot());
     }
@@ -1386,66 +1499,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 radioButton.setChecked(true);
 
-                try {
-                    if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
-                        //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
-                        binding.llChildQuestion.removeAllViews();
-                        String childQuesId = questionOption.getChildQuestionId();
-                        if (childQuesId.contains(",")) {
-                            List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
-                            for (int j = 0; j < childQuesIds.size(); j++) {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j), formId);
-                                if (childQues != null) {
-                                    populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId, formId);
-                            if (childQues != null) {
-                                populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                binding.llChildQuestion.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    } else {
-                        binding.llChildQuestion.setVisibility(View.GONE);
-                        binding.llChildQuestion.removeAllViews();
-                    }
-                } catch (Exception e) {
-                    Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+                radioButtonOnClick(questionOption,binding.llChildQuestion,binding.getRoot());
             }
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
-                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
-                            binding.llChildQuestion.removeAllViews();
-                            String childQuesId = questionOption.getChildQuestionId();
-                            if (childQuesId.contains(",")) {
-                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
-                                for (int j = 0; j < childQuesIds.size(); j++) {
-                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j), formId);
-                                    if (childQues != null) {
-                                        populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                    }
-                                }
-                            } else {
-                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId, formId);
-                                if (childQues != null) {
-                                    populateChildQuestionInput(childQues, binding.llChildQuestion);
-                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            binding.llChildQuestion.setVisibility(View.GONE);
-                            binding.llChildQuestion.removeAllViews();
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    radioButtonOnClick(questionOption,binding.llChildQuestion,binding.getRoot());
                 }
             });
         }
