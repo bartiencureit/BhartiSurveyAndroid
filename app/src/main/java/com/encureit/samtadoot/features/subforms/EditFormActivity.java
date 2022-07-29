@@ -397,6 +397,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetails.setLatitude(Double.toString(latitude));
         candidateDetails.setLongitude(Double.toString(longitude));
+        candidateDetails.setHasImage(true);
         int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
         if (id != -1) {
             updateCandidate(candidateDetails, id);

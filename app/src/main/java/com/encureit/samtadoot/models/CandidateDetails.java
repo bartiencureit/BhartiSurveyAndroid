@@ -27,6 +27,7 @@ public class CandidateDetails {
     String Latitude;
     String Longitude;
     int index_if_linked_question;
+    boolean hasImage;
 
     public int getId() {
         return id;
@@ -148,6 +149,14 @@ public class CandidateDetails {
         this.index_if_linked_question = index_if_linked_question;
     }
 
+    public boolean isHasImage() {
+        return hasImage;
+    }
+
+    public void setHasImage(boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
     @Override
     public String toString() {
         return "CandidateDetails{" +
@@ -166,6 +175,7 @@ public class CandidateDetails {
                 ", Latitude='" + Latitude + '\'' +
                 ", Longitude='" + Longitude + '\'' +
                 ", index_if_linked_question=" + index_if_linked_question +
+                ", hasImage=" + hasImage +
                 '}';
     }
 }

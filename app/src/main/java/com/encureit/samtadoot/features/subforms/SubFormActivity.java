@@ -277,6 +277,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetails.setLatitude(Double.toString(latitude));
         candidateDetails.setLongitude(Double.toString(longitude));
+        candidateDetails.setHasImage(true);
         DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
     }
 

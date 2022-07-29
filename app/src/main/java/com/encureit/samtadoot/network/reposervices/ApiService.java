@@ -14,11 +14,15 @@ import com.encureit.samtadoot.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.SurveyTypeResponseModel;
 import com.encureit.samtadoot.network.responsemodel.UserAssignedDetailsResponseModel;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface ApiService {
 
@@ -131,23 +135,24 @@ public interface ApiService {
      * response has list of question validation
      * @return
      */
-    @FormUrlEncoded
+    @Multipart
     @POST(Contants.INSERT_CANDIDATE)
     Call<CandidateInsertResponseModel> insertCandidateData(
-            @Field("survey_master_id") String survey_master_id,
-            @Field("survey_section_id") String survey_section_id,
-            @Field("survey_que_id") String survey_que_id,
-            @Field("survey_que_option_id") String survey_que_option_id,
-            @Field("survey_que_values") String survey_que_values,
-            @Field("FormID") String FormID,
-            @Field("Current_Form_Status") String Current_Form_Status,
-            @Field("age_value") String age_value,
-            @Field("Survey_StartDate") String Survey_StartDate,
-            @Field("Survey_EndDate") String Survey_EndDate,
-            @Field("created_by") String created_by,
-            @Field("Latitude") String Latitude,
-            @Field("Longitude") String Longitude
-    );
+            @Part("survey_master_id") RequestBody survey_master_id,
+            @Part("survey_section_id") RequestBody survey_section_id,
+            @Part("survey_que_id") RequestBody survey_que_id,
+            @Part("survey_que_option_id") RequestBody survey_que_option_id,
+            @Part("survey_que_values") RequestBody survey_que_values,
+            @Part("FormID") RequestBody FormID,
+            @Part("Current_Form_Status") RequestBody Current_Form_Status,
+            @Part("age_value") RequestBody age_value,
+            @Part("Survey_StartDate") RequestBody Survey_StartDate,
+            @Part("Survey_EndDate") RequestBody Survey_EndDate,
+            @Part("created_by") RequestBody created_by,
+            @Part("Latitude") RequestBody Latitude,
+            @Part("Longitude") RequestBody Longitude,
+            @Part MultipartBody.Part image
+            );
 
 }
 
