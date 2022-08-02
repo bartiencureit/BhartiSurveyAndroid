@@ -28,6 +28,7 @@ public class Contants {
     public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getPath() + "/" + FOLDER_SAVE;
 
     public static String APP_LOGIN_USER_ID = "com.encureit.samtadoot.SYNC_LOGIN_USER_ID";
+    public static String APP_LOGIN_USER_KEY = "com.encureit.samtadoot.SYNC_LOGIN_USER_KEY";
     public static String APP_USER_ID = "com.encureit.samtadoot.SYNC_USER_ID";
     public static String APP_LOGIN_USER_ROLE = "com.encureit.samtadoot.SYNC_LOGIN_USER_ROLE";
     public static String SYNC_LOGIN_DATE_TIME_DATA = "com.encureit.samtadoot.SYNC_LOGIN_DATE_TIME_DATA";

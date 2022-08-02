@@ -72,9 +72,7 @@ public class ScreenHelper {
             public void onClick(DialogInterface dialog, int which) {
                 alertDialog.dismiss();
 
-                System.exit(0);
-                context.finishAffinity();
-
+                exitAppWithoutDialog(context);
             }
         });
 

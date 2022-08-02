@@ -108,7 +108,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getSurveySectionFields() {
-        RetrofitClient.getApiService().getSurveySection().enqueue(new Callback<SurveySectionResponseModel>() {
+        mActivity.service.getSurveySection().enqueue(new Callback<SurveySectionResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<SurveySectionResponseModel> call, @NonNull Response<SurveySectionResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -131,7 +131,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getSurveyQuestionField() {
-        RetrofitClient.getApiService().getSurveyQuestion().enqueue(new Callback<SurveyQuestionResponseModel>() {
+        mActivity.service.getSurveyQuestion().enqueue(new Callback<SurveyQuestionResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<SurveyQuestionResponseModel> call, @NonNull Response<SurveyQuestionResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -154,7 +154,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getQuestionOptionField() {
-        RetrofitClient.getApiService().getQuestionOptions().enqueue(new Callback<QuestionOptionResponseModel>() {
+        mActivity.service.getQuestionOptions().enqueue(new Callback<QuestionOptionResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<QuestionOptionResponseModel> call, @NonNull Response<QuestionOptionResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -177,7 +177,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getQuestionTypesField() {
-        RetrofitClient.getApiService().getQuestionTypes().enqueue(new Callback<QuestionTypeResponseModel>() {
+        mActivity.service.getQuestionTypes().enqueue(new Callback<QuestionTypeResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<QuestionTypeResponseModel> call, @NonNull Response<QuestionTypeResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -200,7 +200,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getQuestionValidationFields() {
-        RetrofitClient.getApiService().getQuestionValidations().enqueue(new Callback<QuestionValidationResponseModel>() {
+        mActivity.service.getQuestionValidations().enqueue(new Callback<QuestionValidationResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<QuestionValidationResponseModel> call, @NonNull Response<QuestionValidationResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -223,7 +223,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getUserAssignedDetails(String user_id) {
-        RetrofitClient.getApiService().getUserAssignedDetails(user_id).enqueue(new Callback<UserAssignedDetailsResponseModel>() {
+        mActivity.service.getUserAssignedDetails(user_id).enqueue(new Callback<UserAssignedDetailsResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<UserAssignedDetailsResponseModel> call, @NonNull Response<UserAssignedDetailsResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {
@@ -246,7 +246,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getSurveyMaster() {
-        RetrofitClient.getApiService().getSurveyTypes().enqueue(new Callback<SurveyTypeResponseModel>() {
+        mActivity.service.getSurveyTypes().enqueue(new Callback<SurveyTypeResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<SurveyTypeResponseModel> call, @NonNull Response<SurveyTypeResponseModel> response) {
                 //mActivity.enableForm();
@@ -270,7 +270,7 @@ public class OtpPresenter implements OtpContract.Presenter {
 
     @Override
     public void getOtherValues() {
-        RetrofitClient.getApiService().getOtherValues().enqueue(new Callback<OtherValuesResponseModel>() {
+        mActivity.service.getOtherValues().enqueue(new Callback<OtherValuesResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<OtherValuesResponseModel> call, @NonNull Response<OtherValuesResponseModel> response) {
                 if (response.code() == 200 && response.body() != null) {

@@ -18,6 +18,8 @@ import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.lib.NetworkHelper;
 import com.encureit.samtadoot.network.Contants;
+import com.encureit.samtadoot.network.reposervices.ApiService;
+import com.encureit.samtadoot.network.retrofit.RetrofitClient;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -35,6 +37,8 @@ public class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Snackbar snackbar;
     private View view;
+    public String key;
+    public ApiService service;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +48,10 @@ public class BaseActivity extends AppCompatActivity {
         Contants.applicationContext = getApplicationContext();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //
+        globalHelper = new GlobalHelper(this);
+        key = globalHelper.getSharedPreferencesHelper().getLoginKey();
+        RetrofitClient.key = key;
+        service = RetrofitClient.getApiService();
         super.onCreate(savedInstanceState);
         mActivity = this;
     }

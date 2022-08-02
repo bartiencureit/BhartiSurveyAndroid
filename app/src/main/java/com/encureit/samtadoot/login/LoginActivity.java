@@ -52,6 +52,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
             //save user id and role in shared preference
             helper.getSharedPreferencesHelper().setLoginUserId(userLoginObject.getResponse().getUser_id());
             helper.getSharedPreferencesHelper().setLoginUserRole(userLoginObject.getResponse().getUser_role());
+            helper.getSharedPreferencesHelper().setLoginKey(userLoginObject.getResponse().getKey());
 
             //start otp check activity
             Intent intent = new Intent(this, OtpCheckActivity.class);

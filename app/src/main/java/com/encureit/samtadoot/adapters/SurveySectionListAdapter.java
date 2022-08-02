@@ -4,7 +4,9 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.SingleSurveySectionItemBinding;
 import com.encureit.samtadoot.models.SurveySection;
@@ -49,8 +51,16 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
             holder.binding.setImgVisibility(View.GONE);
         }
         holder.binding.tvQueSectionName.setOnClickListener(view -> {
-            if (mListener != null) {
-                mListener.onItemClicked(listItem,position);
+            if (isEditMode) {
+                if (mListener != null) {
+                    mListener.onItemClicked(listItem,position);
+                }
+            } else if (position == 0) {
+                if (mListener != null) {
+                    mListener.onItemClicked(listItem,position);
+                }
+            } else {
+                Toast.makeText(context, context.getString(R.string.first_fill_first_section), Toast.LENGTH_SHORT).show();
             }
         });
     }
