@@ -10,7 +10,8 @@ public class Contants {
     public static final String LOGIN_BASE_URL = BASE_URL+"login_api/";
     public static final String GET_LOGIN = "isLoginf";
     public static final String GET_VERIFY_OTP = "verifyOTP";
-    public static final String GET_SURVEY_TYPE = "get_survey_masters";
+    public static final String GET_SURVEY_TYPE = "getForms";
+    //public static final String GET_SURVEY_TYPE = "get_survey_masters";
     public static final String GET_SURVEY_SECTION = "get_survey_section";
     public static final String GET_SURVEY_QUESTION = "get_survey_question";
     public static final String GET_QUESTION_OPTION = "get_question_option";

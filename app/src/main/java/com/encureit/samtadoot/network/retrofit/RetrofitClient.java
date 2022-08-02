@@ -13,6 +13,7 @@ import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.encureit.samtadoot.network.Contants.CANDIDATE_BASE_URL;
 import static com.encureit.samtadoot.network.Contants.OTHER_BASE_URL;
 
 import androidx.annotation.NonNull;
@@ -27,7 +28,7 @@ public class RetrofitClient {
     private static Retrofit getRetrofitInstance() {
 
         return new Retrofit.Builder()
-                .baseUrl(OTHER_BASE_URL)
+                .baseUrl(CANDIDATE_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(okHttpClient)
                 .build();
