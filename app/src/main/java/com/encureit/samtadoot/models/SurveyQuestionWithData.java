@@ -26,6 +26,8 @@ public class SurveyQuestionWithData implements Parcelable {
     String ParentQuestionId;
     String OptionDependent;
     String Questions;
+    String min_length;
+    String max_length;
     String CreatedBy;
     String CreatedDate;
     String UpdatedBy;
@@ -181,6 +183,22 @@ public class SurveyQuestionWithData implements Parcelable {
 
     public void setQuestions(String questions) {
         Questions = questions;
+    }
+
+    public String getMin_length() {
+        return min_length;
+    }
+
+    public void setMin_length(String min_length) {
+        this.min_length = min_length;
+    }
+
+    public String getMax_length() {
+        return max_length;
+    }
+
+    public void setMax_length(String max_length) {
+        this.max_length = max_length;
     }
 
     public String getCreatedBy() {

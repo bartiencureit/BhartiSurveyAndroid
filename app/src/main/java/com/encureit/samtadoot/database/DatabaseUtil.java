@@ -311,6 +311,8 @@ public class DatabaseUtil {
                 surveyQuestionWithData.setParentQuestionId(surveyQuestion.getParentQuestionId());
                 surveyQuestionWithData.setOptionDependent(surveyQuestion.getOptionDependent());
                 surveyQuestionWithData.setQuestions(surveyQuestion.getQuestions());
+                surveyQuestionWithData.setMin_length(surveyQuestion.getMin_length());
+                surveyQuestionWithData.setMax_length(surveyQuestion.getMax_length());
                 surveyQuestionWithData.setCreatedBy(surveyQuestion.getCreatedBy());
                 surveyQuestionWithData.setCreatedDate(surveyQuestion.getCreatedDate());
                 surveyQuestionWithData.setUpdatedBy(surveyQuestion.getUpdatedBy());
@@ -382,6 +384,8 @@ public class DatabaseUtil {
                     surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
                     surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
                     surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+                    surveyQuestionWithData.setMin_length(childSurveyQuestion.getMin_length());
+                    surveyQuestionWithData.setMax_length(childSurveyQuestion.getMax_length());
                     surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
                     surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
                     surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
@@ -503,6 +507,8 @@ public class DatabaseUtil {
         surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
         surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
         surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+        surveyQuestionWithData.setMin_length(childSurveyQuestion.getMin_length());
+        surveyQuestionWithData.setMax_length(childSurveyQuestion.getMax_length());
         surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
         surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
         surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
@@ -548,6 +554,8 @@ public class DatabaseUtil {
                 surveyQuestionWithData.setParentQuestionId(surveyQuestion.getParentQuestionId());
                 surveyQuestionWithData.setOptionDependent(surveyQuestion.getOptionDependent());
                 surveyQuestionWithData.setQuestions(surveyQuestion.getQuestions());
+                surveyQuestionWithData.setMin_length(surveyQuestion.getMin_length());
+                surveyQuestionWithData.setMax_length(surveyQuestion.getMax_length());
                 surveyQuestionWithData.setCreatedBy(surveyQuestion.getCreatedBy());
                 surveyQuestionWithData.setCreatedDate(surveyQuestion.getCreatedDate());
                 surveyQuestionWithData.setUpdatedBy(surveyQuestion.getUpdatedBy());
@@ -609,6 +617,8 @@ public class DatabaseUtil {
                     surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
                     surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
                     surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+                    surveyQuestionWithData.setMin_length(childSurveyQuestion.getMin_length());
+                    surveyQuestionWithData.setMax_length(childSurveyQuestion.getMax_length());
                     surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
                     surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
                     surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
@@ -661,6 +671,8 @@ public class DatabaseUtil {
                     surveyQuestionWithData.setParentQuestionId(childSurveyQuestion.getParentQuestionId());
                     surveyQuestionWithData.setOptionDependent(childSurveyQuestion.getOptionDependent());
                     surveyQuestionWithData.setQuestions(childSurveyQuestion.getQuestions());
+                    surveyQuestionWithData.setMin_length(childSurveyQuestion.getMin_length());
+                    surveyQuestionWithData.setMax_length(childSurveyQuestion.getMax_length());
                     surveyQuestionWithData.setCreatedBy(childSurveyQuestion.getCreatedBy());
                     surveyQuestionWithData.setCreatedDate(childSurveyQuestion.getCreatedDate());
                     surveyQuestionWithData.setUpdatedBy(childSurveyQuestion.getUpdatedBy());
@@ -849,6 +861,8 @@ public class DatabaseUtil {
         surveyQuestionWithData.setParentQuestionId(surveyQuestion.getParentQuestionId());
         surveyQuestionWithData.setOptionDependent(surveyQuestion.getOptionDependent());
         surveyQuestionWithData.setQuestions(surveyQuestion.getQuestions());
+        surveyQuestionWithData.setMin_length(surveyQuestion.getMin_length());
+        surveyQuestionWithData.setMax_length(surveyQuestion.getMax_length());
         surveyQuestionWithData.setCreatedBy(surveyQuestion.getCreatedBy());
         surveyQuestionWithData.setCreatedDate(surveyQuestion.getCreatedDate());
         surveyQuestionWithData.setUpdatedBy(surveyQuestion.getUpdatedBy());
@@ -905,6 +919,8 @@ public class DatabaseUtil {
             surveyQuestionWithData.setParentQuestionId(surveyQuestion.getParentQuestionId());
             surveyQuestionWithData.setOptionDependent(surveyQuestion.getOptionDependent());
             surveyQuestionWithData.setQuestions(surveyQuestion.getQuestions());
+            surveyQuestionWithData.setMin_length(surveyQuestion.getMin_length());
+            surveyQuestionWithData.setMax_length(surveyQuestion.getMax_length());
             surveyQuestionWithData.setCreatedBy(surveyQuestion.getCreatedBy());
             surveyQuestionWithData.setCreatedDate(surveyQuestion.getCreatedDate());
             surveyQuestionWithData.setUpdatedBy(surveyQuestion.getUpdatedBy());
