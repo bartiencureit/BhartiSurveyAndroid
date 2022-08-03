@@ -337,58 +337,66 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             } else {
                 return false;
             }
-        } else {
+        }/* else if (editTexts == null || editTexts.size() <= 0 || optionEditTexts == null || optionEditTexts.size() <= 0 || radioButtons == null || radioButtons.size() <= 0) {
+            return false;
+        } */else {
             getAllChildView();
 
             int filled_edittext_count = 0;
-            for (int j = 0; j < editTexts.size(); j++) {
-                HashMap<String, AppCompatEditText> map = editTexts.get(j);
-                for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
-                    String str_question = entry.getKey();
-                    SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                        AppCompatEditText editText = entry.getValue();
-                        if (!TextUtils.isEmpty(editText.getText().toString())) {
+            if (editTexts.size() > 0) {
+                for (int j = 0; j < editTexts.size(); j++) {
+                    HashMap<String, AppCompatEditText> map = editTexts.get(j);
+                    for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
+                        String str_question = entry.getKey();
+                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                            AppCompatEditText editText = entry.getValue();
+                            if (!TextUtils.isEmpty(editText.getText().toString())) {
+                                filled_edittext_count++;
+                            }
+                        } else {
                             filled_edittext_count++;
                         }
-                    } else {
-                        filled_edittext_count++;
                     }
                 }
             }
 
             int filled_option_edittext_count = 0;
-            for (int j = 0; j < optionEditTexts.size(); j++) {
-                HashMap<String, HashMap<String, AppCompatEditText>> map = optionEditTexts.get(j);
-                for (Map.Entry<String, HashMap<String, AppCompatEditText>> entry : map.entrySet()) {
-                    for (Map.Entry<String, AppCompatEditText> entry1 : entry.getValue().entrySet()) {
-                        String str_question = entry.getKey();
-                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            AppCompatEditText editText = entry1.getValue();
-                            if (!TextUtils.isEmpty(editText.getText().toString())) {
+            if (optionEditTexts != null && optionEditTexts.size() > 0) {
+                for (int j = 0; j < optionEditTexts.size(); j++) {
+                    HashMap<String, HashMap<String, AppCompatEditText>> map = optionEditTexts.get(j);
+                    for (Map.Entry<String, HashMap<String, AppCompatEditText>> entry : map.entrySet()) {
+                        for (Map.Entry<String, AppCompatEditText> entry1 : entry.getValue().entrySet()) {
+                            String str_question = entry.getKey();
+                            SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                            if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                                AppCompatEditText editText = entry1.getValue();
+                                if (!TextUtils.isEmpty(editText.getText().toString())) {
+                                    filled_option_edittext_count++;
+                                }
+                            } else {
                                 filled_option_edittext_count++;
                             }
-                        } else {
-                            filled_option_edittext_count++;
                         }
                     }
                 }
             }
 
             int filled_radio_count = 0;
-            for (int j = 0; j < radioButtons.size(); j++) {
-                HashMap<String, RadioButton> map = radioButtons.get(j);
-                for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
-                    String str_question = entry.getKey();
-                    SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
-                    if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                        RadioButton radioButton = entry.getValue();
-                        if (radioButton.isChecked()) {
+            if (radioButtons != null && radioButtons.size() > 0) {
+                for (int j = 0; j < radioButtons.size(); j++) {
+                    HashMap<String, RadioButton> map = radioButtons.get(j);
+                    for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
+                        String str_question = entry.getKey();
+                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionFromQuestion(str_question);
+                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+                            RadioButton radioButton = entry.getValue();
+                            if (radioButton.isChecked()) {
+                                filled_radio_count++;
+                            }
+                        } else {
                             filled_radio_count++;
                         }
-                    } else {
-                        filled_radio_count++;
                     }
                 }
             }
@@ -1247,6 +1255,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
         }
         ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
+        binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (min_length != 0 && max_length != 0) {
+                    if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length ) {
+                        binding.edtHeader.setError("कृपया कमीत कमी "+min_length+" आणि जास्तीत जास्त "+max_length+" अक्षरं टाका");
+                        //binding.edtHeader.requestFocus();
+                    }
+                }
+            }
+        });
         binding.setSubForm(subForm);
         mBinding.llFormList.addView(binding.getRoot());
     }
@@ -1529,6 +1551,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
         }
         ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
+        binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (min_length != 0 && max_length != 0) {
+                    if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length ) {
+                        binding.edtHeader.setError("कृपया कमीत कमी "+min_length+" आणि जास्तीत जास्त "+max_length+" अक्षरं टाका");
+                        //binding.edtHeader.requestFocus();
+                    }
+                }
+            }
+        });
         binding.setSubForm(subForm);
         rootView.addView(binding.getRoot());
     }
@@ -1677,11 +1713,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         View radio_child_view = radioGroup.getChildAt(0);
         if (radio_child_view instanceof RadioButton) {
             int checked_radio_button_id = radioGroup.getCheckedRadioButtonId();
-            RadioButton radioButton = linearLayout.findViewById(checked_radio_button_id);
+            if (checked_radio_button_id != -1) {
+                RadioButton radioButton = linearLayout.findViewById(checked_radio_button_id);
 
-            HashMap<String, RadioButton> map = new HashMap<>();
-            map.put(headerTextView.getText().toString(), radioButton);
-            radioButtons.add(map);
+                HashMap<String, RadioButton> map = new HashMap<>();
+                map.put(headerTextView.getText().toString(), radioButton);
+                radioButtons.add(map);
+            }
         } else if (radio_child_view instanceof CheckBox) {
             //to get the count of all child checkboxes
             int cb_child_count = radioGroup.getChildCount();

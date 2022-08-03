@@ -184,13 +184,19 @@ public class ScreenHelper {
     }
 
     public static void setEditTextValidation(SurveyQuestionWithData subForm,EditText editText) {
+        int max_length = Integer.parseInt(subForm.getMax_length());
         editText.setInputType(subForm.getInputValidation());
-        if (subForm.getQuestions().equalsIgnoreCase("मोबाईल") || subForm.getQuestions().contains("मोबाईल")) {
-            editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
-        } else if (subForm.getQuestions().equalsIgnoreCase("आधार क्रमांक") || subForm.getQuestions().contains("आधार क्रमांक")) {
-            editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(12) });
-        } else if (subForm.getQuestions().equalsIgnoreCase("ईमेल") || subForm.getQuestions().contains("ईमेल")) {
-            editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        if (max_length != 0) {
+            editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(max_length) });
+        } else {
+            if (subForm.getQuestions().equalsIgnoreCase("मोबाईल") || subForm.getQuestions().contains("मोबाईल")) {
+                editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
+            } else if (subForm.getQuestions().equalsIgnoreCase("आधार क्रमांक") || subForm.getQuestions().contains("आधार क्रमांक")) {
+                editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(12) });
+            } else if (subForm.getQuestions().equalsIgnoreCase("ईमेल") || subForm.getQuestions().contains("ईमेल")) {
+                editText.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            }
         }
+        /**/
     }
 }
