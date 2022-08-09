@@ -213,10 +213,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         mBinding.llFormList.addView(headerTextView);
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
-       /* if (surveySection.getSectionDescription().contains("फोटो")) {
-            hasFoto = true;
-            addPhotoView(mBinding.llFormList);
-        }*/
         //add child views and linked views to linear layout
         for (i = 0; i < list.size(); i++) {
             SurveyQuestionWithData subForm = list.get(i);
@@ -236,6 +232,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                for (int k = 0; k < linkedQuestions.size(); k++) {
+                                    linkedQuestions.get(k).setValue("");
+                                }
                                 addLinkedQuestion(linkedQuestions, index, finalI);
                             }
                         });
@@ -248,6 +247,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        for (int k = 0; k < subForm.getLinkedQuestions().size(); k++) {
+                            subForm.getLinkedQuestions().get(k).setValue("");
+                        }
                         addLinkedQuestion(subForm.getLinkedQuestions(), 0, finalI);
                     }
                 });
@@ -305,6 +307,28 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
         }
         Button btnAddAnother = parent.findViewById(R.id.btn_add_another);
+      /*  if (subForm.getLinkedQuestionInEdit() != null && subForm.getLinkedQuestionInEdit().size() > 0) {
+            for (int j = 0; j < subForm.getLinkedQuestionInEdit().size(); j++) {
+                HashMap<Integer, List<SurveyQuestionWithData>> map = subForm.getLinkedQuestionInEdit().get(j);
+                for (Map.Entry<Integer, List<SurveyQuestionWithData>> entry : map.entrySet()) {
+                    int index = entry.getKey();
+                    List<SurveyQuestionWithData> linkedQuestions = entry.getValue();
+                    for (int k = 0; k < linkedQuestions.size(); k++) {
+                        SurveyQuestionWithData linkedQuestion = linkedQuestions.get(k);
+                        if (btnAddAnother != null) {
+                            addChildLinkedQuestion(linkedQuestion, linearLayout, (LinearLayout) parent);
+                            btnAddAnother.setVisibility(View.VISIBLE);
+                            btnAddAnother.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    addChildLinkedQuestion(linkedQuestion, linearLayout, (LinearLayout) parent);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        }else */
         if (subForm.getLinkedQuestions() != null && subForm.getLinkedQuestions().size() > 0) {
 
             if (btnAddAnother != null) {
@@ -313,6 +337,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        subForm.setValue("");
                         addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
                     }
                 });

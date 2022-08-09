@@ -429,35 +429,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
         }
         //render through edittext hashmap list
-        /*for (int j = 0; j < editTexts.size(); j++) {
-            HashMap<String, AppCompatEditText> map = editTexts.get(j);
-            for (Map.Entry<String, AppCompatEditText> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                AppCompatEditText editText = entry.getValue();
-                //Question was saved in hashmap i.e header text value as key
-                //We have get question id using question text from database
-                String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
-                String questionValue = editText.getText().toString();
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionId);
-                candidateDetails.setSurvey_que_option_id("0");
-                candidateDetails.setSurvey_que_values(questionValue);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
-                }
-                inputCandidateDetails.add(candidateDetails);
-            }
-        }*/
         DatabaseUtil.on().insertAllCandidateDetails(inputCandidateDetails);
     }
 
@@ -496,40 +467,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
 
         //render through edittext hashmap list
-        /*for (int j = 0; j < optionEditTexts.size(); j++) {
-            HashMap<String, HashMap<String, AppCompatEditText>> map = optionEditTexts.get(j);
-            for (Map.Entry<String, HashMap<String, AppCompatEditText>> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                HashMap<String, AppCompatEditText> editTextMap = entry.getValue();
-
-                for (Map.Entry<String, AppCompatEditText> edtEntry : editTextMap.entrySet()) {
-                    //Question was saved in hashmap i.e header text value as key
-                    //We have get question id using question text from database
-                    AppCompatEditText editText = edtEntry.getValue();
-                    String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
-                    String questionValue = editText.getText().toString();
-
-                    CandidateDetails candidateDetails = new CandidateDetails();
-                    candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                    candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                    candidateDetails.setSurvey_que_id(questionId);
-                    candidateDetails.setSurvey_que_option_id(edtEntry.getKey());
-                    candidateDetails.setSurvey_que_values(questionValue);
-                    candidateDetails.setFormID(formId);
-                    candidateDetails.setCurrent_Form_Status("GY");
-                    candidateDetails.setAge_value("0");
-                    candidateDetails.setSurvey_StartDate(start_date);
-                    candidateDetails.setSurvey_EndDate(end_date);
-                    candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                    candidateDetails.setLatitude(Double.toString(latitude));
-                    candidateDetails.setLongitude(Double.toString(longitude));
-                    if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
-                        candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
-                    }
-                    inputCandidateDetails.add(candidateDetails);
-                }
-            }
-        }*/
         DatabaseUtil.on().insertAllCandidateDetails(inputCandidateDetails);
     }
 
@@ -781,6 +718,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        subForm.setValue("");
                         addLinkedQuestion(subForm,finalI);
                     }
                 });
@@ -850,6 +788,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        subForm.setValue("");
                         addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
                     }
                 });
@@ -1836,155 +1775,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         map.put(optionId, stringBuffer.toString());
         multiEditTextValues.add(map);
     }
-
-   /* private void getSimpleChildView(LinearLayout linearLayout, int index_of_child) {
-        int ll_count = linearLayout.getChildCount();
-
-        for (int k = 0; k < ll_count; k++) {
-            View child_view = linearLayout.getChildAt(k);
-            //Check question label
-            if (!(child_view instanceof RadioGroup) && child_view instanceof LinearLayout) {
-                getSimpleChildView((LinearLayout) child_view, index_of_child);
-            } else if (child_view instanceof HeaderTextView) {
-                HeaderTextView headerTextView = (HeaderTextView) child_view;
-                int view_next_to_header_id = linearLayout.indexOfChild(child_view) + 1;
-                View next_view = linearLayout.getChildAt(view_next_to_header_id);
-
-                if (next_view != null) {
-                    //check if view next to header is edittext
-                    if (next_view instanceof AppCompatEditText) {
-                        addViewToEdittext(headerTextView, next_view, index_of_child);
-                    }
-
-                    //Checks value of editext in case of itar
-                    if (next_view instanceof Spinner) {
-                        addViewToSpinner(headerTextView, next_view, view_next_to_header_id, linearLayout, index_of_child);
-                    }
-
-                    if (next_view instanceof MultiSpinnerSearch) {
-                        addViewToMultiSpinner(headerTextView, next_view, index_of_child);
-                    }
-
-                    if (next_view instanceof RadioGroup) {
-                        addViewToRadioButtonAndCheckBox(headerTextView, next_view, linearLayout, index_of_child);
-                    }
-                }
-            } else if (child_view instanceof HorizontalScrollView) {
-                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView) child_view);
-                View hsv_child = horizontalScrollView.getChildAt(0);
-                if (hsv_child instanceof LinearLayout) {
-                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
-                    int tot_count = ll_hsv_child.getChildCount();
-                    for (int j = 0; j < tot_count; j++) {
-                        View view_input_box = ll_hsv_child.getChildAt(j);
-                        if (view_input_box instanceof LinearLayout) {
-                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
-                            getMultiChildView(ll_input_box);
-                        }
-                    }
-                }
-                //getSimpleChildView(linearLayout,-1);
-            }
-        }
-    }
-
-    private void addViewToRadioButtonAndCheckBox(HeaderTextView headerTextView, View next_view, LinearLayout linearLayout, int index_of_child) {
-        RadioGroup radioGroup = (RadioGroup) next_view;
-        View radio_child_view = radioGroup.getChildAt(0);
-        if (radio_child_view instanceof RadioButton) {
-            int checked_radio_button_id = radioGroup.getCheckedRadioButtonId();
-            if (checked_radio_button_id != -1) {
-                RadioButton radioButton = linearLayout.findViewById(checked_radio_button_id);
-                radioButton.setTag(index_of_child);
-
-                HashMap<String, RadioButton> map = new HashMap<>();
-                map.put(headerTextView.getText().toString().replace("*", "").trim(), radioButton);
-                radioButtons.add(map);
-            }
-
-        } else if (radio_child_view instanceof CheckBox) {
-            //to get the count of all child checkboxes
-            int cb_child_count = radioGroup.getChildCount();
-            for (int l = 0; l < cb_child_count; l++) {
-                View cb_child_view = radioGroup.getChildAt(l);
-                if (cb_child_view instanceof CheckBox) {
-                    CheckBox checkBox = (CheckBox) cb_child_view;
-                    checkBox.setTag(index_of_child);
-                    HashMap<String, CheckBox> map = new HashMap<>();
-                    map.put(headerTextView.getText().toString().replace("*", "").trim(), checkBox);
-                    checkBoxes.add(map);
-                }
-            }
-        }
-    }
-
-    private void addViewToMultiSpinner(HeaderTextView headerTextView, View next_view, int index_of_child) {
-        MultiSpinnerSearch multiSpinnerSearch = (MultiSpinnerSearch) next_view;
-        multiSpinnerSearch.setTag(index_of_child);
-        HashMap<String, MultiSpinnerSearch> map = new HashMap<>();
-        map.put(headerTextView.getText().toString().replace("*", "").trim(), multiSpinnerSearch);
-        multiSpinnerSearches.add(map);
-    }
-
-    private void addViewToSpinner(HeaderTextView headerTextView, View next_view, int view_next_to_header_id, LinearLayout linearLayout, int index_of_child) {
-        Spinner spinner = (Spinner) next_view;
-        QuestionOption questionOption = (QuestionOption) spinner.getSelectedItem();
-
-        if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-            int edit_text_next_to_spinner_id = view_next_to_header_id + 1;
-            View edit_text_next_to_spinner = linearLayout.getChildAt(edit_text_next_to_spinner_id);
-
-            if (edit_text_next_to_spinner instanceof AppCompatEditText) {
-                AppCompatEditText editText = (AppCompatEditText) edit_text_next_to_spinner;
-                editText.setTag(index_of_child);
-                HashMap<String, HashMap<String, AppCompatEditText>> map = new HashMap<>();
-                HashMap<String, AppCompatEditText> edtMap = new HashMap<>();
-                edtMap.put(questionOption.getQNAOption_ID(), editText);
-                map.put(headerTextView.getText().toString().replace("*", "").trim(), edtMap);
-                optionEditTexts.add(map);
-            }
-
-        } else {
-            spinner.setTag(index_of_child);
-
-            HashMap<String, Spinner> map = new HashMap<>();
-            map.put(headerTextView.getText().toString().replace("*", "").trim(), spinner);
-            spinners.add(map);
-        }
-    }
-
-    private void addViewToEdittext(HeaderTextView headerTextView, View next_view, int index_of_child) {
-        AppCompatEditText editText = (AppCompatEditText) next_view;
-        editText.setTag(index_of_child);
-        HashMap<String, AppCompatEditText> map = new HashMap<>();
-        map.put(headerTextView.getText().toString().replace("*", "").trim(), editText);
-        editTexts.add(map);
-    }
-
-    private void getLinkedView(LinearLayout linearLayout) {
-        LinearLayout ll_add_another_single_view = linearLayout.findViewById(R.id.ll_add_another_single_view);
-        int single_view_child_count = ll_add_another_single_view.getChildCount();
-        for (int j = 0; j < single_view_child_count; j++) {
-            View view = ll_add_another_single_view.getChildAt(j);
-            if (view instanceof LinearLayout) {
-                LinearLayout ll_add_another = (LinearLayout) view;
-                LinearLayout ll_add_another_child = null;
-                try {
-                    ll_add_another_child = ll_add_another.findViewById(R.id.ll_add_another_child);
-                    if (ll_add_another_child != null) {
-                        int count = ll_add_another_child.getChildCount();
-                        for (int k = 0; k < count; k++) {
-                            View ll_view = ll_add_another_child.getChildAt(k);
-                            if (ll_view instanceof LinearLayout) {
-                                getSimpleChildView((LinearLayout) ll_view, j);
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                }
-            }
-        }
-    }*/
 
     @Override
     public void showResponseFailed(String error) {
