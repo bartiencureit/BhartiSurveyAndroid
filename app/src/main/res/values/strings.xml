@@ -41,7 +41,7 @@
     <string name="setting_">आस सेटिंग</string>
     <string name="invalid_response">सर्व्हरकडून अवैध प्रतिसाद</string>
     <string name="sucessfull_login">यशस्वी लॉगिन</string>
-    <string name="generic_name">%s)</string>
+    <string name="generic_name">%s.</string>
     <string name="add_another">आणखी जोडा</string>
     <string name="invalid_entry">कृपया सगळी माहिती भरा</string>
     <string name="new_form">नवीन फॉर्म</string>
@@ -56,5 +56,6 @@
     <string name="missing_permissions">Missing Permissions</string>
     <string name="no_close_the_app">NO Close The App</string>
     <string name="first_fill_first_section">"आधी पहिला सेक्षन भरणे बंधनकारक "</string>
+    <string name="last_updated">Last Updated :</string>
 
 </resources>

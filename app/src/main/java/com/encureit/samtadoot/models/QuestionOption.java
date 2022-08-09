@@ -112,4 +112,9 @@ public class QuestionOption {
     public void setIsActive(String isActive) {
         IsActive = isActive;
     }
+
+    @Override
+    public String toString() {
+        return QNA_Values;
+    }
 }

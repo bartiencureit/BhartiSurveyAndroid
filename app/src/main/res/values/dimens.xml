@@ -3,5 +3,6 @@
     
     <dimen name="multi_input_width">100dp</dimen>
     <dimen name="one_dp">1dp</dimen>
+    <dimen name="_10dp">10dp</dimen>
 
 </resources>

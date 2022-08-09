@@ -7,6 +7,10 @@
         <variable
             name="candidatePresenter"
             type="com.encureit.samtadoot.presenter.CandidateSurveyDetailsPresenter" />
+
+        <variable
+            name="listModel"
+            type="com.encureit.samtadoot.models.SurveyType" />
     </data>
 
     <LinearLayout
@@ -22,10 +26,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/tv_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="@{listModel.form_description}"
+                android:textSize="18sp"
+                android:textStyle="italic"
+                android:layout_marginStart="@dimen/_10dp"
+                android:layout_marginEnd="@dimen/_10dp"
+                android:gravity="center"/>
+
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_candidate_details"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_below="@id/tv_header"
+                android:layout_above="@id/btn_new_form"
                 android:layout_margin="10dp" />
 
             <Button

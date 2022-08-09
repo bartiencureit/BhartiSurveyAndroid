@@ -1,5 +1,6 @@
 package com.encureit.samtadoot.models;
 
+import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -21,32 +22,29 @@ public class CandidateSurveyStatusDetails implements Parcelable {
     String FormID;
     String survey_status;
     String start_date;
+    String last_updated_date;
     String end_date;
 
     public CandidateSurveyStatusDetails() {}
 
     @Ignore
-    public CandidateSurveyStatusDetails(Parcel in) {
+    protected CandidateSurveyStatusDetails(Parcel in) {
         id = in.readInt();
         survey_section_id = in.readString();
         FormID = in.readString();
         survey_status = in.readString();
         start_date = in.readString();
+        last_updated_date = in.readString();
         end_date = in.readString();
     }
 
-    @Ignore
-    public static final Creator<CandidateSurveyStatusDetails> CREATOR = new Creator<CandidateSurveyStatusDetails>() {
-        @Override
-        public CandidateSurveyStatusDetails createFromParcel(Parcel in) {
-            return new CandidateSurveyStatusDetails(in);
-        }
+    public int getId() {
+        return id;
+    }
 
-        @Override
-        public CandidateSurveyStatusDetails[] newArray(int size) {
-            return new CandidateSurveyStatusDetails[size];
-        }
-    };
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getSurvey_section_id() {
         return survey_section_id;
@@ -80,6 +78,14 @@ public class CandidateSurveyStatusDetails implements Parcelable {
         this.start_date = start_date;
     }
 
+    public String getLast_updated_date() {
+        return last_updated_date;
+    }
+
+    public void setLast_updated_date(String last_updated_date) {
+        this.last_updated_date = last_updated_date;
+    }
+
     public String getEnd_date() {
         return end_date;
     }
@@ -88,19 +94,44 @@ public class CandidateSurveyStatusDetails implements Parcelable {
         this.end_date = end_date;
     }
 
+    @Ignore
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(survey_section_id);
+        dest.writeString(FormID);
+        dest.writeString(survey_status);
+        dest.writeString(start_date);
+        dest.writeString(last_updated_date);
+        dest.writeString(end_date);
+    }
+
+    @Ignore
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Ignore
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(id);
-        parcel.writeString(survey_section_id);
-        parcel.writeString(FormID);
-        parcel.writeString(survey_status);
-        parcel.writeString(start_date);
-        parcel.writeString(end_date);
+    public static final Creator<CandidateSurveyStatusDetails> CREATOR = new Creator<CandidateSurveyStatusDetails>() {
+        @Override
+        public CandidateSurveyStatusDetails createFromParcel(Parcel in) {
+            return new CandidateSurveyStatusDetails(in);
+        }
+
+        @Override
+        public CandidateSurveyStatusDetails[] newArray(int size) {
+            return new CandidateSurveyStatusDetails[size];
+        }
+    };
+
+    public int getStatusColor() {
+        if (survey_status.equalsIgnoreCase("Pending")) {
+            return Color.RED;
+        } else if(survey_status.equalsIgnoreCase("Completed")){
+            return Color.GREEN;
+        } else {
+            return Color.DKGRAY;
+        }
     }
 }
