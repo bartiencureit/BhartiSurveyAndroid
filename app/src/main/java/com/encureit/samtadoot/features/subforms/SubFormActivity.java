@@ -422,6 +422,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (subForm.getLinked_question_id() != -1) {
+                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
+                }
                 /*if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
                     candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
                 }*/
@@ -498,6 +501,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (subForm.getLinked_question_id() != -1) {
+                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
+                }
                 /*if (!(spinner.getTag().toString().equalsIgnoreCase("-1"))) {
                     candidateDetails.setIndex_if_linked_question(Integer.parseInt(spinner.getTag().toString()));
                 }*/
@@ -538,6 +544,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }*/
         DatabaseUtil.on().insertAllCandidateDetails(dropDownCandidateDetails);
     }
+
 
     /**
      * @param spinner
@@ -714,10 +721,14 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             if (subForm.getLinkedQuestions().size() > 0) {
                 mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
                 int finalI = i;
+                subForm.setLinked_question_id(1);
                 addLinkedQuestion(subForm,finalI);
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        int id = subForm.getLinked_question_id();
+                        id++;
+                        subForm.setLinked_question_id(id);
                         subForm.setValue("");
                         addLinkedQuestion(subForm,finalI);
                     }
@@ -725,7 +736,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 mBinding.llFormList.addView(mBindingChild[i].getRoot());
             }
         }
-
         mainLinear = mBinding.llFormList;
     }
 
@@ -803,6 +813,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
             SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
+            linkedQuestion.setLinked_question_id(subForm.getLinked_question_id());
             populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
         }
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {

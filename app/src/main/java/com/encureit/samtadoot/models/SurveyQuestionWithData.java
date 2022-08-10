@@ -40,6 +40,7 @@ public class SurveyQuestionWithData implements Parcelable {
     List<HashMap<Integer,List<SurveyQuestionWithData>>> linkedQuestionInEdit;
     List<QuestionOption> questionOptions;
     String Value = "";
+    int linked_question_id = -1;
 
     public SurveyQuestionWithData() {}
 
@@ -58,6 +59,8 @@ public class SurveyQuestionWithData implements Parcelable {
         ParentQuestionId = in.readString();
         OptionDependent = in.readString();
         Questions = in.readString();
+        min_length = in.readString();
+        max_length = in.readString();
         CreatedBy = in.readString();
         CreatedDate = in.readString();
         UpdatedBy = in.readString();
@@ -67,19 +70,8 @@ public class SurveyQuestionWithData implements Parcelable {
         childQuestions = in.createTypedArrayList(SurveyQuestionWithData.CREATOR);
         linkedQuestions = in.createTypedArrayList(SurveyQuestionWithData.CREATOR);
         Value = in.readString();
+        linked_question_id = in.readInt();
     }
-
-    public static final Creator<SurveyQuestionWithData> CREATOR = new Creator<SurveyQuestionWithData>() {
-        @Override
-        public SurveyQuestionWithData createFromParcel(Parcel in) {
-            return new SurveyQuestionWithData(in);
-        }
-
-        @Override
-        public SurveyQuestionWithData[] newArray(int size) {
-            return new SurveyQuestionWithData[size];
-        }
-    };
 
     public String getSurveyQuestion_ID() {
         return SurveyQuestion_ID;
@@ -297,8 +289,45 @@ public class SurveyQuestionWithData implements Parcelable {
         Value = value;
     }
 
+    public int getLinked_question_id() {
+        return linked_question_id;
+    }
+
+    public void setLinked_question_id(int linked_question_id) {
+        this.linked_question_id = linked_question_id;
+    }
+
     public static Creator<SurveyQuestionWithData> getCREATOR() {
         return CREATOR;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(SurveyQuestion_ID);
+        dest.writeString(SurveySection_ID);
+        dest.writeString(QuestionTypeID);
+        dest.writeString(Autopopulate);
+        dest.writeString(LabelHeader);
+        dest.writeString(Required);
+        dest.writeString(QuestionSequence);
+        dest.writeString(ValidationType);
+        dest.writeString(IsValidation);
+        dest.writeString(IsLinkedQuestionId);
+        dest.writeString(ParentQuestionId);
+        dest.writeString(OptionDependent);
+        dest.writeString(Questions);
+        dest.writeString(min_length);
+        dest.writeString(max_length);
+        dest.writeString(CreatedBy);
+        dest.writeString(CreatedDate);
+        dest.writeString(UpdatedBy);
+        dest.writeString(UpdatedDate);
+        dest.writeString(is_section);
+        dest.writeString(IsActive);
+        dest.writeTypedList(childQuestions);
+        dest.writeTypedList(linkedQuestions);
+        dest.writeString(Value);
+        dest.writeInt(linked_question_id);
     }
 
     @Override
@@ -306,31 +335,17 @@ public class SurveyQuestionWithData implements Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(SurveyQuestion_ID);
-        parcel.writeString(SurveySection_ID);
-        parcel.writeString(QuestionTypeID);
-        parcel.writeString(Autopopulate);
-        parcel.writeString(LabelHeader);
-        parcel.writeString(Required);
-        parcel.writeString(QuestionSequence);
-        parcel.writeString(ValidationType);
-        parcel.writeString(IsValidation);
-        parcel.writeString(IsLinkedQuestionId);
-        parcel.writeString(ParentQuestionId);
-        parcel.writeString(OptionDependent);
-        parcel.writeString(Questions);
-        parcel.writeString(CreatedBy);
-        parcel.writeString(CreatedDate);
-        parcel.writeString(UpdatedBy);
-        parcel.writeString(UpdatedDate);
-        parcel.writeString(is_section);
-        parcel.writeString(IsActive);
-        parcel.writeTypedList(childQuestions);
-        parcel.writeTypedList(linkedQuestions);
-        parcel.writeString(Value);
-    }
+    public static final Creator<SurveyQuestionWithData> CREATOR = new Creator<SurveyQuestionWithData>() {
+        @Override
+        public SurveyQuestionWithData createFromParcel(Parcel in) {
+            return new SurveyQuestionWithData(in);
+        }
+
+        @Override
+        public SurveyQuestionWithData[] newArray(int size) {
+            return new SurveyQuestionWithData[size];
+        }
+    };
 
     public int getInputValidation() {
         switch (ValidationType) {

@@ -228,11 +228,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     for (Map.Entry<Integer, List<SurveyQuestionWithData>> entry : map.entrySet()) {
                         int index = entry.getKey();
                         List<SurveyQuestionWithData> linkedQuestions = entry.getValue();
+                        for (int k = 0; k < linkedQuestions.size(); k++) {
+                            linkedQuestions.get(k).setLinked_question_id(1);
+                        }
                         addLinkedQuestion(linkedQuestions, index, finalI);
                         mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 for (int k = 0; k < linkedQuestions.size(); k++) {
+                                    int id = linkedQuestions.get(k).getLinked_question_id();
+                                    linkedQuestions.get(k).setLinked_question_id(id++);
                                     linkedQuestions.get(k).setValue("");
                                 }
                                 addLinkedQuestion(linkedQuestions, index, finalI);
@@ -243,11 +248,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 mBinding.llFormList.addView(mBindingChild[i].getRoot());
             } else if (subForm.getLinkedQuestions().size() > 0) {
                 mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
+                for (int k = 0; k < subForm.getLinkedQuestions().size(); k++) {
+                    subForm.getLinkedQuestions().get(k).setLinked_question_id(1);
+                }
                 addLinkedQuestion(subForm.getLinkedQuestions(), 0, finalI);
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         for (int k = 0; k < subForm.getLinkedQuestions().size(); k++) {
+                            int id = subForm.getLinkedQuestions().get(k).getLinked_question_id();
+                            subForm.getLinkedQuestions().get(k).setLinked_question_id(id++);
                             subForm.getLinkedQuestions().get(k).setValue("");
                         }
                         addLinkedQuestion(subForm.getLinkedQuestions(), 0, finalI);
@@ -538,7 +548,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
     }
 
-
     private void editMultiInputBoxDataToDb() {
         List<CandidateDetails> multiInputCandidateDetails = new ArrayList<>();
 
@@ -625,6 +634,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (subForm.getLinked_question_id() != -1) {
+                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
+                }
                 inputCandidateDetails.add(candidateDetails);
                 int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
                 if (id != -1) {
@@ -776,6 +788,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
                 candidateDetails.setLatitude(Double.toString(latitude));
                 candidateDetails.setLongitude(Double.toString(longitude));
+                if (subForm.getLinked_question_id() != -1) {
+                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
+                }
                 dropDownCandidateDetails.add(candidateDetails);
 
                 int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
