@@ -180,6 +180,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             if (candidateDetails.isEmpty()) {
                 isValid = false;
             }
+            if (multiEditTextValues.size() > 0) {
+                return true;
+            }
             return isValid;
         }
 
@@ -461,9 +464,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void addChildViews(SurveySection surveySection) {
         //emptyAllLists();
         //Add Survey Section as a header
-        HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
+        /*HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
         headerTextView.setText(surveySection.getSectionDescription());
-        mBinding.llFormList.addView(headerTextView);
+        mBinding.llFormList.addView(headerTextView);*/
 
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
@@ -767,7 +770,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         List<String> labels = Arrays.asList(label_header.split(","));
 
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
-        binding.setOption(null);
+        QuestionOption questionOption = new QuestionOption();
+        questionOption.setQNA_Values("अनु क्र.");
+        binding.setOption(questionOption);
 
         for (int j = 0; j < labels.size(); j++) {
             //add Header To Layout
