@@ -12,21 +12,20 @@
         android:id="@+id/ll_input_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <com.encureit.samtadoot.custom.HeaderTextView
             android:id="@+id/tv_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{subForm.requiredLabel}"/>
+            android:text="@{subForm.requiredLabel}"
+            android:layout_marginTop="@dimen/_10dp"/>
 
         <com.androidbuts.multispinnerfilter.MultiSpinnerSearch
             android:id="@+id/multiSelectSpinnerWithSearch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edittext_rounded_corners"
-            android:layout_margin="10dp" />
+            android:background="@drawable/edittext_rounded_corners" />
 
     </LinearLayout>
 

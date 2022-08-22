@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
+import com.encureit.samtadoot.custom.CustomCheckBox;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -36,6 +36,10 @@ import com.encureit.samtadoot.Helpers.PermissionsUtil;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.adapters.DropDownArrayAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
+import com.encureit.samtadoot.custom.CustomDropDown;
+import com.encureit.samtadoot.custom.CustomEditText;
+import com.encureit.samtadoot.custom.CustomRadioButton;
+import com.encureit.samtadoot.custom.CustomRadioGroup;
 import com.encureit.samtadoot.custom.HeaderTextView;
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivitySubFormBinding;
@@ -96,22 +100,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private SingleAddAnotherItemBinding[] mBindingChild;
     private List<SurveyQuestionWithData> list;
     private int i = 0;
-    /*private final List<HashMap<String, AppCompatEditText>> editTexts = new ArrayList<>();
-    private final List<HashMap<String, HashMap<String, AppCompatEditText>>> optionEditTexts = new ArrayList<>();
-    private final List<HashMap<String, Spinner>> spinners = new ArrayList<>();
-    private final List<HashMap<String, MultiSpinnerSearch>> multiSpinnerSearches = new ArrayList<>();
-    private final List<HashMap<String, RadioButton>> radioButtons = new ArrayList<>();
-    private final List<HashMap<String, CheckBox>> checkBoxes = new ArrayList<>();
-    private final List<HashMap<String, String>> multiEditTextValues = new ArrayList<>();*/
+    private int linked_question_index = 1;
+    private int child_linked_question_index = 1;
     private final List<HashMap<String, String>> multiEditTextValues = new ArrayList<>();
-    private final List<HashMap<SurveyQuestionWithData,AppCompatEditText>> editTexts = new ArrayList<>();
-    private final List<HashMap<QuestionOption,RadioButton>> radioButtons = new ArrayList<>();
-    private final List<HashMap<QuestionOption,CheckBox>> checkBoxes = new ArrayList<>();
-    private final List<HashMap<SurveyQuestionWithData,Spinner>> spinners = new ArrayList<>();
-    private final List<HashMap<QuestionOption,AppCompatEditText>> optionEditTexts = new ArrayList<>();
-    private final List<HashMap<SurveyQuestionWithData,RadioGroup>> radioGroups = new ArrayList<>();
+    private List<CandidateDetails> candidateDetails = new ArrayList<>();
+    private boolean isValid = true;
 
-    //private List<Object> requiredFields = new ArrayList<>();
     private LinearLayout mainLinear;
     private SurveySection section;
     private SurveyType surveyType;
@@ -180,109 +174,13 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             } else {
                 return false;
             }
-        } /*else if (editTexts == null || editTexts.size() <= 0 || optionEditTexts == null || optionEditTexts.size() <= 0 || radioButtons == null || radioButtons.size() <= 0) {
-            return false;
-        } */else {
+        } else {
             emptyAllLists();
             getAllChildViewIterative(mainLinear);
-
-            int filled_edittext_count = 0;
-            if (editTexts.size() > 0) {
-                for (int j = 0; j < editTexts.size(); j++) {
-                    HashMap<SurveyQuestionWithData, AppCompatEditText> map = editTexts.get(j);
-                    for (Map.Entry<SurveyQuestionWithData, AppCompatEditText> entry : map.entrySet()) {
-                        SurveyQuestionWithData question = entry.getKey();
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            AppCompatEditText editText = entry.getValue();
-                            if (!TextUtils.isEmpty(editText.getText().toString())) {
-                                filled_edittext_count++;
-                            }
-                        } else {
-                            filled_edittext_count++;
-                        }
-                    }
-                }
+            if (candidateDetails.isEmpty()) {
+                isValid = false;
             }
-
-            int filled_option_edittext_count = 0;
-            if (optionEditTexts != null && optionEditTexts.size() > 0) {
-                for (int j = 0; j < optionEditTexts.size(); j++) {
-                    HashMap<QuestionOption, AppCompatEditText> map = optionEditTexts.get(j);
-                    for (Map.Entry<QuestionOption, AppCompatEditText> entry : map.entrySet()) {
-                        QuestionOption questionOption = entry.getKey();
-                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            AppCompatEditText editText = entry.getValue();
-                            if (!TextUtils.isEmpty(editText.getText().toString())) {
-                                filled_option_edittext_count++;
-                            }
-                        } else {
-                            filled_option_edittext_count++;
-                        }
-                    }
-                }
-            }
-
-            int filled_radio_group_count = 0;
-            if (radioGroups != null && radioGroups.size() > 0) {
-                for (int j = 0; j < radioGroups.size(); j++) {
-                    HashMap<SurveyQuestionWithData, RadioGroup> map = radioGroups.get(j);
-                    for (Map.Entry<SurveyQuestionWithData, RadioGroup> entry : map.entrySet()) {
-                        SurveyQuestionWithData subForm = entry.getKey();
-                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(subForm.getSurveyQuestion_ID());
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            RadioGroup radioGroup = entry.getValue();
-                            if (radioGroup.getCheckedRadioButtonId() != -1) {
-                                filled_radio_group_count++;
-                            }
-                        } else {
-                            filled_radio_group_count++;
-                        }
-                    }
-                }
-            }
-
-            int filled_radio_count = 0;
-            if (radioButtons != null && radioButtons.size() > 0) {
-                for (int j = 0; j < radioButtons.size(); j++) {
-                    HashMap<QuestionOption, RadioButton> map = radioButtons.get(j);
-                    for (Map.Entry<QuestionOption, RadioButton> entry : map.entrySet()) {
-                        QuestionOption questionOption = entry.getKey();
-                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            RadioButton radioButton = entry.getValue();
-                            if (radioButton.isChecked()) {
-                                filled_radio_count++;
-                            }
-                        } else {
-                            filled_radio_count++;
-                        }
-                    }
-                }
-            }
-
-            int filled_checkbox_count = 0;
-            if (checkBoxes != null && checkBoxes.size() > 0) {
-                for (int j = 0; j < checkBoxes.size(); j++) {
-                    HashMap<QuestionOption, CheckBox> map = checkBoxes.get(j);
-                    for (Map.Entry<QuestionOption, CheckBox> entry : map.entrySet()) {
-                        QuestionOption questionOption = entry.getKey();
-                        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
-                        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
-                            CheckBox checkBox = entry.getValue();
-                            if (checkBox.isChecked()) {
-                                filled_checkbox_count++;
-                            }
-                        } else {
-                            filled_checkbox_count++;
-                        }
-                    }
-                }
-            }
-
-            return filled_edittext_count == editTexts.size() && filled_option_edittext_count == optionEditTexts.size()
-                    && filled_radio_count == radioButtons.size() && filled_checkbox_count == checkBoxes.size()
-                    && filled_radio_group_count == radioGroups.size();
+            return isValid;
         }
 
     }
@@ -310,15 +208,15 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
             startActivityOnTop(DashboardActivity.class, false);
         } else {
-            saveInputBoxDataToDb();
-            saveOptionInputBoxDataToDb();
-            saveDropDownDataToDb();
-            saveRadioButtonDataToDb();
-            saveCheckBoxDataToDb();
+            saveAllCandidates();
             saveMultiInputBoxDataToDb();
             ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
             startActivityOnTop(DashboardActivity.class, false);
         }
+    }
+
+    private void saveAllCandidates() {
+       DatabaseUtil.on().insertAllCandidateDetails(candidateDetails);
     }
 
     private void saveFotoToDb() {
@@ -399,300 +297,157 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      * @date 10-3-2022
      * save edittext data to sqlite db
      */
-    private void saveInputBoxDataToDb() {
-        List<CandidateDetails> inputCandidateDetails = new ArrayList<>();
+    private void getInputCandidate(CustomEditText editText) {
+        CandidateDetails candidateDetail = new CandidateDetails();
+        if (editText.getSubForm() instanceof SurveyQuestionWithData) {
+            SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
 
-        for (int j = 0; j < editTexts.size(); j++) {
-            HashMap<SurveyQuestionWithData, AppCompatEditText> map = editTexts.get(j);
-            for (Map.Entry<SurveyQuestionWithData, AppCompatEditText> entry : map.entrySet()) {
-                SurveyQuestionWithData subForm = entry.getKey();
-                AppCompatEditText editText = entry.getValue();
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(subForm.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id("0");
-                candidateDetails.setSurvey_que_values(editText.getText().toString());
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (subForm.getLinked_question_id() != -1) {
-                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
                 }
-                /*if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
-                }*/
-                inputCandidateDetails.add(candidateDetails);
+            }
+
+            candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+            candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+            candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+            candidateDetail.setSurvey_que_option_id("0");
+            candidateDetail.setSurvey_que_values(editText.getText().toString());
+            candidateDetail.setFormID(formId);
+            candidateDetail.setCurrent_Form_Status("GY");
+            candidateDetail.setAge_value("0");
+            candidateDetail.setSurvey_StartDate(start_date);
+            candidateDetail.setSurvey_EndDate(end_date);
+            candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+            candidateDetail.setLatitude(Double.toString(latitude));
+            candidateDetail.setLongitude(Double.toString(longitude));
+            if (linked_id != -1) {
+                candidateDetail.setIndex_if_linked_question(linked_id);
+            }
+        } else if (editText.getSubForm() instanceof QuestionOption) {
+            QuestionOption questionOption = (QuestionOption) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
+
+            SurveyQuestion subForm = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
+
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
+                }
+            }
+
+            candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+            candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+            candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+            candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+            candidateDetail.setSurvey_que_values(editText.getText().toString());
+            candidateDetail.setFormID(formId);
+            candidateDetail.setCurrent_Form_Status("GY");
+            candidateDetail.setAge_value("0");
+            candidateDetail.setSurvey_StartDate(start_date);
+            candidateDetail.setSurvey_EndDate(end_date);
+            candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+            candidateDetail.setLatitude(Double.toString(latitude));
+            candidateDetail.setLongitude(Double.toString(longitude));
+            if (linked_id != -1) {
+                candidateDetail.setIndex_if_linked_question(linked_id);
             }
         }
-        //render through edittext hashmap list
-        DatabaseUtil.on().insertAllCandidateDetails(inputCandidateDetails);
-    }
-
-    /**
-     * @date 10-6-2022
-     * save option edittext data to sqlite db
-     */
-    private void saveOptionInputBoxDataToDb() {
-        List<CandidateDetails> inputCandidateDetails = new ArrayList<>();
-
-        for (int j = 0; j < optionEditTexts.size(); j++) {
-            HashMap<QuestionOption, AppCompatEditText> map = optionEditTexts.get(j);
-            for (Map.Entry<QuestionOption, AppCompatEditText> entry : map.entrySet()) {
-                QuestionOption questionOption = entry.getKey();
-                AppCompatEditText editText = entry.getValue();
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(editText.getText().toString());
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                /*if (!(editText.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(editText.getTag().toString()));
-                }*/
-                inputCandidateDetails.add(candidateDetails);
-            }
-        }
-
-        //render through edittext hashmap list
-        DatabaseUtil.on().insertAllCandidateDetails(inputCandidateDetails);
+        candidateDetails.add(candidateDetail);
     }
 
     /**
      * @date 10-3-2022
      * save drop down data to sqlite db
      */
-    private void saveDropDownDataToDb() {
-        List<CandidateDetails> dropDownCandidateDetails = new ArrayList<>();
+    private void getDropDownCandidate(CustomDropDown spinner) {
+        SurveyQuestionWithData subForm = (SurveyQuestionWithData) spinner.getSubForm();
+        int linked_id = spinner.getLinked_id();
+        QuestionOption questionOption = (QuestionOption) spinner.getSelectedItem();
 
-        for (int j = 0; j < spinners.size(); j++) {
-            HashMap<SurveyQuestionWithData, Spinner> map = spinners.get(j);
-            for (Map.Entry<SurveyQuestionWithData, Spinner> entry : map.entrySet()) {
-                SurveyQuestionWithData subForm = entry.getKey();
-                Spinner spinner = entry.getValue();
-                QuestionOption questionOption = (QuestionOption) spinner.getSelectedItem();
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(subForm.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(questionOption.getQNA_Values());
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (subForm.getLinked_question_id() != -1) {
-                    candidateDetails.setIndex_if_linked_question(subForm.getLinked_question_id());
-                }
-                /*if (!(spinner.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(spinner.getTag().toString()));
-                }*/
-                dropDownCandidateDetails.add(candidateDetails);
-            }
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+        candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+        candidateDetail.setSurvey_que_values(questionOption.getQNA_Values());
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id != -1) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
         }
-
-        //render through spinner hashmap list
-        /*for (int j = 0; j < spinners.size(); j++) {
-            HashMap<String, Spinner> map = spinners.get(j);
-            for (Map.Entry<String, Spinner> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                Spinner spinner = entry.getValue();
-                //Question was saved in hashmap i.e header text value as key
-                //We have get question id using question text from database
-                String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
-                String questionValue = getSpinnerValue(spinner);
-                String option_id = DatabaseUtil.on().getOptionId(str_question, questionValue);
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionId);
-                candidateDetails.setSurvey_que_option_id(option_id);
-                candidateDetails.setSurvey_que_values(questionValue);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (!(spinner.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(spinner.getTag().toString()));
-                }
-                dropDownCandidateDetails.add(candidateDetails);
-            }
-        }*/
-        DatabaseUtil.on().insertAllCandidateDetails(dropDownCandidateDetails);
-    }
-
-
-    /**
-     * @param spinner
-     * @return
-     * @date 10-3-2022
-     * Calculate spinner value
-     */
-    private String getSpinnerValue(Spinner spinner) {
-        QuestionOption option = (QuestionOption) spinner.getSelectedItem();
-        return option.getQNA_Values();
+        candidateDetails.add(candidateDetail);
     }
 
     /**
      * @date 10-3-2022
      * save radio button data to sqlite db
      */
-    private void saveRadioButtonDataToDb() {
-        List<CandidateDetails> radioButtonCandidateDetails = new ArrayList<>();
-
-        for (int j = 0; j < radioButtons.size(); j++) {
-            HashMap<QuestionOption, RadioButton> map = radioButtons.get(j);
-            for (Map.Entry<QuestionOption, RadioButton> entry : map.entrySet()) {
-                QuestionOption questionOption = entry.getKey();
-                RadioButton radioButton = entry.getValue();
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(radioButton.getText().toString());
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                /*if (!(radioButton.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(radioButton.getTag().toString()));
-                }*/
-                radioButtonCandidateDetails.add(candidateDetails);
+    private void getRadioButtonCandidate(CustomRadioButton radioButton) {
+        QuestionOption questionOption = (QuestionOption) radioButton.getSubForm();
+        int linked_id = radioButton.getLinked_id();
+        SurveyQuestion question = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
+        if (question.getRequired() != null && question.getRequired().equalsIgnoreCase("true")) {
+            if (!radioButton.isChecked()) {
+                isValid = false;
             }
         }
 
-        //render through radio button hashmap list
-        /*for (int j = 0; j < radioButtons.size(); j++) {
-            HashMap<String, RadioButton> map = radioButtons.get(j);
-            for (Map.Entry<String, RadioButton> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                RadioButton radioButton = entry.getValue();
-                //Question was saved in hashmap i.e header text value as key
-                //We have get question id using question text from database
-                String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
-                String questionValue = radioButton.getText().toString();
-                String option_id = DatabaseUtil.on().getOptionId(str_question, questionValue);
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+        candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+        candidateDetail.setSurvey_que_values(radioButton.getText().toString());
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id != -1) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
+        }
 
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionId);
-                candidateDetails.setSurvey_que_option_id(option_id);
-                candidateDetails.setSurvey_que_values(questionValue);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (!(radioButton.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(radioButton.getTag().toString()));
-                }
-                radioButtonCandidateDetails.add(candidateDetails);
-            }
-        }*/
-        DatabaseUtil.on().insertAllCandidateDetails(radioButtonCandidateDetails);
+        candidateDetails.add(candidateDetail);
     }
 
     /**
      * @date 10-3-2022
      * save check boxes data to sqlite db
      */
-    private void saveCheckBoxDataToDb() {
-        List<CandidateDetails> checkBoxCandidateDetails = new ArrayList<>();
+    private void getCheckBoxCandidate(CustomCheckBox checkBox) {
+        QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
+        int linked_id = checkBox.getLinked_id();
 
-        for (int j = 0; j < checkBoxes.size(); j++) {
-            HashMap<QuestionOption, CheckBox> map = checkBoxes.get(j);
-            for (Map.Entry<QuestionOption, CheckBox> entry : map.entrySet()) {
-                QuestionOption questionOption = entry.getKey();
-                CheckBox checkBox = entry.getValue();
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                candidateDetails.setSurvey_que_values(checkBox.getText().toString());
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                /*if (!(checkBox.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(checkBox.getTag().toString()));
-                }*/
-                checkBoxCandidateDetails.add(candidateDetails);
-            }
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+        candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+        candidateDetail.setSurvey_que_values(checkBox.getText().toString());
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id != -1) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
         }
 
-        //render through radio button hashmap list
-        /*for (int j = 0; j < checkBoxes.size(); j++) {
-            HashMap<String, CheckBox> map = checkBoxes.get(j);
-            for (Map.Entry<String, CheckBox> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                CheckBox checkBox = entry.getValue();
-                //Question was saved in hashmap i.e header text value as key
-                //We have get question id using question text from database
-                String questionId = DatabaseUtil.on().getQuestionIdFromQuestion(str_question);
-                String questionValue = checkBox.getText().toString();
-                String option_id = DatabaseUtil.on().getOptionId(str_question, questionValue);
-
-                CandidateDetails candidateDetails = new CandidateDetails();
-                candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                candidateDetails.setSurvey_que_id(questionId);
-                candidateDetails.setSurvey_que_option_id(option_id);
-                candidateDetails.setSurvey_que_values(questionValue);
-                candidateDetails.setFormID(formId);
-                candidateDetails.setCurrent_Form_Status("GY");
-                candidateDetails.setAge_value("0");
-                candidateDetails.setSurvey_StartDate(start_date);
-                candidateDetails.setSurvey_EndDate(end_date);
-                candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                candidateDetails.setLatitude(Double.toString(latitude));
-                candidateDetails.setLongitude(Double.toString(longitude));
-                if (!(checkBox.getTag().toString().equalsIgnoreCase("-1"))) {
-                    candidateDetails.setIndex_if_linked_question(Integer.parseInt(checkBox.getTag().toString()));
-                }
-                checkBoxCandidateDetails.add(candidateDetails);
-            }
-        }*/
-        DatabaseUtil.on().insertAllCandidateDetails(checkBoxCandidateDetails);
+        candidateDetails.add(candidateDetail);
     }
 
     @Override
@@ -704,6 +459,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void addChildViews(SurveySection surveySection) {
+        //emptyAllLists();
         //Add Survey Section as a header
         HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
         headerTextView.setText(surveySection.getSectionDescription());
@@ -721,15 +477,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             if (subForm.getLinkedQuestions().size() > 0) {
                 mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
                 int finalI = i;
-                subForm.setLinked_question_id(1);
+                linked_question_index = 1;
                 addLinkedQuestion(subForm,finalI);
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        int id = subForm.getLinked_question_id();
-                        id++;
-                        subForm.setLinked_question_id(id);
-                        subForm.setValue("");
+                        linked_question_index++;
                         addLinkedQuestion(subForm,finalI);
                     }
                 });
@@ -793,12 +546,14 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         if (subForm.getLinkedQuestions() != null && subForm.getLinkedQuestions().size() > 0) {
 
             if (btnAddAnother != null) {
+                child_linked_question_index = 1;
                 addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
                 btnAddAnother.setVisibility(View.VISIBLE);
                 btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         subForm.setValue("");
+                        child_linked_question_index++;
                         addChildLinkedQuestion(subForm, linearLayout, (LinearLayout) parent);
                     }
                 });
@@ -809,11 +564,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void addLinkedQuestion(SurveyQuestionWithData subForm,int index) {
+
         //inflating layout single_add_another_parent_item
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
             SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
-            linkedQuestion.setLinked_question_id(subForm.getLinked_question_id());
+            linkedQuestion.setLinked_question_id(linked_question_index);
             populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
         }
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
@@ -830,6 +586,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
             SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
+            linkedQuestion.setLinked_question_id(child_linked_question_index);
             populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
         }
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
@@ -895,6 +652,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
         //A text that will display in clear text button
         binding.multiSelectSpinnerWithSearch.setClearText("Close & Clear");
+
+        binding.multiSelectSpinnerWithSearch.setTag(subForm);
 
         List<KeyPairBoolData> listArray1 = populateMultiSelectList(subForm.getQuestionOptions());
 
@@ -990,6 +749,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             int ten_dp = CommonUtils.dip2pix(SubFormActivity.this, 8);
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
             textView.setInputType(validation);
+            questionOption.setLinked_question_id(-1);
             textView.setTag(questionOption.getQNAOption_ID());
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
@@ -1036,13 +796,17 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateCheckBox(SurveyQuestionWithData subForm) {
         SingleCheckBoxesLayoutBinding binding = SingleCheckBoxesLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        binding.rgCheckboxQuestionOptions.setTag(subForm);
+        //binding.rgCheckboxQuestionOptions.setTag(subForm);
+        binding.rgCheckboxQuestionOptions.setSubForm(subForm);
+        binding.rgCheckboxQuestionOptions.setLinked_id(-1);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-            CheckBox checkBox = new CheckBox(SubFormActivity.this);
+            CustomCheckBox checkBox = new CustomCheckBox(SubFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
-            checkBox.setTag(questionOption);
+            //checkBox.setTag(questionOption);
+            checkBox.setSubForm(questionOption);
+            checkBox.setLinked_id(-1);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1077,7 +841,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     binding.llChildQuestion.removeAllViews();
                                     binding.llChildQuestion.setVisibility(View.GONE);
                                     binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                                    binding.edtDropDownItar.setTag(questionOption);
+                                    //binding.edtDropDownItar.setTag(questionOption);
+                                    binding.edtDropDownItar.setSubForm(questionOption);
+                                    binding.edtDropDownItar.setLinked_id(subForm.getLinked_question_id());
                                 } else {
                                     binding.llChildQuestion.removeAllViews();
                                     binding.llChildQuestion.setVisibility(View.GONE);
@@ -1112,7 +878,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item, subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(mAdapter);
-        binding.sprQuestionOption.setTag(subForm);
+        //binding.sprQuestionOption.setTag(subForm);
+        binding.sprQuestionOption.setSubForm(subForm);
+        binding.sprQuestionOption.setLinked_id(-1);
         binding.edtDropDownItar.setVisibility(View.GONE);
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -1149,7 +917,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                            binding.edtDropDownItar.setTag(questionOption);
+                            //binding.edtDropDownItar.setTag(questionOption);
+                            binding.edtDropDownItar.setSubForm(questionOption);
+                            binding.edtDropDownItar.setLinked_id(-1);
                         } else {
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
@@ -1179,12 +949,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateRadioButton(SurveyQuestionWithData subForm) {
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        binding.rgQuestionOptions.setTag(subForm);
+        //binding.rgQuestionOptions.setTag(subForm);
+        binding.rgQuestionOptions.setSubForm(subForm);
+        binding.rgQuestionOptions.setLinked_id(-1);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-            RadioButton radioButton = new RadioButton(SubFormActivity.this);
-            radioButton.setTag(questionOption);
+            CustomRadioButton radioButton = new CustomRadioButton(SubFormActivity.this);
+            //radioButton.setTag(questionOption);
+            radioButton.setSubForm(questionOption);
+            radioButton.setLinked_id(-1);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton, i);
 
@@ -1240,7 +1014,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.setSubForm(subForm);
         ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
         binding.edtHeader.setText("");
-        binding.edtHeader.setTag(subForm);
+        binding.edtHeader.setSubForm(subForm);
+        binding.edtHeader.setLinked_id(-1);
         binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -1314,6 +1089,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         //A text that will display in clear text button
         binding.multiSelectSpinnerWithSearch.setClearText("Close & Clear");
 
+        binding.multiSelectSpinnerWithSearch.setTag(subForm);
+
         List<KeyPairBoolData> listArray1 = populateChildMultiSelectList(subForm.getQuestionOptions());
 
         // Removed second parameter, position. Its not required now..
@@ -1383,13 +1160,18 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateChildCheckBox(SurveyQuestionWithData subForm, LinearLayout rootView) {
         SingleCheckBoxesLayoutBinding binding = SingleCheckBoxesLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        binding.rgCheckboxQuestionOptions.setTag(subForm);
+        //binding.rgCheckboxQuestionOptions.setTag(subForm);
+        binding.rgCheckboxQuestionOptions.setSubForm(subForm);
+        binding.rgCheckboxQuestionOptions.setLinked_id(subForm.getLinked_question_id());
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-            CheckBox checkBox = new CheckBox(SubFormActivity.this);
+            questionOption.setLinked_question_id(subForm.getLinked_question_id());
+            CustomCheckBox checkBox = new CustomCheckBox(SubFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
-            checkBox.setTag(questionOption);
+            //checkBox.setTag(questionOption);
+            checkBox.setSubForm(questionOption);
+            checkBox.setLinked_id(subForm.getLinked_question_id());
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1425,7 +1207,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     binding.llChildQuestion.removeAllViews();
                                     binding.llChildQuestion.setVisibility(View.GONE);
                                     binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                                    binding.edtDropDownItar.setTag(questionOption);
+                                    //binding.edtDropDownItar.setTag(questionOption);
+                                    binding.edtDropDownItar.setSubForm(questionOption);
+                                    binding.edtDropDownItar.setLinked_id(subForm.getLinked_question_id());
                                 } else {
                                     binding.llChildQuestion.removeAllViews();
                                     binding.llChildQuestion.setVisibility(View.GONE);
@@ -1460,14 +1244,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item, subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(mAdapter);
-        binding.sprQuestionOption.setTag(subForm);
+        //binding.sprQuestionOption.setTag(subForm);
+        binding.sprQuestionOption.setSubForm(subForm);
+        binding.sprQuestionOption.setLinked_id(subForm.getLinked_question_id());
         binding.edtDropDownItar.setVisibility(View.GONE);
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-
+                    questionOption.setLinked_question_id(subForm.getLinked_question_id());
                     if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                         binding.llChildQuestion.removeAllViews();
                         String childQuesId = questionOption.getChildQuestionId();
@@ -1499,7 +1285,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
-                            binding.edtDropDownItar.setTag(questionOption);
+                            //binding.edtDropDownItar.setTag(questionOption);
+                            binding.edtDropDownItar.setSubForm(questionOption);
+                            binding.edtDropDownItar.setLinked_id(subForm.getLinked_question_id());
                         } else {
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
@@ -1530,11 +1318,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateChildRadioButton(SurveyQuestionWithData subForm, LinearLayout rootView) {
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        binding.rgQuestionOptions.setTag(subForm);
+        //binding.rgQuestionOptions.setTag(subForm);
+        binding.rgQuestionOptions.setSubForm(subForm);
+        binding.rgQuestionOptions.setLinked_id(subForm.getLinked_question_id());
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
-            RadioButton radioButton = new RadioButton(SubFormActivity.this);
-            radioButton.setTag(questionOption);
+            questionOption.setLinked_question_id(subForm.getLinked_question_id());
+            CustomRadioButton radioButton = new CustomRadioButton(SubFormActivity.this);
+            //radioButton.setTag(questionOption);
+            radioButton.setSubForm(questionOption);
+            radioButton.setLinked_id(subForm.getLinked_question_id());
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton, i);
             radioButton.setOnClickListener(new View.OnClickListener() {
@@ -1592,7 +1385,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             /*binding.edtHeader.setInputType(subForm.getInputValidation());*/
             ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
             binding.edtHeader.setText("");
-            binding.edtHeader.setTag(subForm);
+            binding.edtHeader.setSubForm(subForm);
+            binding.edtHeader.setLinked_id(subForm.getLinked_question_id());
             binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
@@ -1618,69 +1412,50 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             View view = viewGroup.getChildAt(j);
             if (!(view instanceof RadioGroup) && view instanceof LinearLayout) {
                 getAllChildViewIterative((LinearLayout) view);
-            } else if (view instanceof AppCompatEditText) {
-                AppCompatEditText editText = (AppCompatEditText) view;
-                if (editText.getId() == R.id.edt_drop_down_itar) {
-                    QuestionOption questionOption = (QuestionOption) editText.getTag();
-                    if (questionOption != null) {
-                        HashMap<QuestionOption,AppCompatEditText> map = new HashMap<>();
-                        map.put(questionOption,editText);
-                        optionEditTexts.add(map);
-                    }
-                } else {
-                    SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getTag();
-                    if (subForm != null) {
-                        HashMap<SurveyQuestionWithData,AppCompatEditText> map = new HashMap<>();
-                        map.put(subForm,editText);
-                        editTexts.add(map);
-                    }
+            } else if (view instanceof CustomEditText) {
+                CustomEditText editText = (CustomEditText) view;
+                if (editText.getSubForm() != null) {
+                    getInputCandidate(editText);
                 }
-            } else if (view instanceof RadioGroup) {
-                RadioGroup radioGroup = (RadioGroup) view;
-                SurveyQuestionWithData subForm = (SurveyQuestionWithData) radioGroup.getTag();
-                if (subForm != null) {
-                    HashMap<SurveyQuestionWithData,RadioGroup> map = new HashMap<>();
-                    map.put(subForm,radioGroup);
-                    radioGroups.add(map);
-                }
-
-                if (radioGroup.getChildAt(0) instanceof RadioButton) {
+            } else if (view instanceof CustomRadioGroup) {
+                CustomRadioGroup radioGroup = (CustomRadioGroup) view;
+                SurveyQuestionWithData subForm = (SurveyQuestionWithData) radioGroup.getSubForm();
+                if (radioGroup.getChildAt(0) instanceof CustomRadioButton) {
                     int selectedRadioButtonId = radioGroup.getCheckedRadioButtonId();
                     if (selectedRadioButtonId != -1) {
-                        RadioButton selectedRadioButton = radioGroup.findViewById(selectedRadioButtonId);
-                        QuestionOption questionOption = (QuestionOption) selectedRadioButton.getTag();
-                        if (questionOption != null) {
-                            HashMap<QuestionOption,RadioButton> map = new HashMap<>();
-                            map.put(questionOption,selectedRadioButton);
-                            radioButtons.add(map);
+                        CustomRadioButton selectedRadioButton = radioGroup.findViewById(selectedRadioButtonId);
+                        if (selectedRadioButton.getSubForm() != null) {
+                            getRadioButtonCandidate(selectedRadioButton);
+                        }
+                    } else {
+                        if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                            isValid = false;
                         }
                     }
-                } else if (radioGroup.getChildAt(0) instanceof CheckBox) {
+                } else if (radioGroup.getChildAt(0) instanceof CustomCheckBox) {
                     int childCount = radioGroup.getChildCount();
+                    int checked_checkboxes = 0;
 
                     for (int k = 0; k < childCount; k++) {
                         View cbView = radioGroup.getChildAt(k);
-                        if (cbView instanceof CheckBox) {
-                            CheckBox checkBox = (CheckBox) cbView;
+                        if (cbView instanceof CustomCheckBox) {
+                            CustomCheckBox checkBox = (CustomCheckBox) cbView;
                             if (checkBox.isChecked()) {
-                                QuestionOption questionOption = (QuestionOption) checkBox.getTag();
-                                if (questionOption != null) {
-                                    HashMap<QuestionOption, CheckBox> map = new HashMap<>();
-                                    map.put(questionOption, checkBox);
-                                    checkBoxes.add(map);
-                                }
+                                checked_checkboxes++;
+                                getCheckBoxCandidate(checkBox);
                             }
                         }
                     }
+
+                    if (checked_checkboxes <= 0) {
+                        if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                            isValid = false;
+                        }
+                    }
                 }
-            } else if (view instanceof Spinner) {
-                Spinner spinner = (Spinner) view;
-                SurveyQuestionWithData subForm = (SurveyQuestionWithData) spinner.getTag();
-                if (subForm != null) {
-                    HashMap<SurveyQuestionWithData,Spinner> map = new HashMap<>();
-                    map.put(subForm,spinner);
-                    spinners.add(map);
-                }
+            } else if (view instanceof CustomDropDown) {
+                CustomDropDown spinner = (CustomDropDown) view;
+                getDropDownCandidate(spinner);
             } else if (view instanceof HorizontalScrollView) {
                 HorizontalScrollView horizontalScrollView = ((HorizontalScrollView) view);
                 View hsv_child = horizontalScrollView.getChildAt(0);
@@ -1699,53 +1474,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
     }
 
-    /**
-     * @date 9-3-2022 and 10-3-2022
-     * get all child views
-     */
-    /*private void getAllChildView() {
-        emptyAllLists();
-        //get the count of main linear layout
-        int count = mainLinear.getChildCount();
-        for (int j = 0; j < count; j++) {
-            //get all child views in main linear layout
-            View view = mainLinear.getChildAt(j);
-            //as our header text is not child of main linear so here we have checked for instanceof LinearLayout (this is ll_input_box layout)
-            if (view instanceof LinearLayout) {
-                LinearLayout linearLayout = ((LinearLayout) view);
-                if (linearLayout.getId() == R.id.ll_add_another_parent) {
-                    //linked view
-                    getLinkedView(linearLayout);
-                } else {
-                    //simple child view
-                    getSimpleChildView(linearLayout, -1);
-                }
-            } else if (view instanceof HorizontalScrollView) {
-                HorizontalScrollView horizontalScrollView = ((HorizontalScrollView) view);
-                View hsv_child = horizontalScrollView.getChildAt(0);
-                if (hsv_child instanceof LinearLayout) {
-                    LinearLayout ll_hsv_child = (LinearLayout) hsv_child;
-                    int tot_count = ll_hsv_child.getChildCount();
-                    for (int k = 1; k < tot_count; k++) {
-                        View view_input_box = ll_hsv_child.getChildAt(k);
-                        if (view_input_box instanceof LinearLayout) {
-                            LinearLayout ll_input_box = (LinearLayout) view_input_box;
-                            getMultiChildView(ll_input_box);
-                        }
-                    }
-                }
-                //getSimpleChildView(linearLayout,-1);
-            }
-        }
-    }*/
-
     private void emptyAllLists() {
-        editTexts.clear();
-        optionEditTexts.clear();
-        spinners.clear();
-        //multiSpinnerSearches.clear();
-        radioButtons.clear();
-        checkBoxes.clear();
+        isValid = true;
+        candidateDetails.clear();
         multiEditTextValues.clear();
     }
 

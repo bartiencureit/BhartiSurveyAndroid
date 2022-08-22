@@ -26,11 +26,11 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE FormID =:FormID")
     List<CandidateDetails> getAllDetailsByForm(String FormID);
 
-    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id AND FormID=:formId")
-    CandidateDetails getCandidateDetailsByQuestionOptionId(String survey_que_option_id,String formId);
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id AND FormID=:formId AND index_if_linked_question=:linked_id")
+    CandidateDetails getCandidateDetailsByQuestionOptionId(String survey_que_option_id,String formId,int linked_id);
 
-    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID =:FormId")
-    CandidateDetails getCandidateDetailsByQuestionIdFormId(String survey_que_id,String FormId);
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID =:FormId AND index_if_linked_question=:linked_id")
+    CandidateDetails getCandidateDetailsByQuestionIdFormId(String survey_que_id,String FormId,int linked_id);
 
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id")
     List<CandidateDetails> getAllDetailsByQuestionId(String survey_que_id);

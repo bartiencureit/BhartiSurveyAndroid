@@ -12,22 +12,22 @@
         android:id="@+id/ll_input_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <com.encureit.samtadoot.custom.HeaderTextView
             android:id="@+id/tv_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
             android:text="@{subForm.requiredLabel}"/>
 
-        <Spinner
+        <com.encureit.samtadoot.custom.CustomDropDown
             android:id="@+id/spr_question_option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_rounded_corners"/>
 
-        <EditText
+        <com.encureit.samtadoot.custom.CustomEditText
             android:id="@+id/edt_drop_down_itar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

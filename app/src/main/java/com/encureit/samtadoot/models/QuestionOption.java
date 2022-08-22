@@ -24,6 +24,7 @@ public class QuestionOption {
     String UpdatedBy;
     String UpdatedDate;
     String IsActive;
+    int linked_question_id = -1;
 
     public String getQNAOption_ID() {
         return QNAOption_ID;
@@ -111,6 +112,14 @@ public class QuestionOption {
 
     public void setIsActive(String isActive) {
         IsActive = isActive;
+    }
+
+    public int getLinked_question_id() {
+        return linked_question_id;
+    }
+
+    public void setLinked_question_id(int linked_question_id) {
+        this.linked_question_id = linked_question_id;
     }
 
     @Override
