@@ -2,6 +2,7 @@ package com.encureit.samtadoot.database;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
 import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
@@ -14,6 +15,7 @@ import com.encureit.samtadoot.database.dao.SurveyQuestionDao;
 import com.encureit.samtadoot.database.dao.SurveySectionDao;
 import com.encureit.samtadoot.database.dao.SurveyTypeDao;
 import com.encureit.samtadoot.database.dao.UserDeviceDetailsDao;
+import com.encureit.samtadoot.databinding.SingleLinkedChildDataBinding;
 import com.encureit.samtadoot.models.AssignDetails;
 import com.encureit.samtadoot.models.CandidateDetails;
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
@@ -28,6 +30,7 @@ import com.encureit.samtadoot.models.SurveyType;
 import com.encureit.samtadoot.models.UserDeviceDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -971,5 +974,35 @@ public class DatabaseUtil {
         } else {
             return false;
         }
+    }
+
+    public void deleteAllRadioButtonOptions(QuestionOption questionOption, String formId, int linked_id) {
+        String ques_id = questionOption.getSurveyQuestion_ID();
+        SurveyQuestionWithData subForm = getChildQuestionFromId(ques_id);
+
+        if (subForm.getQuestionOptions() != null) {
+            for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
+                QuestionOption selectedOption = subForm.getQuestionOptions().get(i);
+
+                if (selectedOption.getChildQuestionId() != null && !selectedOption.getChildQuestionId().equalsIgnoreCase("null") && !selectedOption.getChildQuestionId().equalsIgnoreCase("")) {
+                    String childQuesId = selectedOption.getChildQuestionId();
+                    if (childQuesId.contains(",")) {
+                        //binding.btnAddAnother.setVisibility(View.GONE);
+                        List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                        for (int j = 0; j < childQuesIds.size(); j++) {
+                            getCandidateDetailsDao().deleteCandidateByQuestionId(childQuesIds.get(j));
+                        }
+                    } else {
+                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(childQuesId, formId);
+                        if (childQues != null) {
+                            getCandidateDetailsDao().deleteCandidateByQuestionId(childQues.getSurveyQuestion_ID());
+                        }
+                    }
+                }
+            }
+        }
+
+        getCandidateDetailsDao().deleteCandidateByQuestionId(ques_id);
+
     }
 }

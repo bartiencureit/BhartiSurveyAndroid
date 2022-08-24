@@ -203,9 +203,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
     private void addChildViews(SurveySection surveySection) {
         //Add Survey Section as a header
-       /* HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
-        headerTextView.setText(surveySection.getSectionDescription());
-        mBinding.llFormList.addView(headerTextView);*/
         mBindingChild = new SingleAddAnotherItemBinding[list.size()];
 
         //add child views and linked views to linear layout
@@ -269,7 +266,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }
             }
         }
-
         binding.imgCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,7 +278,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }
             }
         });
-
         llFormList.addView(binding.getRoot());
     }
 
@@ -340,26 +335,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
     private void addChildLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, LinearLayout rootView, LinearLayout parent,int linked_id) {
         //inflating layout single_add_another_parent_item
-        /*SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
-        for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
-            SurveyQuestionWithData linkedQuestion = subForm.getLinkedQuestions().get(j);
-            linkedQuestion.setLinked_question_id(child_linked_question_index);
-            populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
-        }
-        binding.imgDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rootView.removeView(binding.getRoot());
-            }
-        });*/
-
-
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < linkedQuestionList.size(); j++) {
             SurveyQuestionWithData linkedQuestion = linkedQuestionList.get(j);
             linkedQuestion.setLinked_question_id(linked_id);
             populateChildQuestionInput(linkedQuestion, binding.llAddAnotherChild);
         }
+
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -420,6 +402,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * Save form to sqlite
      */
     private void uploadData() {
+        DatabaseUtil.on().getCandidateDetailsDao().deleteCandidateBySectionId(section.getSurveySection_ID());
         //save data to candidate details survey status
         editCandidateSurveyStatusDetails();
         if (hasFoto) {
@@ -478,44 +461,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 DatabaseUtil.on().getCandidateDetailsDao().insert(details);
             }
         }
-
-       /* List<CandidateDetails> multiInputCandidateDetails = new ArrayList<>();
-
-        //render through multi input hashmap list
-        for (int j = 0; j < multiEditTextValues.size(); j++) {
-            HashMap<String, String> map = multiEditTextValues.get(j);
-            for (Map.Entry<String, String> entry : map.entrySet()) {
-                String str_question = entry.getKey();
-                String value = entry.getValue();
-                //Question was saved in hashmap i.e header text value as key
-                //We have get question id using question text from database
-                QuestionOption questionOption = DatabaseUtil.on().getQuestionOptionDao().getQuestionOptionByID(str_question);
-                if (questionOption != null) {
-
-                    CandidateDetails candidateDetails = new CandidateDetails();
-                    candidateDetails.setSurvey_master_id(surveyType.getForm_unique_id());
-                    candidateDetails.setSurvey_section_id(section.getSurveySection_ID());
-                    candidateDetails.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-                    candidateDetails.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-                    candidateDetails.setSurvey_que_values(value);
-                    candidateDetails.setFormID(formId);
-                    candidateDetails.setCurrent_Form_Status("GY");
-                    candidateDetails.setAge_value("0");
-                    candidateDetails.setSurvey_StartDate(start_date);
-                    candidateDetails.setSurvey_EndDate(end_date);
-                    candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-                    candidateDetails.setLatitude(Double.toString(latitude));
-                    candidateDetails.setLongitude(Double.toString(longitude));
-                    multiInputCandidateDetails.add(candidateDetails);
-                    int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
-                    if (id != -1) {
-                        updateCandidate(candidateDetails, id);
-                    } else {
-                        DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
-                    }
-                }
-            }
-        }*/
     }
 
     /**
@@ -643,6 +588,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 isValid = false;
             }
         }
+        //DatabaseUtil.on().deleteAllRadioButtonOptions(questionOption,formId,linked_id);
 
         CandidateDetails candidateDetail = new CandidateDetails();
         candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
@@ -728,7 +674,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void deleteLinkedQuestion(List<SurveyQuestionWithData> linkedQuestionList, int index, String FormId) {
         for (int j = 0; j < linkedQuestionList.size(); j++) {
             CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateById(linkedQuestionList.get(j).getSurveyQuestion_ID(), index, FormId);
-            DatabaseUtil.on().deleteCandidate(candidateDetails);
+            if (candidateDetails != null) {
+                DatabaseUtil.on().deleteCandidate(candidateDetails);
+            }
         }
     }
 
@@ -1332,6 +1280,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void populateChildLabelText(SurveyQuestionWithData subForm, LinearLayout rootView, CandidateDetails candidateDetails) {
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
+            if(subForm.getLinked_question_id() == -1) {
+                subForm.setLinked_question_id(0);
+            }
             populateMultiInputBox(subForm, rootView);
         } else {
             HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
