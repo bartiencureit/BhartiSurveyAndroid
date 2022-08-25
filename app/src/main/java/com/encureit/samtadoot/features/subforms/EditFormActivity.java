@@ -574,7 +574,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
         candidateDetails.add(candidateDetail);
     }
-
     /**
      * @date 10-3-2022
      * save radio button data to sqlite db
