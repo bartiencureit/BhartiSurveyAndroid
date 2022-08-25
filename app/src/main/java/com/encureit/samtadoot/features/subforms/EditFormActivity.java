@@ -511,7 +511,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
             candidateDetail.setLatitude(Double.toString(latitude));
             candidateDetail.setLongitude(Double.toString(longitude));
-            if (linked_id != -1) {
+            if (linked_id > 0) {
                 candidateDetail.setIndex_if_linked_question(linked_id);
             }
         } else if (editText.getSubForm() instanceof QuestionOption) {
@@ -539,7 +539,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
             candidateDetail.setLatitude(Double.toString(latitude));
             candidateDetail.setLongitude(Double.toString(longitude));
-            if (linked_id != -1) {
+            if (linked_id > 0) {
                 candidateDetail.setIndex_if_linked_question(linked_id);
             }
         }
@@ -569,7 +569,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
         candidateDetails.add(candidateDetail);
@@ -604,7 +604,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
 
@@ -633,7 +633,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
         candidateDetails.add(candidateDetail);
@@ -903,14 +903,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleCheckBoxesLayoutBinding binding = SingleCheckBoxesLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
         binding.rgCheckboxQuestionOptions.setSubForm(subForm);
-        binding.rgCheckboxQuestionOptions.setLinked_id(-1);
+        binding.rgCheckboxQuestionOptions.setLinked_id(0);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CustomCheckBox checkBox = new CustomCheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
             checkBox.setSubForm(questionOption);
-            checkBox.setLinked_id(-1);
+            checkBox.setLinked_id(0);
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,0);
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 checkBox.setChecked(true);
@@ -1001,7 +1001,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         //DropDownArrayAdapter adapter = new DropDownArrayAdapter(EditFormActivity.this, R.layout.single_drop_down_item, subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(mAdapter);
         binding.sprQuestionOption.setSubForm(subForm);
-        binding.sprQuestionOption.setLinked_id(-1);
+        binding.sprQuestionOption.setLinked_id(0);
         binding.sprQuestionOption.setSelection(getDropDownSelectedPosition(subForm));
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -1039,7 +1039,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             binding.llChildQuestion.setVisibility(View.GONE);
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
                             binding.edtDropDownItar.setSubForm(questionOption);
-                            binding.edtDropDownItar.setLinked_id(-1);
+                            binding.edtDropDownItar.setLinked_id(0);
                             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao()
                                     .getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,subForm.getLinked_question_id());
                             if (details != null) {
@@ -1076,13 +1076,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
         binding.rgQuestionOptions.setSubForm(subForm);
-        binding.rgQuestionOptions.setLinked_id(-1);
+        binding.rgQuestionOptions.setLinked_id(0);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CustomRadioButton radioButton = new CustomRadioButton(EditFormActivity.this);
             radioButton.setSubForm(questionOption);
-            radioButton.setLinked_id(-1);
+            radioButton.setLinked_id(0);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton, i);
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao()
@@ -1092,7 +1092,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot());
             }
             radioButton.setSubForm(questionOption);
-            radioButton.setLinked_id(-1);
+            radioButton.setLinked_id(0);
             radioButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1157,7 +1157,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
         ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
         binding.edtHeader.setSubForm(subForm);
-        binding.edtHeader.setLinked_id(-1);
+        binding.edtHeader.setLinked_id(0);
         binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -1627,7 +1627,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             candidateDetails.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
             candidateDetails.setLatitude(Double.toString(latitude));
             candidateDetails.setLongitude(Double.toString(longitude));
-            if (linked_id != -1) {
+            if (linked_id > 0) {
                 candidateDetails.setIndex_if_linked_question(linked_id);
             }
 

@@ -40,7 +40,7 @@ public class SurveyQuestionWithData implements Parcelable {
     List<HashMap<Integer,List<SurveyQuestionWithData>>> linkedQuestionInEdit;
     List<QuestionOption> questionOptions;
     String Value = "";
-    int linked_question_id = -1;
+    int linked_question_id = 0;
 
     public SurveyQuestionWithData() {}
 

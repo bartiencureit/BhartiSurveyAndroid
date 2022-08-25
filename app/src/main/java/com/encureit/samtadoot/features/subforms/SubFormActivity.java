@@ -325,7 +325,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
             candidateDetail.setLatitude(Double.toString(latitude));
             candidateDetail.setLongitude(Double.toString(longitude));
-            if (linked_id != -1) {
+            if (linked_id > 0) {
                 candidateDetail.setIndex_if_linked_question(linked_id);
             }
         } else if (editText.getSubForm() instanceof QuestionOption) {
@@ -353,7 +353,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
             candidateDetail.setLatitude(Double.toString(latitude));
             candidateDetail.setLongitude(Double.toString(longitude));
-            if (linked_id != -1) {
+            if (linked_id > 0) {
                 candidateDetail.setIndex_if_linked_question(linked_id);
             }
         }
@@ -383,7 +383,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
         candidateDetails.add(candidateDetail);
@@ -417,7 +417,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
 
@@ -446,7 +446,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
         candidateDetail.setLatitude(Double.toString(latitude));
         candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id != -1) {
+        if (linked_id > 0) {
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
 
@@ -752,7 +752,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             int ten_dp = CommonUtils.dip2pix(SubFormActivity.this, 8);
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
             textView.setInputType(validation);
-            questionOption.setLinked_question_id(-1);
+            questionOption.setLinked_question_id(0);
             textView.setTag(questionOption.getQNAOption_ID());
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
@@ -803,7 +803,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.setSubForm(subForm);
         //binding.rgCheckboxQuestionOptions.setTag(subForm);
         binding.rgCheckboxQuestionOptions.setSubForm(subForm);
-        binding.rgCheckboxQuestionOptions.setLinked_id(-1);
+        binding.rgCheckboxQuestionOptions.setLinked_id(0);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
@@ -811,7 +811,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             checkBox.setText(questionOption.getQNA_Values());
             //checkBox.setTag(questionOption);
             checkBox.setSubForm(questionOption);
-            checkBox.setLinked_id(-1);
+            checkBox.setLinked_id(0);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -885,7 +885,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.sprQuestionOption.setAdapter(mAdapter);
         //binding.sprQuestionOption.setTag(subForm);
         binding.sprQuestionOption.setSubForm(subForm);
-        binding.sprQuestionOption.setLinked_id(-1);
+        binding.sprQuestionOption.setLinked_id(0);
         binding.edtDropDownItar.setVisibility(View.GONE);
         binding.sprQuestionOption.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -924,7 +924,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             binding.edtDropDownItar.setVisibility(View.VISIBLE);
                             //binding.edtDropDownItar.setTag(questionOption);
                             binding.edtDropDownItar.setSubForm(questionOption);
-                            binding.edtDropDownItar.setLinked_id(-1);
+                            binding.edtDropDownItar.setLinked_id(0);
                         } else {
                             binding.llChildQuestion.removeAllViews();
                             binding.llChildQuestion.setVisibility(View.GONE);
@@ -956,14 +956,14 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.setSubForm(subForm);
         //binding.rgQuestionOptions.setTag(subForm);
         binding.rgQuestionOptions.setSubForm(subForm);
-        binding.rgQuestionOptions.setLinked_id(-1);
+        binding.rgQuestionOptions.setLinked_id(0);
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CustomRadioButton radioButton = new CustomRadioButton(SubFormActivity.this);
             //radioButton.setTag(questionOption);
             radioButton.setSubForm(questionOption);
-            radioButton.setLinked_id(-1);
+            radioButton.setLinked_id(0);
             radioButton.setText(questionOption.getQNA_Values());
             binding.rgQuestionOptions.addView(radioButton, i);
 
@@ -1020,7 +1020,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
         binding.edtHeader.setText("");
         binding.edtHeader.setSubForm(subForm);
-        binding.edtHeader.setLinked_id(-1);
+        binding.edtHeader.setLinked_id(0);
         binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
