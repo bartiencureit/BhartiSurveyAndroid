@@ -20,6 +20,7 @@ import com.encureit.samtadoot.network.responsemodel.SurveySectionResponseModel;
 import com.encureit.samtadoot.network.responsemodel.SurveyTypeResponseModel;
 import com.encureit.samtadoot.network.responsemodel.UserAssignedDetailsResponseModel;
 import com.encureit.samtadoot.network.retrofit.RetrofitClient;
+import com.encureit.samtadoot.network.retrofit.RetrofitClientInsert;
 
 import java.io.File;
 import java.util.List;
@@ -108,7 +109,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                 File file = new File(details.getSurvey_que_values());
                 MultipartBody.Part image = Helper.prepareFilePart(mActivity, "image", file);
 
-                mActivity.service.insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
+                RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
                         survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,image)
                         .enqueue(new Callback<CandidateInsertResponseModel>() {
                             @Override
@@ -139,7 +140,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                         });
             } else {
                 RequestBody survey_que_values = Helper.prepareStringRequest(details.getSurvey_que_values());
-                mActivity.service.insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
+                RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
                         survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,null)
                         .enqueue(new Callback<CandidateInsertResponseModel>() {
                             @Override

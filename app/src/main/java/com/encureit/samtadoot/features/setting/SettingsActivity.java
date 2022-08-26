@@ -65,6 +65,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().nukeTable();
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),"Sync Forms Finished");
+        mPresenter.setUpData(helper);
     }
 
     @Override
