@@ -14,6 +14,6 @@ public interface SurveySectionContract {
         void setupFields(List<SurveySection> list);
     }
     interface Presenter {
-        void startSurveySection();
+        void startSurveySection(String section_id);
     }
 }

@@ -23,8 +23,8 @@ public class SurveySectionPresenter implements SurveySectionContract.Presenter {
     }
 
     @Override
-    public void startSurveySection() {
-        List<SurveySection> surveySectionList = DatabaseUtil.on().getSurveySectionDao().getAllFlowableCodes();
+    public void startSurveySection(String form_id) {
+        List<SurveySection> surveySectionList = DatabaseUtil.on().getSurveySectionDao().getAllSections(form_id);
         mViewModel.setupFields(surveySectionList);
     }
 

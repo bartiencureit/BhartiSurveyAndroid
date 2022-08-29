@@ -23,6 +23,9 @@ public interface SurveySectionDao extends BaseDao<SurveySection> {
     @Query("DELETE FROM "  + TableNames.TABLE_SURVEY_SECTIONS)
     void nukeTable();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_SURVEY_SECTIONS+" WHERE SurveyMaster_ID=:Form_id")
+    List<SurveySection> getAllSections(String Form_id);
+
 //    @Query("UPDATE " + TableNames.TABLE_SURVEY_SECTIONS+" SET device_info_id = :device_info_id WHERE id =:id")
 //    void update_device_info_id(int id, String device_info_id);
 

@@ -81,7 +81,6 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         } else {
             mActivity.finish();
         }
-
         android.os.Process.killProcess(android.os.Process.myPid());
     }
 

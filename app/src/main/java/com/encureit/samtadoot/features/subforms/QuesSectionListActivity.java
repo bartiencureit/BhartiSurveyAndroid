@@ -45,7 +45,10 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
                 inEditMode = true;
                 candidateSurveyStatusDetails = intent.getParcelableExtra(AppKeys.CANDIDATE_SURVEY_DETAILS);
             }
-            mPresenter.startSurveySection();
+            //mPresenter.startSurveySection();
+            if (surveyType != null) {
+                mPresenter.startSurveySection(surveyType.getForm_unique_id());
+            }
         } catch (Exception e) {
             Log.e(TAG, "onCreate: "+e.getMessage());
         }

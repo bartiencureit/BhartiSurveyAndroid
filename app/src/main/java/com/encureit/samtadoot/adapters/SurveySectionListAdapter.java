@@ -41,6 +41,7 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
     public void onBindViewHolder(@NonNull SurveySectionHolder holder, int position) {
         SurveySection listItem = stateList.get(position);
         holder.binding.setSurveySection(listItem);
+        holder.binding.setSectionId(String.valueOf(position+1));
         if (isEditMode && formId != null) {
             if (DatabaseUtil.on().isSectionFilled(listItem,formId)) {
                 holder.binding.setImgVisibility(View.VISIBLE);
