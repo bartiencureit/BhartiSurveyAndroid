@@ -29,12 +29,12 @@ public class CandidateSurveyActivity extends BaseActivity implements CandidateSu
         setContentView(mBinding.getRoot());
         mPresenter = new CandidateSurveyDetailsPresenter(CandidateSurveyActivity.this,this);
         mBinding.setCandidatePresenter(mPresenter);
-        mPresenter.getCandidateData();
         Intent intent = getIntent();
         if (intent.hasExtra(AppKeys.SURVEY_TYPE)) {
             listModel = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
             mBinding.toolbar.tvToolbarTitle.setText("जतन केलेले फॉर्म");
             mBinding.setListModel(listModel);
+            mPresenter.getCandidateData(listModel.getForm_no());
         }
 
     }

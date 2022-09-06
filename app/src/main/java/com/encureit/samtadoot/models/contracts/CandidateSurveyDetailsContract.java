@@ -13,7 +13,7 @@ public interface CandidateSurveyDetailsContract {
         void startNewFormActivity();
     }
     interface Presenter {
-        void getCandidateData();
+        void getCandidateData(String FormId);
         void createNewForm();
     }
 }

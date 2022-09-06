@@ -17,6 +17,9 @@ public interface CandidateSurveyStatusDetailsDao extends BaseDao<CandidateSurvey
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS)
     List<CandidateSurveyStatusDetails> getAllFlowableCodes();
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" WHERE FormID=:FormId")
+    List<CandidateSurveyStatusDetails> getAllCandidatesInSection(String FormId);
+
     @Query("SELECT COUNT(id) FROM " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS)
     int getRowCount();
 
