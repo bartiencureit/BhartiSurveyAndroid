@@ -34,7 +34,7 @@ public class CandidateSurveyActivity extends BaseActivity implements CandidateSu
             listModel = intent.getParcelableExtra(AppKeys.SURVEY_TYPE);
             mBinding.toolbar.tvToolbarTitle.setText("जतन केलेले फॉर्म");
             mBinding.setListModel(listModel);
-            mPresenter.getCandidateData(listModel.getForm_no());
+            mPresenter.getCandidateData(listModel.getForm_unique_id());
         }
 
     }

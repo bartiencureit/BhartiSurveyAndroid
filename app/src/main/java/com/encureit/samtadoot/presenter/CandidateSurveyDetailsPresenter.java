@@ -21,8 +21,8 @@ public class CandidateSurveyDetailsPresenter implements CandidateSurveyDetailsCo
 
     @Override
     public void getCandidateData(String FormId) {
-//        List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllCandidatesInSection(FormId);
-        List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes();
+        List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllCandidatesInSection(FormId);
+        //List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes();
         mViewModel.setUpCandidateDetails(candidateSurveyStatusDetails);
     }
 

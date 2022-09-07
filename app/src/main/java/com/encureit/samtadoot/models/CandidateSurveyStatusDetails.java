@@ -24,10 +24,10 @@ public class CandidateSurveyStatusDetails implements Parcelable {
     String start_date;
     String last_updated_date;
     String end_date;
+    String form_unique_id;
 
-    public CandidateSurveyStatusDetails() {}
+    public CandidateSurveyStatusDetails(){}
 
-    @Ignore
     protected CandidateSurveyStatusDetails(Parcel in) {
         id = in.readInt();
         survey_section_id = in.readString();
@@ -36,7 +36,20 @@ public class CandidateSurveyStatusDetails implements Parcelable {
         start_date = in.readString();
         last_updated_date = in.readString();
         end_date = in.readString();
+        form_unique_id = in.readString();
     }
+
+    public static final Creator<CandidateSurveyStatusDetails> CREATOR = new Creator<CandidateSurveyStatusDetails>() {
+        @Override
+        public CandidateSurveyStatusDetails createFromParcel(Parcel in) {
+            return new CandidateSurveyStatusDetails(in);
+        }
+
+        @Override
+        public CandidateSurveyStatusDetails[] newArray(int size) {
+            return new CandidateSurveyStatusDetails[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -94,36 +107,13 @@ public class CandidateSurveyStatusDetails implements Parcelable {
         this.end_date = end_date;
     }
 
-    @Ignore
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(survey_section_id);
-        dest.writeString(FormID);
-        dest.writeString(survey_status);
-        dest.writeString(start_date);
-        dest.writeString(last_updated_date);
-        dest.writeString(end_date);
+    public String getForm_unique_id() {
+        return form_unique_id;
     }
 
-    @Ignore
-    @Override
-    public int describeContents() {
-        return 0;
+    public void setForm_unique_id(String form_unique_id) {
+        this.form_unique_id = form_unique_id;
     }
-
-    @Ignore
-    public static final Creator<CandidateSurveyStatusDetails> CREATOR = new Creator<CandidateSurveyStatusDetails>() {
-        @Override
-        public CandidateSurveyStatusDetails createFromParcel(Parcel in) {
-            return new CandidateSurveyStatusDetails(in);
-        }
-
-        @Override
-        public CandidateSurveyStatusDetails[] newArray(int size) {
-            return new CandidateSurveyStatusDetails[size];
-        }
-    };
 
     public int getStatusColor() {
         if (survey_status.equalsIgnoreCase("Pending")) {
@@ -133,5 +123,22 @@ public class CandidateSurveyStatusDetails implements Parcelable {
         } else {
             return Color.DKGRAY;
         }
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(survey_section_id);
+        parcel.writeString(FormID);
+        parcel.writeString(survey_status);
+        parcel.writeString(start_date);
+        parcel.writeString(last_updated_date);
+        parcel.writeString(end_date);
+        parcel.writeString(form_unique_id);
     }
 }

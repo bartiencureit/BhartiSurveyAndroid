@@ -479,6 +479,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
         candidateSurveyStatusDetails.setLast_updated_date(last_updated_date);
         candidateSurveyStatusDetails.setEnd_date(end_date);
+        candidateSurveyStatusDetails.setForm_unique_id(surveyType.getForm_unique_id());
         DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().update(candidateSurveyStatusDetails);
     }
 

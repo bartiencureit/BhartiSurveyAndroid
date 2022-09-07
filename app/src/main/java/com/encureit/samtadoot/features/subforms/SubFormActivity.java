@@ -293,6 +293,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateSurveyStatusDetails.setStart_date(start_date);
         candidateSurveyStatusDetails.setLast_updated_date(last_updated_date);
         candidateSurveyStatusDetails.setStart_date(end_date);
+        candidateSurveyStatusDetails.setForm_unique_id(surveyType.getForm_unique_id());
         DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().insert(candidateSurveyStatusDetails);
     }
 
