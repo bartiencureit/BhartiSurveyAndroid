@@ -19,7 +19,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
 import com.encureit.samtadoot.custom.CustomCheckBox;
+
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -178,10 +180,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             emptyAllLists();
             getAllChildViewIterative(mainLinear);
             if (candidateDetails.isEmpty()) {
-                isValid = false;
-            }
-            if (multiEditTextValues.size() > 0) {
-                return true;
+                if (multiEditTextValues.size() > 0) {
+                    return true;
+                } else {
+                    isValid = false;
+                }
             }
             return isValid;
         }
@@ -219,7 +222,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void saveAllCandidates() {
-       DatabaseUtil.on().insertAllCandidateDetails(candidateDetails);
+        DatabaseUtil.on().insertAllCandidateDetails(candidateDetails);
     }
 
     private void saveFotoToDb() {
@@ -307,9 +310,16 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
             int linked_id = editText.getLinked_id();
 
-            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
-                if (TextUtils.isEmpty(editText.getText().toString())) {
+            int max_length = Integer.parseInt(subForm.getMax_length());
+            int min_length = Integer.parseInt(subForm.getMin_length());
+
+            if (TextUtils.isEmpty(editText.getText().toString())) {
+                isValid = false;
+            } else if (min_length != 0 && max_length != 0) {
+                if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                    editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                     isValid = false;
+                    //editText.requestFocus();
                 }
             }
 
@@ -482,12 +492,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 mBindingChild[i] = SingleAddAnotherItemBinding.inflate(getLayoutInflater());
                 int finalI = i;
                 linked_question_index = 1;
-                addLinkedQuestion(subForm,finalI);
+                addLinkedQuestion(subForm, finalI);
                 mBindingChild[i].btnAddAnother.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         linked_question_index++;
-                        addLinkedQuestion(subForm,finalI);
+                        addLinkedQuestion(subForm, finalI);
                     }
                 });
                 mBinding.llFormList.addView(mBindingChild[i].getRoot());
@@ -505,10 +515,10 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             public void onClick(View view) {
                 try {
                     fileImage = createImageFile();
-                    uri =  FileProvider.getUriForFile(SubFormActivity.this, "com.encureit.samtadoot.fileprovider", fileImage);
+                    uri = FileProvider.getUriForFile(SubFormActivity.this, "com.encureit.samtadoot.fileprovider", fileImage);
                     openCamera.launch(uri);
                 } catch (Exception e) {
-                    Toast.makeText(SubFormActivity.this, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SubFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -519,7 +529,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     @Override
                     public void onActivityResult(Boolean result) {
                         if (result) {
-                            if(fileImage != null) {
+                            if (fileImage != null) {
                                 Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
                                 binding.imgViewFoto.setImageBitmap(bitmap);
                             }
@@ -567,7 +577,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         }
     }
 
-    private void addLinkedQuestion(SurveyQuestionWithData subForm,int index) {
+    private void addLinkedQuestion(SurveyQuestionWithData subForm, int index) {
 
         //inflating layout single_add_another_parent_item
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
@@ -708,14 +718,14 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         mBinding.llFormList.addView(headerTextView);
         if (subForm.getQuestions().contains("फोटो")) {
             hasFoto = true;
-            addPhotoView(mBinding.llFormList,subForm);
+            addPhotoView(mBinding.llFormList, subForm);
         }
     }
 
     private void populateLabelText(SurveyQuestionWithData subForm) {
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
-            populateMultiInputBox(subForm,mBinding.llFormList);
+            populateMultiInputBox(subForm, mBinding.llFormList);
         } else {
             HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
@@ -737,12 +747,12 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
 
         addLabelHeader(subForm, binding.llMultiInputParent);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
-            addInputOption(subForm.getInputValidation(),subForm.getQuestionOptions().get(j), binding.llMultiInputParent);
+            addInputOption(subForm.getInputValidation(), subForm.getQuestionOptions().get(j), binding.llMultiInputParent);
         }
         linearLayout.addView(binding.getRoot());
     }
 
-    private void addInputOption(int validation,QuestionOption questionOption, LinearLayout llMultiInputParent) {
+    private void addInputOption(int validation, QuestionOption questionOption, LinearLayout llMultiInputParent) {
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
 
@@ -859,7 +869,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         } catch (Exception e) {
                             Toast.makeText(SubFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+                    } else {
                         binding.llChildQuestion.setVisibility(View.GONE);
                         binding.llChildQuestion.removeAllViews();
                         binding.edtDropDownItar.setVisibility(View.GONE);
@@ -880,7 +890,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleDropDownListLayoutBinding binding = SingleDropDownListLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
-        ArrayAdapter<QuestionOption> mAdapter = new ArrayAdapter<>(SubFormActivity.this,android.R.layout.simple_spinner_item,subForm.getQuestionOptions());
+        ArrayAdapter<QuestionOption> mAdapter = new ArrayAdapter<>(SubFormActivity.this, android.R.layout.simple_spinner_item, subForm.getQuestionOptions());
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item, subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(mAdapter);
@@ -1018,7 +1028,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateInputText(SurveyQuestionWithData subForm) {
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
-        ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
+        ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
         binding.edtHeader.setText("");
         binding.edtHeader.setSubForm(subForm);
         binding.edtHeader.setLinked_id(0);
@@ -1029,8 +1039,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 int min_length = Integer.parseInt(subForm.getMin_length());
 
                 if (min_length != 0 && max_length != 0) {
-                    if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length ) {
-                        binding.edtHeader.setError("कृपया कमीत कमी "+min_length+" आणि जास्तीत जास्त "+max_length+" अक्षरं टाका");
+                    if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length) {
+                        binding.edtHeader.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                         //binding.edtHeader.requestFocus();
                     }
                 }
@@ -1149,7 +1159,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void populateChildLabelText(SurveyQuestionWithData subForm, LinearLayout rootView) {
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
-            populateMultiInputBox(subForm,rootView);
+            populateMultiInputBox(subForm, rootView);
         } else {
             HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
@@ -1225,7 +1235,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         } catch (Exception e) {
                             Toast.makeText(SubFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+                    } else {
                         binding.llChildQuestion.setVisibility(View.GONE);
                         binding.llChildQuestion.removeAllViews();
                         binding.edtDropDownItar.setVisibility(View.GONE);
@@ -1246,7 +1256,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleDropDownListLayoutBinding binding = SingleDropDownListLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
-        ArrayAdapter<QuestionOption> mAdapter = new ArrayAdapter<>(SubFormActivity.this,android.R.layout.simple_spinner_item,subForm.getQuestionOptions());
+        ArrayAdapter<QuestionOption> mAdapter = new ArrayAdapter<>(SubFormActivity.this, android.R.layout.simple_spinner_item, subForm.getQuestionOptions());
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //DropDownArrayAdapter adapter = new DropDownArrayAdapter(SubFormActivity.this, R.layout.single_drop_down_item, subForm.getQuestionOptions());
         binding.sprQuestionOption.setAdapter(mAdapter);
@@ -1389,7 +1399,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         if (subForm != null) {
             binding.setSubForm(subForm);
             /*binding.edtHeader.setInputType(subForm.getInputValidation());*/
-            ScreenHelper.setEditTextValidation(subForm,binding.edtHeader);
+            ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
             binding.edtHeader.setText("");
             binding.edtHeader.setSubForm(subForm);
             binding.edtHeader.setLinked_id(subForm.getLinked_question_id());
@@ -1400,8 +1410,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                     int min_length = Integer.parseInt(subForm.getMin_length());
 
                     if (min_length != 0 && max_length != 0) {
-                        if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length ) {
-                            binding.edtHeader.setError("कृपया कमीत कमी "+min_length+" आणि जास्तीत जास्त "+max_length+" अक्षरं टाका");
+                        if (binding.edtHeader.getText().toString().length() < min_length || binding.edtHeader.getText().toString().length() > max_length) {
+                            binding.edtHeader.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                             //binding.edtHeader.requestFocus();
                         }
                     }

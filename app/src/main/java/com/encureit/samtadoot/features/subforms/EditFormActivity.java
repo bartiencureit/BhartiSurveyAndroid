@@ -378,10 +378,11 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             emptyAllLists();
             getAllChildViewIterative(mainLinear);
             if (candidateDetails.isEmpty()) {
-                isValid = false;
-            }
-            if (multiEditTextValues.size() > 0) {
-                return true;
+                if (multiEditTextValues.size() > 0) {
+                    return true;
+                } else {
+                    isValid = false;
+                }
             }
             return isValid;
         }
@@ -493,9 +494,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
             int linked_id = editText.getLinked_id();
 
-            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
-                if (TextUtils.isEmpty(editText.getText().toString())) {
+            int max_length = Integer.parseInt(subForm.getMax_length());
+            int min_length = Integer.parseInt(subForm.getMin_length());
+
+            if (TextUtils.isEmpty(editText.getText().toString())) {
+                isValid = false;
+            } else if (min_length != 0 && max_length != 0) {
+                if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                    editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                     isValid = false;
+                    //editText.requestFocus();
                 }
             }
 
@@ -521,9 +529,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
             SurveyQuestion subForm = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
 
-            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
-                if (TextUtils.isEmpty(editText.getText().toString())) {
+            int max_length = Integer.parseInt(subForm.getMax_length());
+            int min_length = Integer.parseInt(subForm.getMin_length());
+
+            if (TextUtils.isEmpty(editText.getText().toString())) {
+                isValid = false;
+            } else if (min_length != 0 && max_length != 0) {
+                if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                    editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                     isValid = false;
+                    //editText.requestFocus();
                 }
             }
 
