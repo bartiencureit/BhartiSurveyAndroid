@@ -57,6 +57,19 @@ public class BaseActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        RetrofitClient.key = key;
+        service = RetrofitClient.getApiService();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        RetrofitClient.key = key;
+        service = RetrofitClient.getApiService();
+    }
 
     public void startProgressDialog(View view) {
         try {
