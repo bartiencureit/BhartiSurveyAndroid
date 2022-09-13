@@ -730,11 +730,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             HeaderTextView headerTextView = new HeaderTextView(SubFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
             mBinding.llFormList.addView(headerTextView);
-
-            /*if (subForm.getQuestions().contains("फोटो")) {
-                hasFoto = true;
-                addPhotoView(mBinding.llFormList);
-            }*/
         }
     }
 
@@ -765,9 +760,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             textView.setInputType(validation);
             questionOption.setLinked_question_id(0);
             textView.setTag(questionOption.getQNAOption_ID());
-            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            //textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
 
             binding.llInputBox.addView(textView);
@@ -792,7 +787,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setText(labels.get(j));

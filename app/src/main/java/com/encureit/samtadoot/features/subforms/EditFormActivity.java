@@ -13,7 +13,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +24,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import com.encureit.samtadoot.custom.CustomCheckBox;
+
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -847,6 +852,22 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
             for (int j = 0; j < tot_input_boxes; j++) {
                 CustomEditText textView = new CustomEditText(EditFormActivity.this);
+                /*textView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        //add timer for 3 sec
+                    }
+                });*/
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
@@ -855,9 +876,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                 textView.setLayoutParams(params);
-
                 binding.llInputBox.addView(textView);
             }
 
@@ -872,7 +892,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                 textView.setLayoutParams(params);
 
                 binding.llInputBox.addView(textView);
@@ -898,9 +918,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            textView.setMinLines(2);
+            textView.setMaxLines(100);
             textView.setText(labels.get(j));
 
             binding.llInputBox.addView(textView);
