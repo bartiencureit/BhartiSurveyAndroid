@@ -23,9 +23,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.custom.CustomCheckBox;
 
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -112,6 +115,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private String last_updated_date;
     private String end_date;
     private GlobalHelper helper;
+    private List<Bitmap> photoList = new ArrayList<>();
+    private ImageAdapter mImageAdapter;
 
     private File fileImage = null;
     ActivityResultLauncher<Uri> openCamera = registerForActivityResult(
@@ -121,9 +126,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 public void onActivityResult(Boolean result) {
                     if (result) {
                         if (fileImage != null) {
-                            Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
-                            ImageView imageView = findViewById(R.id.img_view_foto);
-                            imageView.setImageBitmap(bitmap);
+                            /*Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
+                            photoList.add(bitmap);
+                            mImageAdapter = new ImageAdapter(EditFormActivity.this,photoList);
+                            GridView gridView = findViewById(R.id.img_view_foto);
+                            gridView.setAdapter(mImageAdapter);*/
+                            editPhotoFromDB();
                         }
                     } else {
                         fileImage = null;
@@ -263,14 +271,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySectionIdFormId(section.getSurveySection_ID(), formId);
 
         if (details != null && details.size() > 0) {
-            String path = details.get(0).getSurvey_que_values();
-            if (path != null && !path.isEmpty()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
-                if (bitmap != null) {
-                    binding.imgViewFoto.setImageBitmap(bitmap);
+            for (int j = 0; j < details.size(); j++) {
+                String path = details.get(j).getSurvey_que_values();
+                if (path != null && !path.isEmpty()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(path);
+                    if (bitmap != null) {
+                        // binding.imgViewFoto.setImageBitmap(bitmap);
+                        photoList.add(bitmap);
+                    }
                 }
             }
         }
+        mImageAdapter = new ImageAdapter(EditFormActivity.this,photoList);
+        binding.imgViewFoto.setAdapter(mImageAdapter);
+
         binding.imgCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -449,12 +463,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetails.setLatitude(Double.toString(latitude));
         candidateDetails.setLongitude(Double.toString(longitude));
         candidateDetails.setHasImage(true);
-        int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
+        /*int id = DatabaseUtil.on().isCandidateDetailsPresent(candidateDetails);
         if (id != -1) {
             updateCandidate(candidateDetails, id);
-        } else {
+        } else {*/
             DatabaseUtil.on().getCandidateDetailsDao().insert(candidateDetails);
-        }
+        //}
     }
 
     private void editMultiInputBoxDataToDb() {

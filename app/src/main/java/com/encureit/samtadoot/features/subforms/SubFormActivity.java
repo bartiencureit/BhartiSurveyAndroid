@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.custom.CustomCheckBox;
 
 import android.widget.HorizontalScrollView;
@@ -124,6 +125,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private ActivityResultLauncher<Uri> openCamera;
     private boolean hasFoto = false;
     private SurveyQuestionWithData imageSubForm = null;
+    private List<Bitmap> photoList = new ArrayList<>();
+    private ImageAdapter mImageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -523,6 +526,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
         });
 
+        mImageAdapter = new ImageAdapter(SubFormActivity.this,photoList);
+        binding.imgViewFoto.setAdapter(mImageAdapter);
+
         openCamera = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
                 new ActivityResultCallback<Boolean>() {
@@ -531,7 +537,9 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                         if (result) {
                             if (fileImage != null) {
                                 Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
-                                binding.imgViewFoto.setImageBitmap(bitmap);
+                                photoList.add(bitmap);
+                                mImageAdapter.notifyDataSetChanged();
+                                //binding.imgViewFoto.setImageBitmap(bitmap);
                             }
                         } else {
                             fileImage = null;
