@@ -1,5 +1,8 @@
 package com.encureit.samtadoot.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.encureit.samtadoot.database.TableNames;
 
 import androidx.room.Entity;
@@ -9,7 +12,7 @@ import androidx.room.PrimaryKey;
  * Created by Swapna Thakur on 3/10/2022.
  */
 @Entity(tableName = TableNames.TABLE_CANDIDATE_DETAILS)
-public class CandidateDetails {
+public class CandidateDetails implements Parcelable {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
@@ -28,6 +31,64 @@ public class CandidateDetails {
     String Longitude;
     int index_if_linked_question;
     boolean hasImage;
+
+    public CandidateDetails() {}
+
+    protected CandidateDetails(Parcel in) {
+        id = in.readInt();
+        survey_master_id = in.readString();
+        survey_section_id = in.readString();
+        survey_que_id = in.readString();
+        survey_que_option_id = in.readString();
+        survey_que_values = in.readString();
+        FormID = in.readString();
+        Current_Form_Status = in.readString();
+        age_value = in.readString();
+        Survey_StartDate = in.readString();
+        Survey_EndDate = in.readString();
+        created_by = in.readString();
+        Latitude = in.readString();
+        Longitude = in.readString();
+        index_if_linked_question = in.readInt();
+        hasImage = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(survey_master_id);
+        dest.writeString(survey_section_id);
+        dest.writeString(survey_que_id);
+        dest.writeString(survey_que_option_id);
+        dest.writeString(survey_que_values);
+        dest.writeString(FormID);
+        dest.writeString(Current_Form_Status);
+        dest.writeString(age_value);
+        dest.writeString(Survey_StartDate);
+        dest.writeString(Survey_EndDate);
+        dest.writeString(created_by);
+        dest.writeString(Latitude);
+        dest.writeString(Longitude);
+        dest.writeInt(index_if_linked_question);
+        dest.writeByte((byte) (hasImage ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<CandidateDetails> CREATOR = new Creator<CandidateDetails>() {
+        @Override
+        public CandidateDetails createFromParcel(Parcel in) {
+            return new CandidateDetails(in);
+        }
+
+        @Override
+        public CandidateDetails[] newArray(int size) {
+            return new CandidateDetails[size];
+        }
+    };
 
     public int getId() {
         return id;

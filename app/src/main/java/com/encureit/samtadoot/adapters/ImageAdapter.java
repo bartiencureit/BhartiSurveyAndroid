@@ -2,20 +2,22 @@ package com.encureit.samtadoot.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.encureit.samtadoot.databinding.SingleImageBinding;
+import com.encureit.samtadoot.models.CandidateDetails;
 
 import java.util.List;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private List<Bitmap> photoList;
+    private List<CandidateDetails> photoList;
 
-    public ImageAdapter(Context mContext, List<Bitmap> photoList) {
+    public ImageAdapter(Context mContext, List<CandidateDetails> photoList) {
         this.mContext = mContext;
         this.photoList = photoList;
     }
@@ -35,7 +37,7 @@ public class ImageAdapter extends BaseAdapter {
         return i;
     }
 
-    public void addItem(Bitmap bitmap) {
+    public void addItem(CandidateDetails bitmap) {
         photoList.add(bitmap);
         notifyDataSetChanged();
     }
@@ -53,7 +55,14 @@ public class ImageAdapter extends BaseAdapter {
         else {
             viewHolder=(ViewHolder)convertView.getTag();
         }
-        viewHolder.binding.imageView.setImageBitmap(photoList.get(position));
+        String path = photoList.get(position).getSurvey_que_values();
+        if (path != null && !path.isEmpty()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            if (bitmap != null) {
+                // binding.imgViewFoto.setImageBitmap(bitmap);
+                viewHolder.binding.imageView.setImageBitmap(bitmap);
+            }
+        }
         return convertView;
     }
 

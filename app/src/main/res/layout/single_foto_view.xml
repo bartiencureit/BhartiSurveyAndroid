@@ -40,7 +40,7 @@
         <GridView
             android:id="@+id/img_view_foto"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/multi_input_height"
             android:layout_margin="10dp"
             android:numColumns="2"/>
 

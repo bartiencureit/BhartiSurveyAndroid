@@ -526,8 +526,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
         });
 
-        mImageAdapter = new ImageAdapter(SubFormActivity.this,photoList);
-        binding.imgViewFoto.setAdapter(mImageAdapter);
+        //mImageAdapter = new ImageAdapter(SubFormActivity.this,photoList);
+        //binding.imgViewFoto.setAdapter(mImageAdapter);
 
         openCamera = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),

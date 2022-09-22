@@ -115,7 +115,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private String last_updated_date;
     private String end_date;
     private GlobalHelper helper;
-    private List<Bitmap> photoList = new ArrayList<>();
+   // private List<Bitmap> photoList = new ArrayList<>();
     private ImageAdapter mImageAdapter;
 
     private File fileImage = null;
@@ -270,20 +270,17 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleFotoViewBinding binding = SingleFotoViewBinding.inflate(getLayoutInflater());
         List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySectionIdFormId(section.getSurveySection_ID(), formId);
 
-        if (details != null && details.size() > 0) {
-            for (int j = 0; j < details.size(); j++) {
-                String path = details.get(j).getSurvey_que_values();
-                if (path != null && !path.isEmpty()) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(path);
-                    if (bitmap != null) {
-                        // binding.imgViewFoto.setImageBitmap(bitmap);
-                        photoList.add(bitmap);
-                    }
-                }
-            }
-        }
-        mImageAdapter = new ImageAdapter(EditFormActivity.this,photoList);
+        mImageAdapter = new ImageAdapter(EditFormActivity.this,details);
         binding.imgViewFoto.setAdapter(mImageAdapter);
+        binding.imgViewFoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CandidateDetails detail = details.get(i);
+                Intent intent = new Intent(EditFormActivity.this,ViewImageActivity.class);
+                intent.putExtra(AppKeys.IMAGE,detail);
+                EditFormActivity.this.startActivity(intent);
+            }
+        });
 
         binding.imgCapture.setOnClickListener(new View.OnClickListener() {
             @Override
