@@ -55,12 +55,19 @@ public class ImageAdapter extends BaseAdapter {
         else {
             viewHolder=(ViewHolder)convertView.getTag();
         }
-        String path = photoList.get(position).getSurvey_que_values();
-        if (path != null && !path.isEmpty()) {
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
-            if (bitmap != null) {
-                // binding.imgViewFoto.setImageBitmap(bitmap);
-                viewHolder.binding.imageView.setImageBitmap(bitmap);
+        if (position == photoList.size() -1) {
+            viewHolder.binding.imageViewCapture.setVisibility(View.VISIBLE);
+            viewHolder.binding.imageView.setVisibility(View.GONE);
+        } else {
+            viewHolder.binding.imageViewCapture.setVisibility(View.GONE);
+            viewHolder.binding.imageView.setVisibility(View.VISIBLE);
+            String path = photoList.get(position).getSurvey_que_values();
+            if (path != null && !path.isEmpty()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                if (bitmap != null) {
+                    // binding.imgViewFoto.setImageBitmap(bitmap);
+                    viewHolder.binding.imageView.setImageBitmap(bitmap);
+                }
             }
         }
         return convertView;

@@ -11,5 +11,15 @@
         android:layout_height="@dimen/image_height_width"
         android:scaleType="fitXY"
         android:layout_margin="@dimen/_10dp"
+        android:visibility="visible"
         android:src="@drawable/trit_logo_512x512"/>
+
+    <ImageView
+        android:id="@+id/imageView_capture"
+        android:layout_width="@dimen/image_height_width"
+        android:layout_height="@dimen/image_height_width"
+        android:scaleType="fitXY"
+        android:layout_margin="@dimen/_10dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_check_circle"/>
 </LinearLayout>

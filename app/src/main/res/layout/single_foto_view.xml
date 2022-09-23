@@ -41,8 +41,10 @@
             android:id="@+id/img_view_foto"
             android:layout_width="match_parent"
             android:layout_height="@dimen/multi_input_height"
+            android:scrollbars="vertical"
+            android:nestedScrollingEnabled="true"
             android:layout_margin="10dp"
-            android:numColumns="2"/>
+            android:numColumns="2" />
 
 
     </LinearLayout>

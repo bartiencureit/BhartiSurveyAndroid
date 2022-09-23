@@ -117,6 +117,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private GlobalHelper helper;
    // private List<Bitmap> photoList = new ArrayList<>();
     private ImageAdapter mImageAdapter;
+    private SingleFotoViewBinding binding;
 
     private File fileImage = null;
     ActivityResultLauncher<Uri> openCamera = registerForActivityResult(
@@ -126,18 +127,40 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 public void onActivityResult(Boolean result) {
                     if (result) {
                         if (fileImage != null) {
-                            /*Bitmap bitmap = BitmapFactory.decodeFile(fileImage.getAbsolutePath());
-                            photoList.add(bitmap);
-                            mImageAdapter = new ImageAdapter(EditFormActivity.this,photoList);
-                            GridView gridView = findViewById(R.id.img_view_foto);
-                            gridView.setAdapter(mImageAdapter);*/
                             editPhotoFromDB();
+                            if(binding != null) {
+                                setPhotoAdapter();
+                            }
                         }
                     } else {
                         fileImage = null;
                     }
                 }
             });
+
+    private void setPhotoAdapter() {
+        List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySectionIdFormId(section.getSurveySection_ID(), formId);
+        details.add(new CandidateDetails());
+
+        mImageAdapter = new ImageAdapter(EditFormActivity.this,details);
+        binding.imgViewFoto.setAdapter(mImageAdapter);
+        binding.imgViewFoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (i == details.size() -1) {
+                    //capture image
+                    binding.imgCapture.callOnClick();
+                } else {
+                    //view image
+                    CandidateDetails detail = details.get(i);
+                    Intent intent = new Intent(EditFormActivity.this, ViewImageActivity.class);
+                    intent.putExtra(AppKeys.IMAGE, detail);
+                    EditFormActivity.this.startActivity(intent);
+                }
+            }
+        });
+    }
+
     private SurveyQuestionWithData imageSubForm = null;
     private Uri uri;
     private boolean hasFoto = false;
@@ -267,21 +290,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void addPhotoView(LinearLayout llFormList, SurveyQuestionWithData subForm) {
         imageSubForm = subForm;
         requestPermissions();
-        SingleFotoViewBinding binding = SingleFotoViewBinding.inflate(getLayoutInflater());
-        List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySectionIdFormId(section.getSurveySection_ID(), formId);
-
-        mImageAdapter = new ImageAdapter(EditFormActivity.this,details);
-        binding.imgViewFoto.setAdapter(mImageAdapter);
-        binding.imgViewFoto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                CandidateDetails detail = details.get(i);
-                Intent intent = new Intent(EditFormActivity.this,ViewImageActivity.class);
-                intent.putExtra(AppKeys.IMAGE,detail);
-                EditFormActivity.this.startActivity(intent);
-            }
-        });
-
+        binding = SingleFotoViewBinding.inflate(getLayoutInflater());
+        setPhotoAdapter();
         binding.imgCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

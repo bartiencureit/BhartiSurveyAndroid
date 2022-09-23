@@ -211,17 +211,18 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      */
     private void uploadData() {
         //save data to candidate details survey status
-        saveCandidateSurveyStatusDetails();
+        CandidateSurveyStatusDetails candidateSurveyStatusDetails = saveCandidateSurveyStatusDetails();
         if (hasFoto) {
             saveFotoToDb();
-            ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
-            startActivityOnTop(DashboardActivity.class, false);
         } else {
             saveAllCandidates();
             saveMultiInputBoxDataToDb();
-            ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
-            startActivityOnTop(DashboardActivity.class, false);
         }
+        ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
+        Intent intent = new Intent(SubFormActivity.this, QuesSectionListActivity.class);
+        intent.putExtra(AppKeys.SURVEY_TYPE, surveyType);
+        intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS, candidateSurveyStatusDetails);
+        startActivityOnTop(true, intent);
     }
 
     private void saveAllCandidates() {
@@ -286,7 +287,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      * @date 10-3-2022
      * Save CandidateSurveyStatusDetails to room db
      */
-    private void saveCandidateSurveyStatusDetails() {
+    private CandidateSurveyStatusDetails saveCandidateSurveyStatusDetails() {
         last_updated_date = getCurrentDate();
         CandidateSurveyStatusDetails candidateSurveyStatusDetails = new CandidateSurveyStatusDetails();
         candidateSurveyStatusDetails.setFormID(formId);
@@ -301,6 +302,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateSurveyStatusDetails.setStart_date(end_date);
         candidateSurveyStatusDetails.setForm_unique_id(surveyType.getForm_unique_id());
         DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().insert(candidateSurveyStatusDetails);
+        return candidateSurveyStatusDetails;
     }
 
     /**
