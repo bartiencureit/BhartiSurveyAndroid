@@ -170,8 +170,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
                             }
                         });
             }
-
-
         }
         if (candidateDetails.size() == 0) {
             mViewModel.showResponseNoData("No forms to sync");
@@ -208,7 +206,6 @@ public class SettingsPresenter implements SettingsContract.Presenter {
             }
         });
         dialog.show();
-
     }
 
     public void getSurveySectionFields() {
