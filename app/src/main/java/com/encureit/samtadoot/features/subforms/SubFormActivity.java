@@ -599,7 +599,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     }
 
     private void addLinkedQuestion(SurveyQuestionWithData subForm, int index) {
-
         //inflating layout single_add_another_parent_item
         SingleAddAnotherParentItemBinding binding = SingleAddAnotherParentItemBinding.inflate(getLayoutInflater());
         for (int j = 0; j < subForm.getLinkedQuestions().size(); j++) {
