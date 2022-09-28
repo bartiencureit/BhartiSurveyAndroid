@@ -12,6 +12,7 @@ import java.lang.Object;
 public class CustomEditText extends AppCompatEditText {
     private Object subForm;
     private int linked_id;
+    private int index;
 
     public CustomEditText(@NonNull Context context) {
         super(context);
@@ -39,5 +40,13 @@ public class CustomEditText extends AppCompatEditText {
 
     public void setLinked_id(int linked_id) {
         this.linked_id = linked_id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }

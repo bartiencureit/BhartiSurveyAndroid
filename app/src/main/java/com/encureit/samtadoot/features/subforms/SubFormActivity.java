@@ -770,9 +770,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     private void addInputOption(int validation, QuestionOption questionOption, LinearLayout llMultiInputParent) {
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
-
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
-
         for (int j = 0; j < tot_input_boxes; j++) {
             AppCompatEditText textView = new AppCompatEditText(SubFormActivity.this);
             int ten_dp = CommonUtils.dip2pix(SubFormActivity.this, 8);
@@ -784,10 +782,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             int width = CommonUtils.dip2pix(SubFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
-
             binding.llInputBox.addView(textView);
         }
-
         llMultiInputParent.addView(binding.getRoot());
     }
 
@@ -799,7 +795,6 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         QuestionOption questionOption = new QuestionOption();
         questionOption.setQNA_Values("अनु क्र.");
         binding.setOption(questionOption);
-
         for (int j = 0; j < labels.size(); j++) {
             //add Header To Layout
             HeaderTextView textView = new HeaderTextView(SubFormActivity.this);
@@ -811,10 +806,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setText(labels.get(j));
-
             binding.llInputBox.addView(textView);
         }
-
         llMultiInputParent.addView(binding.getRoot());
     }
 

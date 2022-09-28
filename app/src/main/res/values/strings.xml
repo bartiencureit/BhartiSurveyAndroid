@@ -57,5 +57,6 @@
     <string name="no_close_the_app">NO Close The App</string>
     <string name="first_fill_first_section">"आधी पहिला सेक्षन भरणे बंधनकारक "</string>
     <string name="last_updated">Last Updated :</string>
+    <string name="calculate">Calculate</string>
 
 </resources>

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -838,17 +839,140 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
             subForm.setLinked_question_id(0);
-            populateMultiInputBox(subForm, mBinding.llFormList);
+            if (subForm.getSurveySection_ID().contains("4")) {
+                populateMultiInputBoxFourthSection(subForm, mBinding.llFormList);
+            } else {
+                populateMultiInputBox(subForm, mBinding.llFormList);
+            }
         } else {
             HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
             headerTextView.setText(subForm.getQuestions());
             mBinding.llFormList.addView(headerTextView);
-
-            /*if (subForm.getQuestions().contains("फोटो")) {
-                hasFoto = true;
-                addPhotoView(mBinding.llFormList);
-            }*/
         }
+    }
+
+    private void populateMultiInputBoxFourthSection(SurveyQuestionWithData subForm, LinearLayout linearLayout) {
+        HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
+        headerTextView.setText(subForm.getQuestions());
+        linearLayout.addView(headerTextView);
+
+        SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
+
+        addLabelHeader(subForm, binding.llMultiInputParent);
+        for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
+            addInputOptionFourthSection(subForm.getInputValidation(), subForm.getQuestionOptions().get(j), binding.llMultiInputParent,subForm.getLinked_question_id());
+        }
+        Button btn_calculate = new Button(EditFormActivity.this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0,10,0,10);
+        btn_calculate.setLayoutParams(params);
+        btn_calculate.setText(getResources().getString(R.string.calculate));
+        btn_calculate.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+        btn_calculate.setTextColor(Color.WHITE);
+        btn_calculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int ll_count = linearLayout.getChildCount();
+                String option = "";
+                int first_column_count = 0;
+                int second_column_count = 0;
+                int third_column_count = 0;
+                int fourth_column_count = 0;
+                boolean isTotal = false;
+
+                for (int k = 0; k < ll_count; k++) {
+                    View child_view = linearLayout.getChildAt(k);
+                    //Check option label
+                    if (child_view instanceof HeaderTextView) {
+                        HeaderTextView headerTextView = (HeaderTextView) child_view;
+                        option = headerTextView.getText().toString().replace("*", "").trim();
+                        Log.e("Text", option);
+                        if (option.contains("4.15")) {
+                            isTotal = true;
+                        } else {
+                            isTotal = false;
+                        }
+                    }
+                    if (child_view instanceof CustomEditText) {
+                        CustomEditText editText = (CustomEditText) child_view;
+                        if (isTotal) {
+                            if (editText.getIndex() == 0) {
+                                editText.setText(first_column_count);
+                            } else if (editText.getIndex() == 1) {
+                                editText.setText(second_column_count);
+                            } else if (editText.getIndex() == 2) {
+                                editText.setText(third_column_count);
+                            } else if (editText.getIndex() == 3) {
+                                editText.setText(fourth_column_count);
+                            }
+                        } else {
+                            int value;
+                            if (editText.getText().toString().isEmpty()) {
+                                value = 0;
+                            } else {
+                                value = Integer.parseInt(editText.getText().toString());
+                            }
+                            if (editText.getIndex() == 0) {
+                                first_column_count = first_column_count + value;
+                            } else if (editText.getIndex() == 1) {
+                                second_column_count = second_column_count + value;
+                            } else if (editText.getIndex() == 2) {
+                                third_column_count = third_column_count + value;
+                            } else if (editText.getIndex() == 3) {
+                                fourth_column_count = fourth_column_count + value;
+                            }
+                        }
+                    }
+                }
+
+            }
+        });
+
+       // binding.llMultiInputParent.addView(btn_calculate);
+        linearLayout.addView(binding.getRoot());
+        linearLayout.addView(btn_calculate);
+    }
+
+    private void addInputOptionFourthSection(int validation, QuestionOption questionOption, LinearLayout llMultiInputParent,int linked_question_index) {
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        binding.setOption(questionOption);
+        int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
+        CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,linked_question_index);
+        if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
+            String value = candidateDetails.getSurvey_que_values();
+            List<String> values = Arrays.asList(value.split(","));
+            for (int j = 0; j < tot_input_boxes; j++) {
+                CustomEditText textView = new CustomEditText(EditFormActivity.this);
+                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
+                textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
+                textView.setInputType(validation);
+                textView.setText(values.get(j));
+                textView.setIndex(j);
+                textView.setSubForm(questionOption.getQNAOption_ID());
+                textView.setLinked_id(linked_question_index);
+                textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                textView.setLayoutParams(params);
+                binding.llInputBox.addView(textView);
+            }
+        } else {
+            for (int j = 0; j < tot_input_boxes; j++) {
+                CustomEditText textView = new CustomEditText(EditFormActivity.this);
+                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
+                textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
+                textView.setInputType(validation);
+                textView.setSubForm(questionOption.getQNAOption_ID());
+                textView.setIndex(j);
+                textView.setLinked_id(linked_question_index);
+                textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                textView.setLayoutParams(params);
+                binding.llInputBox.addView(textView);
+            }
+        }
+        llMultiInputParent.addView(binding.getRoot());
     }
 
     private void populateMultiInputBox(SurveyQuestionWithData subForm, LinearLayout linearLayout) {
@@ -868,31 +992,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void addInputOption(int validation, QuestionOption questionOption, LinearLayout llMultiInputParent,int linked_question_index) {
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
-
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
         CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,linked_question_index);
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             String value = candidateDetails.getSurvey_que_values();
             List<String> values = Arrays.asList(value.split(","));
-
             for (int j = 0; j < tot_input_boxes; j++) {
                 CustomEditText textView = new CustomEditText(EditFormActivity.this);
-                /*textView.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        //add timer for 3 sec
-                    }
-                });*/
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
@@ -905,8 +1011,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
             }
-
-            llMultiInputParent.addView(binding.getRoot());
         } else {
             for (int j = 0; j < tot_input_boxes; j++) {
                 CustomEditText textView = new CustomEditText(EditFormActivity.this);
@@ -919,23 +1023,19 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                 textView.setLayoutParams(params);
-
                 binding.llInputBox.addView(textView);
             }
-
-            llMultiInputParent.addView(binding.getRoot());
         }
+        llMultiInputParent.addView(binding.getRoot());
     }
 
     private void addLabelHeader(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
         String label_header = subForm.getLabelHeader().replaceAll("\".*\"", "");
         List<String> labels = Arrays.asList(label_header.split(","));
-
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         QuestionOption questionOption = new QuestionOption();
         questionOption.setQNA_Values("अनु क्र.");
         binding.setOption(questionOption);
-
         for (int j = 0; j < labels.size(); j++) {
             //add Header To Layout
             HeaderTextView textView = new HeaderTextView(EditFormActivity.this);
@@ -950,10 +1050,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             textView.setMinLines(2);
             textView.setMaxLines(100);
             textView.setText(labels.get(j));
-
             binding.llInputBox.addView(textView);
         }
-
         llMultiInputParent.addView(binding.getRoot());
     }
 
