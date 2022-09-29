@@ -872,7 +872,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         btn_calculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int ll_count = linearLayout.getChildCount();
+                int ll_count = binding.llMultiInputParent.getChildCount();
                 String option = "";
                 int first_column_count = 0;
                 int second_column_count = 0;
@@ -881,50 +881,56 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 boolean isTotal = false;
 
                 for (int k = 0; k < ll_count; k++) {
-                    View child_view = linearLayout.getChildAt(k);
-                    //Check option label
-                    if (child_view instanceof HeaderTextView) {
-                        HeaderTextView headerTextView = (HeaderTextView) child_view;
-                        option = headerTextView.getText().toString().replace("*", "").trim();
-                        Log.e("Text", option);
-                        if (option.contains("4.15")) {
-                            isTotal = true;
-                        } else {
-                            isTotal = false;
-                        }
-                    }
-                    if (child_view instanceof CustomEditText) {
-                        CustomEditText editText = (CustomEditText) child_view;
-                        if (isTotal) {
-                            if (editText.getIndex() == 0) {
-                                editText.setText(first_column_count);
-                            } else if (editText.getIndex() == 1) {
-                                editText.setText(second_column_count);
-                            } else if (editText.getIndex() == 2) {
-                                editText.setText(third_column_count);
-                            } else if (editText.getIndex() == 3) {
-                                editText.setText(fourth_column_count);
+                    View child_view = binding.llMultiInputParent.getChildAt(k);
+
+                    if (child_view instanceof LinearLayout) {
+                        for (int j = 0; j < ((LinearLayout) child_view).getChildCount(); j++) {
+                            View sub_child_view = ((LinearLayout) child_view).getChildAt(j);
+
+                            if (sub_child_view instanceof HeaderTextView) {
+                                HeaderTextView headerTextView = (HeaderTextView) sub_child_view;
+                                option = headerTextView.getText().toString().replace("*", "").trim();
+                                Log.e("Text", option);
+                                if (option.contains("4.16")) {
+                                    isTotal = true;
+                                } else {
+                                    isTotal = false;
+                                }
                             }
-                        } else {
-                            int value;
-                            if (editText.getText().toString().isEmpty()) {
-                                value = 0;
-                            } else {
-                                value = Integer.parseInt(editText.getText().toString());
-                            }
-                            if (editText.getIndex() == 0) {
-                                first_column_count = first_column_count + value;
-                            } else if (editText.getIndex() == 1) {
-                                second_column_count = second_column_count + value;
-                            } else if (editText.getIndex() == 2) {
-                                third_column_count = third_column_count + value;
-                            } else if (editText.getIndex() == 3) {
-                                fourth_column_count = fourth_column_count + value;
+                            if (sub_child_view instanceof CustomEditText) {
+                                CustomEditText editText = (CustomEditText) sub_child_view;
+                                if (isTotal) {
+                                    if (editText.getIndex() == 0) {
+                                        editText.setText(""+first_column_count);
+                                    } else if (editText.getIndex() == 1) {
+                                        editText.setText(""+second_column_count);
+                                    } else if (editText.getIndex() == 2) {
+                                        editText.setText(""+third_column_count);
+                                    } else if (editText.getIndex() == 3) {
+                                        editText.setText(""+fourth_column_count);
+                                    }
+                                } else {
+                                    int value;
+                                    if (editText.getText().toString().isEmpty()) {
+                                        editText.setText("0");
+                                        value = 0;
+                                    } else {
+                                        value = Integer.parseInt(editText.getText().toString());
+                                    }
+                                    if (editText.getIndex() == 0) {
+                                        first_column_count = first_column_count + value;
+                                    } else if (editText.getIndex() == 1) {
+                                        second_column_count = second_column_count + value;
+                                    } else if (editText.getIndex() == 2) {
+                                        third_column_count = third_column_count + value;
+                                    } else if (editText.getIndex() == 3) {
+                                        fourth_column_count = fourth_column_count + value;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-
             }
         });
 
@@ -934,15 +940,22 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void addInputOptionFourthSection(int validation, QuestionOption questionOption, LinearLayout llMultiInputParent,int linked_question_index) {
+        boolean isTotal = false;
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
+        if (questionOption.getQNA_Values().contains("4.16")) {
+            isTotal = true;
+        }
         CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,linked_question_index);
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             String value = candidateDetails.getSurvey_que_values();
             List<String> values = Arrays.asList(value.split(","));
             for (int j = 0; j < tot_input_boxes; j++) {
                 CustomEditText textView = new CustomEditText(EditFormActivity.this);
+                if (isTotal) {
+                    textView.setEnabled(false);
+                }
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
@@ -959,6 +972,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         } else {
             for (int j = 0; j < tot_input_boxes; j++) {
                 CustomEditText textView = new CustomEditText(EditFormActivity.this);
+                if (isTotal) {
+                    textView.setEnabled(false);
+                }
                 int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
