@@ -119,6 +119,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
    // private List<Bitmap> photoList = new ArrayList<>();
     private ImageAdapter mImageAdapter;
     private SingleFotoViewBinding binding;
+    int first_column_count = 0;
+    int second_column_count = 0;
+    int third_column_count = 0;
+    int fourth_column_count = 0;
 
     private File fileImage = null;
     ActivityResultLauncher<Uri> openCamera = registerForActivityResult(
@@ -404,13 +408,30 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         } else {
             emptyAllLists();
             getAllChildViewIterative(mainLinear);
-            if (candidateDetails.isEmpty()) {
-                if (multiEditTextValues.size() > 0) {
-                    return true;
+            if (section.getSurveySection_ID().equalsIgnoreCase("4")) {
+                if (first_column_count == 0 && second_column_count == 0 && third_column_count == 0 && fourth_column_count == 0) {
+                    return false;
                 } else {
-                    isValid = false;
+                    if (candidateDetails.isEmpty()) {
+                        if (multiEditTextValues.size() > 0) {
+                            return true;
+                        } else {
+                            isValid = false;
+                        }
+                    }
+
                 }
+            } else {
+                if (candidateDetails.isEmpty()) {
+                    if (multiEditTextValues.size() > 0) {
+                        return true;
+                    } else {
+                        isValid = false;
+                    }
+                }
+
             }
+
             return isValid;
         }
     }
@@ -839,7 +860,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
             //add multiple edittext
             subForm.setLinked_question_id(0);
-            if (subForm.getSurveySection_ID().contains("4")) {
+            if (subForm.getSurveySection_ID().equalsIgnoreCase("4")) {
                 populateMultiInputBoxFourthSection(subForm, mBinding.llFormList);
             } else {
                 populateMultiInputBox(subForm, mBinding.llFormList);
@@ -874,10 +895,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             public void onClick(View view) {
                 int ll_count = binding.llMultiInputParent.getChildCount();
                 String option = "";
-                int first_column_count = 0;
-                int second_column_count = 0;
-                int third_column_count = 0;
-                int fourth_column_count = 0;
+                first_column_count = 0;
+                second_column_count = 0;
+                third_column_count = 0;
+                fourth_column_count = 0;
                 boolean isTotal = false;
 
                 for (int k = 0; k < ll_count; k++) {
