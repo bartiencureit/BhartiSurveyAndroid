@@ -1,5 +1,6 @@
 package com.encureit.samtadoot.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +32,7 @@ public class SurveyTypeListAdapter extends RecyclerView.Adapter<SurveyTypeListAd
                 parent, false));
     }
     @Override
-    public void onBindViewHolder(@NonNull SurveyTypeHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SurveyTypeHolder holder, @SuppressLint("RecyclerView") int position) {
         SurveyType listItem = stateList.get(holder.getAdapterPosition());
         holder.binding.setSurveyType(listItem);
         holder.binding.form1TitleAdapter.setOnClickListener(new View.OnClickListener() {
