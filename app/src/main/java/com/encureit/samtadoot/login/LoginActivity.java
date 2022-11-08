@@ -38,7 +38,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.ViewMod
             helper = new GlobalHelper(this);
             mPresenter = new LoginPresenter(this,this);
             mPresenter.rootView = mBinding.getRoot();
-            mPresenter.userId.set("1111");
+            //mPresenter.userId.set("00001");
             askPermission();
             mBinding.setPresenter(mPresenter);
         } catch (Exception e) {

@@ -763,10 +763,20 @@ public class DatabaseUtil {
      * else return false
      * else return false
      */
-    public boolean isLastSurveySection(String Survey_section_id, String form_id) {
-        List<SurveySection> surveySections = getSurveySectionDao().getAllFlowableCodes();
+    public boolean isLastSurveySection(String Survey_section_id, String form_id,String Survey_MasterId) {
+        List<SurveySection> surveySections = getSurveySectionDao().getAllSections(Survey_MasterId);
         if (surveySections.get(surveySections.size() - 1).getSurveySection_ID().equalsIgnoreCase(Survey_section_id)) {
-            return surveySections.size() == getCandidateDetailsDao().getAllDetailsByForm(form_id).size();
+            int tot_candidates = getCandidateDetailsDao().getAllSectionDetailsByForm(form_id).size();
+            if(surveySections.size() == tot_candidates + 1) {
+                return true;
+            } else if(surveySections.size() == tot_candidates) {
+                return true;
+            } else if(surveySections.size() == tot_candidates - 1) {
+                return true;
+            } else {
+                return false;
+            }
+            //return  ;
         } else {
             return false;
         }
@@ -1004,5 +1014,21 @@ public class DatabaseUtil {
 
         getCandidateDetailsDao().deleteCandidateByQuestionId(ques_id);
 
+    }
+
+    public List<CandidateDetails> getAllFilledFormData() {
+        List<CandidateDetails> candidateDetails = new ArrayList<>();
+        for (int i = 0; i < getCandidateSurveyStatusDetailsDao().getAllFlowableCodes().size(); i++) {
+            CandidateSurveyStatusDetails candidateSurveyStatusDetails = getCandidateSurveyStatusDetailsDao().getAllFlowableCodes().get(i);
+            if(candidateSurveyStatusDetails.getEnd_date() != null) {
+                candidateDetails.addAll(getCandidateDetailsDao().getAllDetailsByForm(candidateSurveyStatusDetails.getFormID()));
+            }
+        }
+
+        return candidateDetails;
+    }
+
+    public void logout() {
+        UniqaDatabase.on().clearAllTables();
     }
 }

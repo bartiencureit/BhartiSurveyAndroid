@@ -451,7 +451,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * Save form to sqlite
      */
     private void uploadData() {
-        DatabaseUtil.on().getCandidateDetailsDao().deleteCandidateBySectionId(section.getSurveySection_ID());
+       // DatabaseUtil.on().getCandidateDetailsDao().deleteCandidateBySectionId(section.getSurveySection_ID());
         //save data to candidate details survey status
         editCandidateSurveyStatusDetails();
         if (hasFoto) {
@@ -518,11 +518,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      */
     private void editCandidateSurveyStatusDetails() {
         last_updated_date = getCurrentDate();
-        CandidateSurveyStatusDetails candidateSurveyStatusDetails = new CandidateSurveyStatusDetails();
+        //CandidateSurveyStatusDetails candidateSurveyStatusDetails = new CandidateSurveyStatusDetails();
         candidateSurveyStatusDetails.setFormID(formId);
         candidateSurveyStatusDetails.setSurvey_section_id(section.getSurveySection_ID());
-        if (DatabaseUtil.on().isLastSurveySection(section.getSurveySection_ID(), formId)) {
+        if (DatabaseUtil.on().isLastSurveySection(section.getSurveySection_ID(), formId,surveyType.getForm_unique_id())) {
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.completed));
+            end_date = last_updated_date;
         } else {
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.pending));
         }

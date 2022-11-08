@@ -85,10 +85,30 @@ public class SettingsPresenter implements SettingsContract.Presenter {
 
     @Override
     public void syncAllForms() {
+        AlertDialog dialog = new AlertDialog.Builder(mActivity).create();
+        dialog.setTitle("Do you want to sync data?");
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                uploadAllForms();
+            }
+        });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, "No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+
+    }
+
+    private void uploadAllForms() {
+        mActivity.startProgressDialog(mActivity.mBinding.getRoot());
         uploadedForms = 0;
         uploadedFormsError = 0;
-        mActivity.startProgressDialog(mActivity.mBinding.getRoot());
-        List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes();
+        //List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes();
+        List<CandidateDetails> candidateDetails = DatabaseUtil.on().getAllFilledFormData();
         for (int i = 0; i < candidateDetails.size(); i++) {
             CandidateDetails details = candidateDetails.get(i);
 
@@ -194,7 +214,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                DatabaseUtil.on().getUserDeviceDetailsDao().nukeTable();
+                //DatabaseUtil.on().getUserDeviceDetailsDao().nukeTable();
+                DatabaseUtil.on().logout();
                 mActivity.helper.getSharedPreferencesHelper().clear();
                 mViewModel.logoutFinished();
             }
