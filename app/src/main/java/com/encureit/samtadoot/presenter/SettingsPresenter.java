@@ -2,6 +2,7 @@ package com.encureit.samtadoot.presenter;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.Helpers.Helper;
@@ -112,89 +113,117 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         for (int i = 0; i < candidateDetails.size(); i++) {
             CandidateDetails details = candidateDetails.get(i);
 
-            RequestBody survey_master_id = Helper.prepareStringRequest(details.getSurvey_master_id());
-            RequestBody survey_section_id = Helper.prepareStringRequest(details.getSurvey_section_id());
-            RequestBody survey_que_id = Helper.prepareStringRequest(details.getSurvey_que_id());
-            RequestBody survey_que_option_id = Helper.prepareStringRequest(details.getSurvey_que_option_id());
-            RequestBody FormID = Helper.prepareStringRequest(details.getFormID());
-            RequestBody Current_Form_Status = Helper.prepareStringRequest(details.getCurrent_Form_Status());
-            RequestBody age_value = Helper.prepareStringRequest(details.getAge_value());
-            RequestBody Survey_StartDate = Helper.prepareStringRequest(details.getSurvey_StartDate());
-            RequestBody Survey_EndDate = Helper.prepareStringRequest(details.getSurvey_EndDate());
-            RequestBody created_by = Helper.prepareStringRequest(details.getCreated_by());
-            RequestBody Latitude = Helper.prepareStringRequest(details.getLatitude());
-            RequestBody Longitude = Helper.prepareStringRequest(details.getLongitude());
             if (details.isHasImage()) {
-                RequestBody survey_que_values = Helper.prepareStringRequest("");
-                File file = new File(details.getSurvey_que_values());
-                MultipartBody.Part image = Helper.prepareFilePart(mActivity, "image", file);
+                uploadImage(details,candidateDetails.size());
+                Log.e("TAG", "uploadAllForms: image upload "+i);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
 
-                RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
-                        survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,image)
-                        .enqueue(new Callback<CandidateInsertResponseModel>() {
-                            @Override
-                            public void onResponse(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Response<CandidateInsertResponseModel> response) {
-                                if (response.code() == 200) {
-                                    if (response.body().isStatus()) {
-                                        DatabaseUtil.on().deleteCandidate(details);
-                                        uploadedForms++;
-                                        totuploadedForms++;
-                                    } else {
-                                        uploadedFormsError++;
-                                        totuploadedForms++;
-                                    }
-                                }
-                                if (totuploadedForms >= candidateDetails.size()) {
-                                    checkData(candidateDetails.size());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Throwable t) {
-                                uploadedFormsError++;
-                                totuploadedForms++;
-                                if (totuploadedForms >= candidateDetails.size()) {
-                                    checkData(candidateDetails.size());
-                                }
-                            }
-                        });
+                }
             } else {
-                RequestBody survey_que_values = Helper.prepareStringRequest(details.getSurvey_que_values());
-                RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
-                        survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,null)
-                        .enqueue(new Callback<CandidateInsertResponseModel>() {
-                            @Override
-                            public void onResponse(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Response<CandidateInsertResponseModel> response) {
-                                if (response.code() == 200) {
-                                    if (response.body().isStatus()) {
-                                        DatabaseUtil.on().deleteCandidate(details);
-                                        uploadedForms++;
-                                        totuploadedForms++;
-                                    } else {
-                                        uploadedFormsError++;
-                                        totuploadedForms++;
-                                    }
-                                }
-                                if (totuploadedForms >= candidateDetails.size()) {
-                                    checkData(candidateDetails.size());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Throwable t) {
-                                uploadedFormsError++;
-                                totuploadedForms++;
-                                if (totuploadedForms >= candidateDetails.size()) {
-                                    checkData(candidateDetails.size());
-                                }
-                            }
-                        });
+               uploadData(details,candidateDetails.size());
             }
         }
         if (candidateDetails.size() == 0) {
             mViewModel.showResponseNoData("No forms to sync");
         }
 
+    }
+
+    private void uploadImage(CandidateDetails details,int tot_size) {
+        RequestBody survey_master_id = Helper.prepareStringRequest(details.getSurvey_master_id());
+        RequestBody survey_section_id = Helper.prepareStringRequest(details.getSurvey_section_id());
+        RequestBody survey_que_id = Helper.prepareStringRequest(details.getSurvey_que_id());
+        RequestBody survey_que_option_id = Helper.prepareStringRequest(details.getSurvey_que_option_id());
+        RequestBody FormID = Helper.prepareStringRequest(details.getFormID());
+        RequestBody Current_Form_Status = Helper.prepareStringRequest(details.getCurrent_Form_Status());
+        RequestBody age_value = Helper.prepareStringRequest(details.getAge_value());
+        RequestBody Survey_StartDate = Helper.prepareStringRequest(details.getSurvey_StartDate());
+        RequestBody Survey_EndDate = Helper.prepareStringRequest(details.getSurvey_EndDate());
+        RequestBody created_by = Helper.prepareStringRequest(details.getCreated_by());
+        RequestBody Latitude = Helper.prepareStringRequest(details.getLatitude());
+        RequestBody Longitude = Helper.prepareStringRequest(details.getLongitude());
+
+        RequestBody survey_que_values = Helper.prepareStringRequest("");
+        File file = new File(details.getSurvey_que_values());
+        MultipartBody.Part image = Helper.prepareFilePart(mActivity, "image", file);
+
+        RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
+                survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,image)
+                .enqueue(new Callback<CandidateInsertResponseModel>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Response<CandidateInsertResponseModel> response) {
+                        if (response.code() == 200) {
+                            if (response.body().isStatus()) {
+                                DatabaseUtil.on().deleteCandidate(details);
+                                uploadedForms++;
+                                totuploadedForms++;
+                            } else {
+                                uploadedFormsError++;
+                                totuploadedForms++;
+                            }
+                        }
+                        if (totuploadedForms >= tot_size) {
+                            checkData(tot_size);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Throwable t) {
+                        uploadedFormsError++;
+                        totuploadedForms++;
+                        if (totuploadedForms >= tot_size) {
+                            checkData(tot_size);
+                        }
+                    }
+                });
+    }
+
+    private void uploadData(CandidateDetails details,int tot_size) {
+        RequestBody survey_master_id = Helper.prepareStringRequest(details.getSurvey_master_id());
+        RequestBody survey_section_id = Helper.prepareStringRequest(details.getSurvey_section_id());
+        RequestBody survey_que_id = Helper.prepareStringRequest(details.getSurvey_que_id());
+        RequestBody survey_que_option_id = Helper.prepareStringRequest(details.getSurvey_que_option_id());
+        RequestBody FormID = Helper.prepareStringRequest(details.getFormID());
+        RequestBody Current_Form_Status = Helper.prepareStringRequest(details.getCurrent_Form_Status());
+        RequestBody age_value = Helper.prepareStringRequest(details.getAge_value());
+        RequestBody Survey_StartDate = Helper.prepareStringRequest(details.getSurvey_StartDate());
+        RequestBody Survey_EndDate = Helper.prepareStringRequest(details.getSurvey_EndDate());
+        RequestBody created_by = Helper.prepareStringRequest(details.getCreated_by());
+        RequestBody Latitude = Helper.prepareStringRequest(details.getLatitude());
+        RequestBody Longitude = Helper.prepareStringRequest(details.getLongitude());
+
+        RequestBody survey_que_values = Helper.prepareStringRequest(details.getSurvey_que_values());
+        RetrofitClientInsert.getApiService().insertCandidateData(survey_master_id,survey_section_id,survey_que_id,survey_que_option_id,
+                survey_que_values,FormID,Current_Form_Status,age_value,Survey_StartDate,Survey_EndDate,created_by,Latitude,Longitude,null)
+                .enqueue(new Callback<CandidateInsertResponseModel>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Response<CandidateInsertResponseModel> response) {
+                        if (response.code() == 200) {
+                            if (response.body().isStatus()) {
+                                DatabaseUtil.on().deleteCandidate(details);
+                                uploadedForms++;
+                                totuploadedForms++;
+                            } else {
+                                uploadedFormsError++;
+                                totuploadedForms++;
+                            }
+                        }
+                        if (totuploadedForms >= tot_size) {
+                            checkData(tot_size);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<CandidateInsertResponseModel> call, @NonNull Throwable t) {
+                        uploadedFormsError++;
+                        totuploadedForms++;
+                        if (totuploadedForms >= tot_size) {
+                            checkData(tot_size);
+                        }
+                    }
+                });
     }
 
     private void checkData(int totSize) {

@@ -294,6 +294,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         candidateSurveyStatusDetails.setSurvey_section_id(section.getSurveySection_ID());
         if (DatabaseUtil.on().isLastSurveySection(section.getSurveySection_ID(), formId,surveyType.getForm_unique_id())) {
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.completed));
+            end_date = last_updated_date;
         } else {
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.pending));
         }

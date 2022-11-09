@@ -1031,4 +1031,16 @@ public class DatabaseUtil {
     public void logout() {
         UniqaDatabase.on().clearAllTables();
     }
+
+    public void updateCandidateSurveyStatusDetail(CandidateSurveyStatusDetails candidateSurveyStatusDetails) {
+        getCandidateSurveyStatusDetailsDao().update_all(candidateSurveyStatusDetails.id,
+                candidateSurveyStatusDetails.getSurvey_section_id(),
+                candidateSurveyStatusDetails.getFormID(),
+                candidateSurveyStatusDetails.getSurvey_status(),
+                candidateSurveyStatusDetails.getStart_date(),
+                candidateSurveyStatusDetails.getLast_updated_date(),
+                candidateSurveyStatusDetails.getEnd_date(),
+                candidateSurveyStatusDetails.getForm_unique_id()
+                );
+    }
 }

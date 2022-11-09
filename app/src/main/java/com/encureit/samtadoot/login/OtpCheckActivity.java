@@ -53,7 +53,7 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
             if(intent.hasExtra(AppKeys.loginUserId)) {
                 loginUserId = intent.getStringExtra(AppKeys.loginUserId);
             }
-            mBinding.pinview.setValue("1111");
+            //mBinding.pinview.setValue("1111");
             helper = new GlobalHelper(this);
             mPresenter = new OtpPresenter(this,OtpCheckActivity.this);
             mPresenter.rootView = mBinding.getRoot();
