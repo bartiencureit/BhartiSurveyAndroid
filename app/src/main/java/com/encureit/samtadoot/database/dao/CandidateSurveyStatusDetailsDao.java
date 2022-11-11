@@ -38,6 +38,9 @@ public interface CandidateSurveyStatusDetailsDao extends BaseDao<CandidateSurvey
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" WHERE survey_section_id=:survey_section_id")
     CandidateSurveyStatusDetails getCandidateDetails(String survey_section_id);
 
-    @Query("UPDATE " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" SET survey_section_id =:survey_section_id AND FormID =:FormID AND survey_status =:survey_status AND start_date =:start_date AND last_updated_date =:last_updated_date AND end_date =:end_date AND form_unique_id =:form_unique_id WHERE id =:id")
+    @Query("UPDATE " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" SET survey_section_id =:survey_section_id,survey_status =:survey_status,start_date =:start_date,last_updated_date =:last_updated_date,end_date =:end_date WHERE FormID =:FormID")
+    void update_section(String FormID, String survey_section_id,String survey_status,String start_date,String last_updated_date,String end_date);
+
+    @Query("UPDATE " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" SET survey_section_id =:survey_section_id,FormID =:FormID,survey_status =:survey_status,start_date =:start_date,last_updated_date =:last_updated_date,end_date =:end_date,form_unique_id =:form_unique_id WHERE id =:id")
     void update_all(int id, String survey_section_id,String FormID,String survey_status,String start_date,String last_updated_date,String end_date,String form_unique_id);
 }

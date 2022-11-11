@@ -455,7 +455,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         //save data to candidate details survey status
         editCandidateSurveyStatusDetails();
         if (hasFoto) {
-            editPhotoFromDB();
+            //editPhotoFromDB();
         } else {
             editAllCandidates();
             editMultiInputBoxDataToDb();
@@ -525,12 +525,14 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.completed));
             end_date = last_updated_date;
         } else {
+            end_date = null;
             candidateSurveyStatusDetails.setSurvey_status(getResources().getString(R.string.pending));
         }
         candidateSurveyStatusDetails.setLast_updated_date(last_updated_date);
         candidateSurveyStatusDetails.setEnd_date(end_date);
         candidateSurveyStatusDetails.setForm_unique_id(surveyType.getForm_unique_id());
-        DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().update(candidateSurveyStatusDetails);
+        //DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().update(candidateSurveyStatusDetails);
+        DatabaseUtil.on().updateCandidateSurveyStatusDetail(candidateSurveyStatusDetails);
     }
 
     /**
@@ -682,7 +684,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     /**
      * @date 10-3-2022
      * save check boxes data to sqlite db
-     */
+     *
     private void getCheckBoxCandidate(CustomCheckBox checkBox) {
         QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
         int linked_id = checkBox.getLinked_id();
@@ -693,6 +695,34 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
         candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
         candidateDetail.setSurvey_que_values(checkBox.getText().toString());
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id > 0) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
+        }
+        candidateDetails.add(candidateDetail);
+    }*/
+
+    /**
+     * @date 11-11-2022
+     * save check boxes data to sqlite db
+     */
+    private void getCheckBoxCandidate(CustomRadioGroup radioGroup,String value,String ids) {
+        SurveyQuestionWithData subForm = (SurveyQuestionWithData) radioGroup.getSubForm();
+        int linked_id = radioGroup.getLinked_id();
+
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+        candidateDetail.setSurvey_que_option_id(ids);
+        candidateDetail.setSurvey_que_values(value);
         candidateDetail.setFormID(formId);
         candidateDetail.setCurrent_Form_Status("GY");
         candidateDetail.setAge_value("0");
@@ -1103,6 +1133,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         binding.setSubForm(subForm);
         binding.rgCheckboxQuestionOptions.setSubForm(subForm);
         binding.rgCheckboxQuestionOptions.setLinked_id(0);
+        CandidateDetails details = null;
+        String qna_options = null;
+        List<CandidateDetails> detailList = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySurveyQueId(subForm.getSurveyQuestion_ID());
+        if (detailList.size() > 0) {
+            details = detailList.get(0);
+            qna_options = details.getSurvey_que_option_id();
+        }
 
         for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
@@ -1110,14 +1147,18 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             checkBox.setText(questionOption.getQNA_Values());
             checkBox.setSubForm(questionOption);
             checkBox.setLinked_id(0);
-            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,0);
-            if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
+            if (qna_options != null && qna_options.contains(questionOption.getQNAOption_ID())) {
+                checkBox.setChecked(true);
+                checkBoxOnClick(checkBox, questionOption, binding.edtDropDownItar, binding.llChildQuestion, binding.getRoot(),0);
+            }
+           // CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,0);
+            /*if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 checkBox.setChecked(true);
                 checkBoxOnClick(checkBox, questionOption, binding.edtDropDownItar, binding.llChildQuestion, binding.getRoot(),0);
             } else if (details != null && questionOption.getQNAOption_ID().equalsIgnoreCase(details.getSurvey_que_option_id())) {
                 checkBox.setChecked(true);
                 checkBoxOnClick(checkBox, questionOption, binding.edtDropDownItar, binding.llChildQuestion, binding.getRoot(),0);
-            }
+            }*/
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1501,13 +1542,26 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         binding.rgCheckboxQuestionOptions.setSubForm(subForm);
         binding.rgCheckboxQuestionOptions.setLinked_id(subForm.getLinked_question_id());
 
-        for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
+        CandidateDetails details = null;
+        String qna_options = null;
+        List<CandidateDetails> detailList = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsBySurveyQueId(subForm.getSurveyQuestion_ID());
+        if (detailList.size() > 0) {
+            details = detailList.get(0);
+            qna_options = details.getSurvey_que_option_id();
+        }
 
+        for (int i = 0; i < subForm.getQuestionOptions().size(); i++) {
             QuestionOption questionOption = subForm.getQuestionOptions().get(i);
             CustomCheckBox checkBox = new CustomCheckBox(EditFormActivity.this);
             checkBox.setText(questionOption.getQNA_Values());
             checkBox.setSubForm(questionOption);
             checkBox.setLinked_id(subForm.getLinked_question_id());
+            if (qna_options != null && qna_options.contains(questionOption.getQNAOption_ID())) {
+                checkBox.setChecked(true);
+                checkBoxOnClick(checkBox, questionOption, binding.edtDropDownItar, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
+            }
+
+            /*
             CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,subForm.getLinked_question_id());
             if (details != null && questionOption.getQNA_Values().equalsIgnoreCase(details.getSurvey_que_values())) {
                 checkBox.setChecked(true);
@@ -1515,7 +1569,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }  else if (details != null && questionOption.getQNAOption_ID().equalsIgnoreCase(details.getSurvey_que_option_id())) {
                 checkBox.setChecked(true);
                 checkBoxOnClick(checkBox, questionOption, binding.edtDropDownItar, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
-            }
+            }*/
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1725,6 +1779,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 } else if (radioGroup.getChildAt(0) instanceof CustomCheckBox) {
                     int childCount = radioGroup.getChildCount();
                     int checked_checkboxes = 0;
+                    String str_cb_value = "";
+                    String str_cb_option_ids = "";
 
                     for (int k = 0; k < childCount; k++) {
                         View cbView = radioGroup.getChildAt(k);
@@ -1732,10 +1788,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                             CustomCheckBox checkBox = (CustomCheckBox) cbView;
                             if (checkBox.isChecked()) {
                                 checked_checkboxes++;
-                                getCheckBoxCandidate(checkBox);
+                                QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
+                                //getCheckBoxCandidate(checkBox);
+                                if (k == 0) {
+                                    str_cb_value = checkBox.getText().toString();
+                                    str_cb_option_ids = questionOption.getQNAOption_ID();
+                                } else {
+                                    str_cb_value = str_cb_value + "," + checkBox.getText().toString();
+                                    str_cb_option_ids = str_cb_option_ids + "," + questionOption.getQNAOption_ID();
+                                }
                             }
                         }
                     }
+
+                    getCheckBoxCandidate(radioGroup,str_cb_value,str_cb_option_ids);
 
                     if (checked_checkboxes <= 0) {
                         if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {

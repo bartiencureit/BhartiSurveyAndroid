@@ -1033,7 +1033,7 @@ public class DatabaseUtil {
     }
 
     public void updateCandidateSurveyStatusDetail(CandidateSurveyStatusDetails candidateSurveyStatusDetails) {
-        getCandidateSurveyStatusDetailsDao().update_all(candidateSurveyStatusDetails.id,
+        /*getCandidateSurveyStatusDetailsDao().update_all(candidateSurveyStatusDetails.id,
                 candidateSurveyStatusDetails.getSurvey_section_id(),
                 candidateSurveyStatusDetails.getFormID(),
                 candidateSurveyStatusDetails.getSurvey_status(),
@@ -1041,6 +1041,18 @@ public class DatabaseUtil {
                 candidateSurveyStatusDetails.getLast_updated_date(),
                 candidateSurveyStatusDetails.getEnd_date(),
                 candidateSurveyStatusDetails.getForm_unique_id()
-                );
+                );*/
+        String query = "UPDATE " + TableNames.TABLE_CANDIDATE_SURVEY_DETAILS+" SET survey_section_id =:"+candidateSurveyStatusDetails.getSurvey_section_id()+"" +
+                ",survey_status =:"+candidateSurveyStatusDetails.getSurvey_status()+
+                ",start_date =:"+candidateSurveyStatusDetails.getStart_date()+
+                ",last_updated_date =:"+candidateSurveyStatusDetails.getLast_updated_date() +
+                ",end_date =:"+candidateSurveyStatusDetails.getEnd_date()+
+                "WHERE FormID =:"+candidateSurveyStatusDetails.getFormID();
+        getCandidateSurveyStatusDetailsDao().update_section(candidateSurveyStatusDetails.getFormID(),
+                candidateSurveyStatusDetails.getSurvey_section_id(),
+                candidateSurveyStatusDetails.getSurvey_status(),
+                candidateSurveyStatusDetails.getStart_date(),
+                candidateSurveyStatusDetails.getLast_updated_date(),
+                candidateSurveyStatusDetails.getEnd_date());
     }
 }

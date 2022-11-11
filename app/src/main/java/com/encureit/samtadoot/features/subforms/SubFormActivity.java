@@ -455,7 +455,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
     /**
      * @date 10-3-2022
      * save check boxes data to sqlite db
-     */
+     *
     private void getCheckBoxCandidate(CustomCheckBox checkBox) {
         QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
         int linked_id = checkBox.getLinked_id();
@@ -478,6 +478,34 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             candidateDetail.setIndex_if_linked_question(linked_id);
         }
 
+        candidateDetails.add(candidateDetail);
+    }*/
+
+    /**
+     * @date 11-11-2022
+     * save check boxes data to sqlite db
+     */
+    private void getCheckBoxCandidate(CustomRadioGroup radioGroup,String value,String ids) {
+        SurveyQuestionWithData subForm = (SurveyQuestionWithData) radioGroup.getSubForm();
+        int linked_id = radioGroup.getLinked_id();
+
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+        candidateDetail.setSurvey_que_option_id(ids);
+        candidateDetail.setSurvey_que_values(value);
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id > 0) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
+        }
         candidateDetails.add(candidateDetail);
     }
 
@@ -1460,6 +1488,8 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 } else if (radioGroup.getChildAt(0) instanceof CustomCheckBox) {
                     int childCount = radioGroup.getChildCount();
                     int checked_checkboxes = 0;
+                    String str_cb_value = "";
+                    String str_cb_option_ids = "";
 
                     for (int k = 0; k < childCount; k++) {
                         View cbView = radioGroup.getChildAt(k);
@@ -1467,10 +1497,20 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             CustomCheckBox checkBox = (CustomCheckBox) cbView;
                             if (checkBox.isChecked()) {
                                 checked_checkboxes++;
-                                getCheckBoxCandidate(checkBox);
+                                QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
+                                //getCheckBoxCandidate(checkBox);
+                                if (k == 0) {
+                                    str_cb_value = checkBox.getText().toString();
+                                    str_cb_option_ids = questionOption.getQNAOption_ID();
+                                } else {
+                                    str_cb_value = str_cb_value + "," + checkBox.getText().toString();
+                                    str_cb_option_ids = str_cb_option_ids + "," + questionOption.getQNAOption_ID();
+                                }
                             }
                         }
                     }
+
+                    getCheckBoxCandidate(radioGroup,str_cb_value,str_cb_option_ids);
 
                     if (checked_checkboxes <= 0) {
                         if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
