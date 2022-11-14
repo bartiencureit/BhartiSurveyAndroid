@@ -1,5 +1,7 @@
 package com.encureit.samtadoot.login;
 
+import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -215,6 +217,7 @@ public class OtpCheckActivity extends BaseActivity implements OtpContract.ViewMo
     private void addOtherValuesToDb(List<OtherValues> other_values) {
         DatabaseUtil.on().getOtherValuesDao().nukeTable();
         DatabaseUtil.on().insertAllOtherValues(other_values);
+        helper.getSharedPreferencesHelper().setLastSyncTimeAllData(getCurrentDate());
         dismissProgressDialog();
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),getResources().getString(R.string.sucessfull_login));
         goToDashboard();

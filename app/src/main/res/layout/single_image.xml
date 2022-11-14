@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="@dimen/image_parent_height_width"
-    android:layout_height="@dimen/image_parent_height_width">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/ll_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="@dimen/image_height_width"
-        android:layout_height="@dimen/image_height_width"
-        android:scaleType="fitXY"
-        android:layout_margin="@dimen/_10dp"
-        android:visibility="gone"
-        android:src="@drawable/trit_logo_512x512"/>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitXY"
+            android:layout_margin="@dimen/_10dp"
+            android:visibility="gone"
+            android:src="@drawable/trit_logo_512x512"/>
 
+        <ImageView
+            android:id="@+id/imageView_capture"
+            android:layout_width="@dimen/image_height_width"
+            android:layout_height="@dimen/image_height_width"
+            android:scaleType="center"
+            android:layout_margin="@dimen/_10dp"
+            android:visibility="visible"
+            android:src="@drawable/capture_image"/>
+    </LinearLayout>
     <ImageView
-        android:id="@+id/imageView_capture"
-        android:layout_width="@dimen/image_height_width"
-        android:layout_height="@dimen/image_height_width"
-        android:scaleType="center"
-        android:layout_margin="@dimen/_10dp"
-        android:visibility="visible"
-        android:src="@drawable/capture_image"/>
-</LinearLayout>
+        android:id="@+id/img_delete_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="@dimen/_10dp"/>
+
+</RelativeLayout>

@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.encureit.samtadoot.Helpers.Helper;
 import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.custom.CustomCheckBox;
 
@@ -323,6 +324,213 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 if (TextUtils.isEmpty(editText.getText().toString())) {
                     isValid = false;
                 } else if (min_length != 0 && max_length != 0) {
+                    if (subForm.getQuestions().contains("ईमेल") && !Helper.emailValidator(editText.getText().toString())) {
+                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        isValid = false;
+                    } else if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                        editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
+                        isValid = false;
+                        //editText.requestFocus();
+                    } else {
+                        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                        candidateDetail.setSurvey_que_option_id("0");
+                        candidateDetail.setSurvey_que_values(editText.getText().toString());
+                        candidateDetail.setFormID(formId);
+                        candidateDetail.setCurrent_Form_Status("GY");
+                        candidateDetail.setAge_value("0");
+                        candidateDetail.setSurvey_StartDate(start_date);
+                        candidateDetail.setSurvey_EndDate(end_date);
+                        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                        candidateDetail.setLatitude(Double.toString(latitude));
+                        candidateDetail.setLongitude(Double.toString(longitude));
+                        if (linked_id > 0) {
+                            candidateDetail.setIndex_if_linked_question(linked_id);
+                        }
+                        candidateDetails.add(candidateDetail);
+                    }
+                } else {
+                    candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                    candidateDetail.setSurvey_que_option_id("0");
+                    candidateDetail.setSurvey_que_values(editText.getText().toString());
+                    candidateDetail.setFormID(formId);
+                    candidateDetail.setCurrent_Form_Status("GY");
+                    candidateDetail.setAge_value("0");
+                    candidateDetail.setSurvey_StartDate(start_date);
+                    candidateDetail.setSurvey_EndDate(end_date);
+                    candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetail.setLatitude(Double.toString(latitude));
+                    candidateDetail.setLongitude(Double.toString(longitude));
+                    if (linked_id > 0) {
+                        candidateDetail.setIndex_if_linked_question(linked_id);
+                    }
+                    candidateDetails.add(candidateDetail);
+                }
+            } else {
+                if (subForm.getQuestions().contains("ईमेल")) {
+                    if(!Helper.emailValidator(editText.getText().toString())) {
+                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        isValid = false;
+                    }  else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                        candidateDetail.setSurvey_que_option_id("0");
+                        candidateDetail.setSurvey_que_values(editText.getText().toString());
+                        candidateDetail.setFormID(formId);
+                        candidateDetail.setCurrent_Form_Status("GY");
+                        candidateDetail.setAge_value("0");
+                        candidateDetail.setSurvey_StartDate(start_date);
+                        candidateDetail.setSurvey_EndDate(end_date);
+                        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                        candidateDetail.setLatitude(Double.toString(latitude));
+                        candidateDetail.setLongitude(Double.toString(longitude));
+                        if (linked_id > 0) {
+                            candidateDetail.setIndex_if_linked_question(linked_id);
+                        }
+                        candidateDetails.add(candidateDetail);
+                    }
+                } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                    candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                    candidateDetail.setSurvey_que_option_id("0");
+                    candidateDetail.setSurvey_que_values(editText.getText().toString());
+                    candidateDetail.setFormID(formId);
+                    candidateDetail.setCurrent_Form_Status("GY");
+                    candidateDetail.setAge_value("0");
+                    candidateDetail.setSurvey_StartDate(start_date);
+                    candidateDetail.setSurvey_EndDate(end_date);
+                    candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetail.setLatitude(Double.toString(latitude));
+                    candidateDetail.setLongitude(Double.toString(longitude));
+                    if (linked_id > 0) {
+                        candidateDetail.setIndex_if_linked_question(linked_id);
+                    }
+                    candidateDetails.add(candidateDetail);
+                }
+            }
+
+        } else if (editText.getSubForm() instanceof QuestionOption) {
+            QuestionOption questionOption = (QuestionOption) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
+
+            SurveyQuestion subForm = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
+
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
+                } else if (min_length != 0 && max_length != 0) {
+                    if (subForm.getQuestions().contains("ईमेल") && !Helper.emailValidator(editText.getText().toString())) {
+                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        isValid = false;
+                    } else if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                        editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
+                        isValid = false;
+                        //editText.requestFocus();
+                    }else {
+                        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                        candidateDetail.setSurvey_que_option_id("0");
+                        candidateDetail.setSurvey_que_values(editText.getText().toString());
+                        candidateDetail.setFormID(formId);
+                        candidateDetail.setCurrent_Form_Status("GY");
+                        candidateDetail.setAge_value("0");
+                        candidateDetail.setSurvey_StartDate(start_date);
+                        candidateDetail.setSurvey_EndDate(end_date);
+                        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                        candidateDetail.setLatitude(Double.toString(latitude));
+                        candidateDetail.setLongitude(Double.toString(longitude));
+                        if (linked_id > 0) {
+                            candidateDetail.setIndex_if_linked_question(linked_id);
+                        }
+                        candidateDetails.add(candidateDetail);
+                    }
+                } else {
+                    candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                    candidateDetail.setSurvey_que_option_id("0");
+                    candidateDetail.setSurvey_que_values(editText.getText().toString());
+                    candidateDetail.setFormID(formId);
+                    candidateDetail.setCurrent_Form_Status("GY");
+                    candidateDetail.setAge_value("0");
+                    candidateDetail.setSurvey_StartDate(start_date);
+                    candidateDetail.setSurvey_EndDate(end_date);
+                    candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetail.setLatitude(Double.toString(latitude));
+                    candidateDetail.setLongitude(Double.toString(longitude));
+                    if (linked_id > 0) {
+                        candidateDetail.setIndex_if_linked_question(linked_id);
+                    }
+                    candidateDetails.add(candidateDetail);
+                }
+            } else {
+                if (subForm.getQuestions().contains("ईमेल")) {
+                    if(!Helper.emailValidator(editText.getText().toString())) {
+                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        isValid = false;
+                    }  else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                        candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                        candidateDetail.setSurvey_que_option_id("0");
+                        candidateDetail.setSurvey_que_values(editText.getText().toString());
+                        candidateDetail.setFormID(formId);
+                        candidateDetail.setCurrent_Form_Status("GY");
+                        candidateDetail.setAge_value("0");
+                        candidateDetail.setSurvey_StartDate(start_date);
+                        candidateDetail.setSurvey_EndDate(end_date);
+                        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                        candidateDetail.setLatitude(Double.toString(latitude));
+                        candidateDetail.setLongitude(Double.toString(longitude));
+                        if (linked_id > 0) {
+                            candidateDetail.setIndex_if_linked_question(linked_id);
+                        }
+                        candidateDetails.add(candidateDetail);
+                    }
+                } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                    candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+                    candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+                    candidateDetail.setSurvey_que_id(subForm.getSurveyQuestion_ID());
+                    candidateDetail.setSurvey_que_option_id("0");
+                    candidateDetail.setSurvey_que_values(editText.getText().toString());
+                    candidateDetail.setFormID(formId);
+                    candidateDetail.setCurrent_Form_Status("GY");
+                    candidateDetail.setAge_value("0");
+                    candidateDetail.setSurvey_StartDate(start_date);
+                    candidateDetail.setSurvey_EndDate(end_date);
+                    candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+                    candidateDetail.setLatitude(Double.toString(latitude));
+                    candidateDetail.setLongitude(Double.toString(longitude));
+                    if (linked_id > 0) {
+                        candidateDetail.setIndex_if_linked_question(linked_id);
+                    }
+                    candidateDetails.add(candidateDetail);
+                }
+            }
+        }
+    }
+    /*private void getInputCandidate(CustomEditText editText) {
+        CandidateDetails candidateDetail = new CandidateDetails();
+        if (editText.getSubForm() instanceof SurveyQuestionWithData) {
+            SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
+
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
+                } else if (min_length != 0 && max_length != 0) {
                     if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
                         editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
                         isValid = false;
@@ -386,7 +594,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             }
         }
         candidateDetails.add(candidateDetail);
-    }
+    }*/
 
     /**
      * @date 10-3-2022
@@ -877,6 +1085,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                         SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                         if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            childQues.setLinked_question_id(subForm.getLinked_question_id());
                                             addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                         }
                                         binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -885,6 +1094,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                                     if (childQues != null) {
 //                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
                                         addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                         binding.llChildQuestion.setVisibility(View.VISIBLE);
                                     }
@@ -950,6 +1160,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                 if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(subForm.getLinked_question_id());
                                     addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                 }
                                 binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -960,6 +1171,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                             if (childQues != null) {
 //                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                childQues.setLinked_question_id(subForm.getLinked_question_id());
                                 addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 binding.edtDropDownItar.setVisibility(View.GONE);
@@ -1031,6 +1243,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                     if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
                                         addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                     }
                                     binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -1040,6 +1253,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                                 if (childQues != null) {
 //                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(subForm.getLinked_question_id());
                                     addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 }
@@ -1242,6 +1456,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                         SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                         if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            childQues.setLinked_question_id(subForm.getLinked_question_id());
                                             addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                         }
                                         binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -1251,6 +1466,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                                     if (childQues != null) {
 //                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
                                         addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                         binding.llChildQuestion.setVisibility(View.VISIBLE);
                                     }
@@ -1317,6 +1533,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                 if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(subForm.getLinked_question_id());
                                     addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                 }
                                 binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -1328,6 +1545,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                             SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                             if (childQues != null) {
 //                                populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                childQues.setLinked_question_id(subForm.getLinked_question_id());
                                 addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                 binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 binding.edtDropDownItar.setVisibility(View.GONE);
@@ -1398,6 +1616,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                     SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesIds.get(j));
                                     if (childQues != null) {
 //                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
                                         addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
                                     }
                                     binding.llChildQuestion.addView(singleBinding.getRoot());
@@ -1407,6 +1626,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                                 SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromId(childQuesId);
                                 if (childQues != null) {
 //                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(subForm.getLinked_question_id());
                                     addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
                                     binding.llChildQuestion.setVisibility(View.VISIBLE);
                                 }

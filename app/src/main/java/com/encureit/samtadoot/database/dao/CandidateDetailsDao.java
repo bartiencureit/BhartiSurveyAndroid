@@ -29,6 +29,9 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("DELETE FROM "  + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_section_id=:section_id")
     void deleteCandidateBySectionId(String section_id);
 
+    @Query("DELETE FROM "  + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_section_id=:section_id AND FormID=:form_id")
+    void deleteCandidateBySectionIdFormId(String section_id,String form_id);
+
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE FormID =:FormID")
     List<CandidateDetails> getAllDetailsByForm(String FormID);
 
