@@ -38,11 +38,14 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE FormID =:FormID GROUP BY survey_section_id")
     List<CandidateDetails> getAllSectionDetailsByForm(String FormID);
 
-    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id")
-    List<CandidateDetails> getAllDetailsBySurveyQueId(String survey_que_id);
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID=:FormId")
+    List<CandidateDetails> getAllDetailsBySurveyQueId(String survey_que_id,String FormId);
 
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id AND FormID=:formId AND index_if_linked_question=:linked_id")
     CandidateDetails getCandidateDetailsByQuestionOptionId(String survey_que_option_id,String formId,int linked_id);
+
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_option_id =:survey_que_option_id AND FormID=:formId AND index_if_linked_question=:linked_id")
+    List<CandidateDetails> getCandidateDetailsByQuestionOptionIdList(String survey_que_option_id,String formId,int linked_id);
 
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID =:FormId AND index_if_linked_question=:linked_id")
     CandidateDetails getCandidateDetailsByQuestionIdFormId(String survey_que_id,String FormId,int linked_id);
@@ -52,6 +55,9 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
 
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID=:FormId")
     List<CandidateDetails> getAllDetailsByQuestionIdFormId(String survey_que_id,String FormId);
+
+    @Query("SELECT max(index_if_linked_question) as tot_questions FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_que_id =:survey_que_id AND FormID=:FormId")
+    int getMaxDetailsByQuestionIdFormId(String survey_que_id,String FormId);
 
     @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE survey_section_id =:survey_section_id AND FormID =:formId")
     List<CandidateDetails> getAllDetailsBySectionIdFormId(String survey_section_id,String formId);
@@ -95,5 +101,9 @@ public interface CandidateDetailsDao extends BaseDao<CandidateDetails> {
     @Query("UPDATE " + TableNames.TABLE_CANDIDATE_DETAILS+" SET Longitude =:Longitude WHERE id =:id")
     void update_Longitude(int id,String Longitude);
 
+    @Query("UPDATE " + TableNames.TABLE_CANDIDATE_DETAILS+" SET index_if_linked_question =:update_index WHERE survey_que_id =:Survey_question_id AND FormID =:Form_id AND index_if_linked_question =:index")
+    void update_Linked_Index(String Survey_question_id,String Form_id,int index,int update_index);
 
+    @Query("SELECT * FROM " + TableNames.TABLE_CANDIDATE_DETAILS+" WHERE index_if_linked_question=:index AND parent_ques_id=:parent_ques_id AND FormID=:FormId")
+    List<CandidateDetails> getAllDetailsByQuestionIdFormIdParentQuesId(int index,String FormId,String parent_ques_id);
 }

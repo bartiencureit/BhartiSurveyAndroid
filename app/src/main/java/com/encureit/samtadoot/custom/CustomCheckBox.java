@@ -13,6 +13,7 @@ import com.encureit.samtadoot.models.SurveyQuestionWithData;
 public class CustomCheckBox extends AppCompatCheckBox {
     private Object subForm;
     private int linked_id;
+    private int id;
 
     public CustomCheckBox(@NonNull Context context) {
         super(context);
@@ -40,5 +41,15 @@ public class CustomCheckBox extends AppCompatCheckBox {
 
     public void setLinked_id(int linked_id) {
         this.linked_id = linked_id;
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(int id) {
+        this.id = id;
     }
 }

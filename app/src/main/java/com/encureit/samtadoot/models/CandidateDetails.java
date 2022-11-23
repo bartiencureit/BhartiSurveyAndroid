@@ -31,6 +31,7 @@ public class CandidateDetails implements Parcelable {
     String Longitude;
     int index_if_linked_question;
     boolean hasImage;
+    String parent_ques_id;
 
     public CandidateDetails() {}
 
@@ -51,6 +52,7 @@ public class CandidateDetails implements Parcelable {
         Longitude = in.readString();
         index_if_linked_question = in.readInt();
         hasImage = in.readByte() != 0;
+        parent_ques_id = in.readString();
     }
 
     @Override
@@ -71,24 +73,13 @@ public class CandidateDetails implements Parcelable {
         dest.writeString(Longitude);
         dest.writeInt(index_if_linked_question);
         dest.writeByte((byte) (hasImage ? 1 : 0));
+        dest.writeString(parent_ques_id);
     }
 
     @Override
     public int describeContents() {
         return 0;
     }
-
-    public static final Creator<CandidateDetails> CREATOR = new Creator<CandidateDetails>() {
-        @Override
-        public CandidateDetails createFromParcel(Parcel in) {
-            return new CandidateDetails(in);
-        }
-
-        @Override
-        public CandidateDetails[] newArray(int size) {
-            return new CandidateDetails[size];
-        }
-    };
 
     public int getId() {
         return id;
@@ -218,27 +209,29 @@ public class CandidateDetails implements Parcelable {
         this.hasImage = hasImage;
     }
 
-    @Override
-    public String toString() {
-        return "CandidateDetails{" +
-                "id=" + id +
-                ", survey_master_id='" + survey_master_id + '\'' +
-                ", survey_section_id='" + survey_section_id + '\'' +
-                ", survey_que_id='" + survey_que_id + '\'' +
-                ", survey_que_option_id='" + survey_que_option_id + '\'' +
-                ", survey_que_values='" + survey_que_values + '\'' +
-                ", FormID='" + FormID + '\'' +
-                ", Current_Form_Status='" + Current_Form_Status + '\'' +
-                ", age_value='" + age_value + '\'' +
-                ", Survey_StartDate='" + Survey_StartDate + '\'' +
-                ", Survey_EndDate='" + Survey_EndDate + '\'' +
-                ", created_by='" + created_by + '\'' +
-                ", Latitude='" + Latitude + '\'' +
-                ", Longitude='" + Longitude + '\'' +
-                ", index_if_linked_question=" + index_if_linked_question +
-                ", hasImage=" + hasImage +
-                '}';
+    public String getParent_ques_id() {
+        return parent_ques_id;
     }
+
+    public void setParent_ques_id(String parent_ques_id) {
+        this.parent_ques_id = parent_ques_id;
+    }
+
+    public static Creator<CandidateDetails> getCREATOR() {
+        return CREATOR;
+    }
+
+    public static final Creator<CandidateDetails> CREATOR = new Creator<CandidateDetails>() {
+        @Override
+        public CandidateDetails createFromParcel(Parcel in) {
+            return new CandidateDetails(in);
+        }
+
+        @Override
+        public CandidateDetails[] newArray(int size) {
+            return new CandidateDetails[size];
+        }
+    };
 }
 
 

@@ -34,12 +34,12 @@ public class CandidateSurveyDetailsListAdapter extends RecyclerView.Adapter<Cand
     @Override
     public void onBindViewHolder(@NonNull CandidateSurveyDetailsHolder holder, int position) {
         CandidateSurveyStatusDetails listItem = candidateSurveyDetailsList.get(position);
-        List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsByForm(listItem.getFormID());
-        if(candidateDetails.size() > 0) {
-            CandidateDetails candidateDetail = candidateDetails.get(0);
+        CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsByForm(listItem.getFormID());
+        if (candidateDetails != null) {
             holder.binding.setCandidateSurveyDetails(listItem);
-            holder.binding.setCandidateDetails(candidateDetail);
+            holder.binding.setCandidateDetails(candidateDetails);
         }
+
         holder.binding.tvQueSectionName.setOnClickListener(view -> {
             if (mListener != null) {
                 mListener.onItemClicked(listItem,position);

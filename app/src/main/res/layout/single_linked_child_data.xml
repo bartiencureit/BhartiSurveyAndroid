@@ -5,18 +5,19 @@
 
     </data>
 
-    <LinearLayout
+    <com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout
+        android:id="@+id/ll_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
+        <com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout
             android:id="@+id/ll_child_question"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-        </LinearLayout>
+        </com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout>
 
         <Button
             android:id="@+id/btn_add_another"
@@ -26,5 +27,5 @@
             android:visibility="gone"
             android:layout_marginTop="10dp" />
 
-    </LinearLayout>
+    </com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout>
 </layout>

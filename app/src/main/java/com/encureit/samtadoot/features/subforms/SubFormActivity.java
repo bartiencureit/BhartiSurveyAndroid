@@ -312,6 +312,91 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      * save edittext data to sqlite db
      */
     private void getInputCandidate(CustomEditText editText) {
+        // CandidateDetails candidateDetail = new CandidateDetails();
+        if (editText.getSubForm() instanceof SurveyQuestionWithData) {
+            SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
+
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
+                } else if (min_length != 0 && max_length != 0) {
+                    if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                        editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
+                        isValid = false;
+                        //editText.requestFocus();
+                    } else {
+                        saveCandidate(subForm.getSurveyQuestion_ID(),"0",editText.getText().toString(),linked_id);
+                    }
+                } else {
+                    saveCandidate(subForm.getSurveyQuestion_ID(),"0",editText.getText().toString(),linked_id);
+                }
+            } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                if (subForm.getQuestions().contains("ईमेल")) {
+                    if (Helper.emailValidator(editText.getText().toString())) {
+                        saveCandidate(subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
+                    } else {
+                        isValid = false;
+                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                    }
+                } else {
+                    saveCandidate(subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
+                }
+            }
+
+        } else if (editText.getSubForm() instanceof QuestionOption) {
+            QuestionOption questionOption = (QuestionOption) editText.getSubForm();
+            int linked_id = editText.getLinked_id();
+
+            SurveyQuestion subForm = DatabaseUtil.on().getSurveyQuestionDao().getQuestionById(questionOption.getSurveyQuestion_ID());
+
+            if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
+                int max_length = Integer.parseInt(subForm.getMax_length());
+                int min_length = Integer.parseInt(subForm.getMin_length());
+
+                if (TextUtils.isEmpty(editText.getText().toString())) {
+                    isValid = false;
+                } else if (min_length != 0 && max_length != 0) {
+                    if (editText.getText().toString().length() < min_length || editText.getText().toString().length() > max_length) {
+                        editText.setError("कृपया कमीत कमी " + min_length + " आणि जास्तीत जास्त " + max_length + " अक्षरं टाका");
+                        isValid = false;
+                        //editText.requestFocus();
+                    } else {
+                        saveCandidate(questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
+                    }
+                } else {
+                    saveCandidate(questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
+                }
+            } else if (!TextUtils.isEmpty(editText.getText().toString())) {
+                saveCandidate(questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
+            }
+        }
+    }
+
+    private void saveCandidate(String ques_id,String option_id,String value,int linked_id) {
+        CandidateDetails candidateDetail = new CandidateDetails();
+        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+        candidateDetail.setSurvey_que_id(ques_id);
+        candidateDetail.setSurvey_que_option_id(option_id);
+        candidateDetail.setSurvey_que_values(value);
+        candidateDetail.setFormID(formId);
+        candidateDetail.setCurrent_Form_Status("GY");
+        candidateDetail.setAge_value("0");
+        candidateDetail.setSurvey_StartDate(start_date);
+        candidateDetail.setSurvey_EndDate(end_date);
+        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+        candidateDetail.setLatitude(Double.toString(latitude));
+        candidateDetail.setLongitude(Double.toString(longitude));
+        if (linked_id > 0) {
+            candidateDetail.setIndex_if_linked_question(linked_id);
+        }
+        candidateDetails.add(candidateDetail);
+    }
+    /*private void getInputCandidate(CustomEditText editText) {
         CandidateDetails candidateDetail = new CandidateDetails();
         if (editText.getSubForm() instanceof SurveyQuestionWithData) {
             SurveyQuestionWithData subForm = (SurveyQuestionWithData) editText.getSubForm();
@@ -517,7 +602,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
                 }
             }
         }
-    }
+    }*/
     /*private void getInputCandidate(CustomEditText editText) {
         CandidateDetails candidateDetail = new CandidateDetails();
         if (editText.getSubForm() instanceof SurveyQuestionWithData) {
@@ -846,7 +931,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mBindingChild[index].llAddAnotherSingleView.removeView(binding.llAddAnother);
+                if (linked_question_index > 1) {
+                    mBindingChild[index].llAddAnotherSingleView.removeView(binding.llAddAnother);
+                } else {
+                    Toast.makeText(mActivity, "Cannot delete this", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mBindingChild[index].llAddAnotherSingleView.addView(binding.getRoot());
@@ -863,7 +952,11 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         binding.imgDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                rootView.removeView(binding.getRoot());
+                if (child_linked_question_index > 1) {
+                    rootView.removeView(binding.getRoot());
+                } else {
+                    Toast.makeText(mActivity, "Cannot delete this", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         rootView.addView(binding.getRoot());

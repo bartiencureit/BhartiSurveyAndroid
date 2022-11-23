@@ -39,7 +39,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     private boolean validate() {
-        if (TextUtils.isEmpty(userId.get())) {
+        if (userId == null || TextUtils.isEmpty(userId.get())) {
             mViewModel.showLoginFailed(mActivity.getResources().getString(R.string.empty_user_id));
             return false;
         }

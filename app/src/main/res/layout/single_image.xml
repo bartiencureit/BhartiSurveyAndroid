@@ -6,8 +6,8 @@
     android:layout_height="match_parent">
     <LinearLayout
         android:id="@+id/ll_main"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -20,9 +20,9 @@
 
         <ImageView
             android:id="@+id/imageView_capture"
-            android:layout_width="@dimen/image_height_width"
-            android:layout_height="@dimen/image_height_width"
-            android:scaleType="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
             android:layout_margin="@dimen/_10dp"
             android:visibility="visible"
             android:src="@drawable/capture_image"/>

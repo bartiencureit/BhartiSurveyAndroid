@@ -437,19 +437,21 @@ public class DatabaseUtil {
         int tot_candidates = getParentQuestionCandidateCount(questionId, FormId);
         List<SurveyQuestion> linkedQuestions = getSurveyQuestionDao().getAllLinkedQuestion(questionId, "true");
         for (int i = 0; i < tot_candidates; i++) {
-            SurveyQuestion childSurveyQuestion = linkedQuestions.get(i);
+           /* SurveyQuestion childSurveyQuestion = linkedQuestions.get(i);
             QuestionOption childQesOption = getQuestionOptionDao().getChildQuesOption(questionId,'%'+childSurveyQuestion.getSurveyQuestion_ID()+'%');
-            if (childQesOption == null) {
+            if (childQesOption == null) {*/
                 List<SurveyQuestionWithData> linkedQuestionListForSingleCandidate = new ArrayList<>();
                 for (int j = 0; j < linkedQuestions.size(); j++) {
-                    CandidateDetails candidateDetails = getCandidateById(linkedQuestions.get(j).getSurveyQuestion_ID(), i+1, FormId);
-                    SurveyQuestionWithData surveyQuestionWithData = createDataWithCandidate(linkedQuestions.get(j), candidateDetails);
-                    linkedQuestionListForSingleCandidate.add(surveyQuestionWithData);
+                    List<CandidateDetails> candidateDetails = getCandidateById(linkedQuestions.get(j).getSurveyQuestion_ID(), i+1, FormId);
+                    if (candidateDetails != null && candidateDetails.size() > 0) {
+                        SurveyQuestionWithData surveyQuestionWithData = createDataWithCandidate(linkedQuestions.get(j), candidateDetails.get(0));
+                        linkedQuestionListForSingleCandidate.add(surveyQuestionWithData);
+                    }
                 }
                 HashMap<Integer, List<SurveyQuestionWithData>> map = new HashMap<>();
                 map.put(i, linkedQuestionListForSingleCandidate);
                 allLinkedQuestions.add(map);
-            }
+            //}
         }
 
         return allLinkedQuestions;
@@ -462,11 +464,29 @@ public class DatabaseUtil {
      * @date 14-03-2022
      * Get Candidate by question id
      */
-    public CandidateDetails getCandidateById(String Question_Id, int index, String FormId) {
+    public List<CandidateDetails> getCandidateById(String Question_Id, int index, String FormId) {
+        List<CandidateDetails> candidateDetailsList = getCandidateDetailsDao().getAllDetailsByQuestionIdFormId(Question_Id, FormId);
+        List<CandidateDetails> candidateDetails = new ArrayList<>();
+        for (int i = 0; i < candidateDetailsList.size(); i++) {
+            if (candidateDetailsList.get(i).getIndex_if_linked_question() == index) {
+                candidateDetails.add(candidateDetailsList.get(i));
+            }
+        }
+        return candidateDetails;
+    }
+
+    /**
+     * @param Question_Id
+     * @param index
+     * @return
+     * @date 14-03-2022
+     * Get Candidate by question id
+     */
+    public CandidateDetails getCandidateByIdParentId(String Question_Id, int index, String FormId,String Parent_id) {
         List<CandidateDetails> candidateDetailsList = getCandidateDetailsDao().getAllDetailsByQuestionIdFormId(Question_Id, FormId);
         CandidateDetails candidateDetails = null;
         for (int i = 0; i < candidateDetailsList.size(); i++) {
-            if (candidateDetailsList.get(i).getIndex_if_linked_question() == index) {
+            if (candidateDetailsList.get(i).getIndex_if_linked_question() == index && candidateDetailsList.get(i).getParent_ques_id().equalsIgnoreCase(Parent_id)) {
                 candidateDetails = candidateDetailsList.get(i);
             }
         }
@@ -479,10 +499,10 @@ public class DatabaseUtil {
      * @date 14-03-2022
      * Get candidate count for parent question
      */
-    private int getParentQuestionCandidateCount(String Parent_Question_Id, String FormId) {
+    public int getParentQuestionCandidateCount(String Parent_Question_Id, String FormId) {
         List<SurveyQuestion> linkedQuestion = getSurveyQuestionDao().getAllLinkedQuestion(Parent_Question_Id, "true");
         if (linkedQuestion.size() > 0) {
-            return getCandidateDetailsDao().getAllDetailsByQuestionIdFormId(linkedQuestion.get(0).getSurveyQuestion_ID(), FormId).size();
+            return getCandidateDetailsDao().getMaxDetailsByQuestionIdFormId(linkedQuestion.get(0).getSurveyQuestion_ID(), FormId);
         } else {
             return -1;
         }
@@ -530,9 +550,9 @@ public class DatabaseUtil {
         surveyQuestionWithData.setIsActive(childSurveyQuestion.getIsActive());
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             surveyQuestionWithData.setValue(candidateDetails.getSurvey_que_values());
+            //assert candidateDetails != null;
+            surveyQuestionWithData.setLinked_question_id(candidateDetails.getIndex_if_linked_question());
         }
-        assert candidateDetails != null;
-        surveyQuestionWithData.setLinked_question_id(candidateDetails.getIndex_if_linked_question());
         //get question type of given child question
         QuestionType questionType = getQuestionTypeOfQuestion(childSurveyQuestion);
         surveyQuestionWithData.setQuestionType(questionType);
@@ -821,8 +841,13 @@ public class DatabaseUtil {
         return getCandidateDetailsDao().delete(candidateDetails);
     }
 
-    public List<CandidateDetails> getCandidateDetailsByForm(String formId) {
-        return getCandidateDetailsDao().getAllDetailsByForm(formId);
+    public CandidateDetails getCandidateDetailsByForm(String formId) {
+        List<CandidateDetails> candidateDetails = getCandidateDetailsDao().getAllDetailsBySectionIdFormId(""+1,formId);
+        if (candidateDetails.size() > 0) {
+            return candidateDetails.get(0);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -1054,5 +1079,31 @@ public class DatabaseUtil {
                 candidateSurveyStatusDetails.getStart_date(),
                 candidateSurveyStatusDetails.getLast_updated_date(),
                 candidateSurveyStatusDetails.getEnd_date());
+    }
+
+    public List<CandidateDetails> getCandidateListOfChildQuestion(SurveyQuestionWithData Survey_ques,int index,String formId) {
+        List<String> quesIds = new ArrayList<>();
+        List<QuestionOption> questionOptions = getQuestionOptionDao().getAllQuestionOption(Survey_ques.getSurveyQuestion_ID());
+        for (int i = 0; i < questionOptions.size(); i++) {
+            QuestionOption questionOption = questionOptions.get(i);
+            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                String childQuesId = questionOption.getChildQuestionId();
+                if (childQuesId.contains(",")) {
+                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                    quesIds.addAll(childQuesIds);
+                } else {
+                    quesIds.add(childQuesId);
+                }
+            }
+        }
+
+        List<CandidateDetails> candidateDetails = new ArrayList<>();
+        for (int i = 0; i < quesIds.size(); i++) {
+            CandidateDetails candidateDetail = getCandidateByIdParentId(quesIds.get(i),index,formId,Survey_ques.getSurveyQuestion_ID());
+            if (candidateDetail != null) {
+                candidateDetails.add(candidateDetail);
+            }
+        }
+        return candidateDetails;
     }
 }

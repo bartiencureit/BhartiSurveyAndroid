@@ -75,6 +75,14 @@ public class ImageAdapter extends BaseAdapter {
             viewHolder.binding.imgDeleteImage.setVisibility(View.GONE);
             viewHolder.binding.imgDeleteImage.setVisibility(View.GONE);
         } else {
+            int image_parent_h_w = Helper.getScreenWidth(mContext) / 2;
+            float dip_in_pxl = Helper.convertDpToPixel(10,mContext);
+            int image_h_w = (int) (image_parent_h_w - dip_in_pxl);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(image_h_w,image_h_w);
+            params.setMargins(10,10,10,10);
+            viewHolder.binding.imageView.setLayoutParams(params);
+            viewHolder.binding.imageViewCapture.setLayoutParams(params);
+
             viewHolder.binding.imgDeleteImage.setVisibility(View.VISIBLE);
             viewHolder.binding.imageViewCapture.setVisibility(View.GONE);
             viewHolder.binding.imageView.setVisibility(View.VISIBLE);

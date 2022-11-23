@@ -37,13 +37,13 @@
             android:visibility="gone"
             android:background="@drawable/edittext_rounded_corners"/>
 
-        <LinearLayout
+        <com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout
             android:id="@+id/ll_child_question"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-        </LinearLayout>
+        </com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout>
 
         <Button
             android:id="@+id/btn_add_another"
