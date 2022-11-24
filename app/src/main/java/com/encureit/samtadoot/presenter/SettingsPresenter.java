@@ -232,7 +232,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         } else if(uploadedFormsError >= totSize) {
             mViewModel.showResponseFailed("Error in uploading form try again");
         } else {
-            mViewModel.showResponseFailed(""+uploadedForms+" forms are uploaded");
+            mViewModel.syncFormsPartiallyFinished(""+uploadedForms+" forms are uploaded");
         }
     }
 

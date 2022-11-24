@@ -11,7 +11,9 @@ import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivitySettingsBinding;
 import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.ScreenHelper;
+import com.encureit.samtadoot.login.LoginActivity;
 import com.encureit.samtadoot.models.AssignDetails;
+import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.OtherValues;
 import com.encureit.samtadoot.models.QuestionOption;
 import com.encureit.samtadoot.models.QuestionType;
@@ -62,17 +64,38 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
 
     @Override
     public void syncFormsFinished() {
-        DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().nukeTable();
+        deleteCandidateSurveyStatusDetails();
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),"Sync Forms Finished");
+        mPresenter.setUpData(helper);
+    }
+
+    private void deleteCandidateSurveyStatusDetails() {
+        List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes();
+        for (int i = 0; i < candidateSurveyStatusDetails.size(); i++) {
+            if (DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsByForm(candidateSurveyStatusDetails.get(i).getFormID()).size() <= 0) {
+                DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().delete(candidateSurveyStatusDetails.get(i));
+            }
+        }
+    }
+
+    @Override
+    public void syncFormsPartiallyFinished(String message) {
+        deleteCandidateSurveyStatusDetails();
+        helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
+        ScreenHelper.showGreenSnackBar(mBinding.getRoot(),message);
         mPresenter.setUpData(helper);
     }
 
     @Override
     public void logoutFinished() {
         Snackbar.make(mBinding.getRoot(),"Successfully logged out", BaseTransientBottomBar.LENGTH_LONG).show();
+        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
 
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        /*Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mActivity.startActivity(startMain);
@@ -81,7 +104,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         } else {
             mActivity.finish();
         }
-        android.os.Process.killProcess(android.os.Process.myPid());
+        android.os.Process.killProcess(android.os.Process.myPid());*/
     }
 
     @Override

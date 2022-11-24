@@ -2,9 +2,11 @@ package com.encureit.samtadoot.presenter;
 
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.features.subforms.CandidateSurveyActivity;
+import com.encureit.samtadoot.models.CandidateDetails;
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;
 import com.encureit.samtadoot.models.contracts.CandidateSurveyDetailsContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,9 +23,16 @@ public class CandidateSurveyDetailsPresenter implements CandidateSurveyDetailsCo
 
     @Override
     public void getCandidateData(String FormId) {
+        List<CandidateSurveyStatusDetails> candidateSurveyStatusDetailsfinal = new ArrayList<>();
         List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllCandidatesInSection(FormId);
         //List<CandidateSurveyStatusDetails> candidateSurveyStatusDetails = DatabaseUtil.on().getCandidateSurveyStatusDetailsDao().getAllFlowableCodes();
-        mViewModel.setUpCandidateDetails(candidateSurveyStatusDetails);
+        for (int i = 0; i < candidateSurveyStatusDetails.size(); i++) {
+            List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllDetailsByForm(candidateSurveyStatusDetails.get(i).getFormID());
+            if (candidateDetails.size() > 0) {
+                candidateSurveyStatusDetailsfinal.add(candidateSurveyStatusDetails.get(i));
+            }
+        }
+        mViewModel.setUpCandidateDetails(candidateSurveyStatusDetailsfinal);
     }
 
     @Override

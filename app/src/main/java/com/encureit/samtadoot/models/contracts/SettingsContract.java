@@ -19,6 +19,7 @@ public interface SettingsContract {
     interface ViewModel {
         void syncFinished();
         void syncFormsFinished();
+        void syncFormsPartiallyFinished(String message);
         void logoutFinished();
         void getSurveySectionFieldsResponse(SurveySectionResponseModel surveySectionResponseModel);
         void getSurveyQuestionFieldResponse(SurveyQuestionResponseModel surveyQuestionResponseModel);

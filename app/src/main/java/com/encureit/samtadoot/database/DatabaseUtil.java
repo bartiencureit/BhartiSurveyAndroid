@@ -846,7 +846,12 @@ public class DatabaseUtil {
         if (candidateDetails.size() > 0) {
             return candidateDetails.get(0);
         } else {
-            return null;
+            List<CandidateDetails> candidateDetailsnew = getCandidateDetailsDao().getAllDetailsByForm(formId);
+            if (candidateDetailsnew.size() > 0) {
+                return candidateDetailsnew.get(0);
+            } else {
+                return null;
+            }
         }
     }
 
