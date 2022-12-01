@@ -91,6 +91,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, "Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                dialog.dismiss();
                 uploadAllForms();
             }
         });
@@ -105,17 +106,18 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     }
 
     private void uploadAllForms() {
-        mActivity.startProgressDialog(mActivity.mBinding.getRoot());
         uploadedForms = 0;
         uploadedFormsError = 0;
         //List<CandidateDetails> candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getAllFlowableCodes();
         List<CandidateDetails> candidateDetails = DatabaseUtil.on().getAllFilledFormData();
+        mActivity.showDialog(mActivity,"Loading..",candidateDetails.size());
         for (int i = 0; i < candidateDetails.size(); i++) {
             CandidateDetails details = candidateDetails.get(i);
+            //Log.e("TAG", "uploadAllForms: "+details.getSurvey_que_values());
 
             if (details.isHasImage()) {
                 uploadImage(details,candidateDetails.size());
-                Log.e("TAG", "uploadAllForms: image upload "+i);
+                //Log.e("TAG", "uploadAllForms: image upload "+i);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -127,6 +129,7 @@ public class SettingsPresenter implements SettingsContract.Presenter {
         }
         if (candidateDetails.size() == 0) {
             mViewModel.showResponseNoData("No forms to sync");
+           // mActivity.dismissPercentageDialog();
         }
 
     }

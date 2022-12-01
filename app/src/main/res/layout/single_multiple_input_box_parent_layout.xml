@@ -1,17 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scrollbarFadeDuration="0"
-    android:layout_marginTop="10dp"
-    android:scrollbarDefaultDelayBeforeFade="0">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
 
-    <LinearLayout
-        android:id="@+id/ll_multi_input_parent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+    </data>
 
-    </LinearLayout>
-</HorizontalScrollView>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/ll_fourth_section"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/ll_first_column"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <com.encureit.samtadoot.custom.HeaderTextView
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/anukramank"
+                    android:textColor="@color/black"/>
+
+
+            </LinearLayout>
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbarDefaultDelayBeforeFade="0"
+                android:scrollbarFadeDuration="0">
+
+                <LinearLayout
+                    android:id="@+id/ll_multi_input_parent_one"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll_other"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarFadeDuration="0"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            android:scrollbarDefaultDelayBeforeFade="0">
+
+            <LinearLayout
+                android:id="@+id/ll_multi_input_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </HorizontalScrollView>
+    </RelativeLayout>
+</layout>
 

@@ -68,6 +68,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),"Sync Forms Finished");
         mPresenter.setUpData(helper);
+        //dismissPercentageDialog();
     }
 
     private void deleteCandidateSurveyStatusDetails() {
@@ -85,6 +86,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),message);
         mPresenter.setUpData(helper);
+        //dismissPercentageDialog();
     }
 
     @Override

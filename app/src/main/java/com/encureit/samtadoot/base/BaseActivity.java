@@ -1,17 +1,21 @@
 package com.encureit.samtadoot.base;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
@@ -39,6 +43,9 @@ public class BaseActivity extends AppCompatActivity {
     private View view;
     public String key;
     public ApiService service;
+    int status = 0;
+    Handler handler = new Handler();
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,56 @@ public class BaseActivity extends AppCompatActivity {
             Log.e("TAG", "startProgressDialog: "+e.getMessage());
         }
     }
+
+    public void showDialog(Activity activity, String msg,int total) {
+        dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog);
+
+        final ProgressBar text = (ProgressBar) dialog.findViewById(R.id.progress_horizontal);
+        text.setMax(total);
+        final TextView text2 = dialog.findViewById(R.id.value123);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (status < total) {
+
+                    status += 1;
+
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            text.setProgress(status);
+                            text2.setText(status+"/"+total);
+
+                            if (status == total) {
+                                dialog.dismiss();
+                            }
+                        }
+                    });
+                }
+            }
+        }).start();
+
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    }
+
+    /*public void dismissPercentageDialog() {
+        dialog.dismiss();
+    }*/
 
     public void startCircularProgressDialog() {
         String progressMessage = getResources().getString(R.string.loading);

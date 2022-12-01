@@ -1058,10 +1058,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         linearLayout.addView(headerTextView);
 
         SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
+        binding.llFourthSection.setVisibility(View.VISIBLE);
+        binding.horizontalScrollOther.setVisibility(View.GONE);
 
-        addLabelHeader(subForm, binding.llMultiInputParent);
+        addLabelHeader(subForm, binding.llMultiInputParentOne);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
-            addInputOptionFourthSection(subForm.getInputValidation(), subForm.getQuestionOptions().get(j), binding.llMultiInputParent,subForm.getLinked_question_id());
+            HeaderTextView firstColumn = new HeaderTextView(EditFormActivity.this);
+            firstColumn.setText(subForm.getQuestionOptions().get(j).getQNA_Values());
+            firstColumn.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+            firstColumn.setLayoutParams(params);
+            firstColumn.setPadding(10,10,10,10);
+            binding.llFirstColumn.addView(firstColumn);
+            addInputOptionFourthSection(subForm.getInputValidation(), subForm.getQuestionOptions().get(j), binding.llMultiInputParentOne,subForm.getLinked_question_id());
         }
         Button btn_calculate = new Button(EditFormActivity.this);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -1073,7 +1083,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         btn_calculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int ll_count = binding.llMultiInputParent.getChildCount();
+                int ll_count = binding.llMultiInputParentOne.getChildCount();
                 String option = "";
                 first_column_count = 0;
                 second_column_count = 0;
@@ -1082,7 +1092,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 boolean isTotal = false;
 
                 for (int k = 0; k < ll_count; k++) {
-                    View child_view = binding.llMultiInputParent.getChildAt(k);
+                    View child_view = binding.llMultiInputParentOne.getChildAt(k);
 
                     if (child_view instanceof LinearLayout) {
                         for (int j = 0; j < ((LinearLayout) child_view).getChildCount(); j++) {
@@ -1144,6 +1154,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         boolean isTotal = false;
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
+        binding.tvHeader.setVisibility(View.GONE);
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
         if (questionOption.getQNA_Values().contains("4.16")) {
             isTotal = true;
@@ -1199,6 +1210,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
 
         SingleMultipleInputBoxParentLayoutBinding binding = SingleMultipleInputBoxParentLayoutBinding.inflate(getLayoutInflater());
 
+        binding.llFourthSection.setVisibility(View.GONE);
+        binding.horizontalScrollOther.setVisibility(View.VISIBLE);
+
         addLabelHeader(subForm, binding.llMultiInputParent);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
             addInputOption(subForm.getInputValidation(), subForm.getQuestionOptions().get(j), binding.llMultiInputParent,subForm.getLinked_question_id());
@@ -1252,6 +1266,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         QuestionOption questionOption = new QuestionOption();
         questionOption.setQNA_Values("अनु क्र.");
+        binding.tvHeader.setVisibility(View.GONE);
         binding.setOption(questionOption);
         for (int j = 0; j < labels.size(); j++) {
             //add Header To Layout
