@@ -29,6 +29,9 @@
                     android:text="@string/anukramank"
                     android:background="@drawable/balck_border_rectangle"
                     android:padding="@dimen/_10dp"
+                    android:inputType="textMultiLine"
+                    android:minLines="2"
+                    android:maxLines="100"
                     android:textColor="@color/black"/>
 
 

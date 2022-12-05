@@ -1067,7 +1067,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             firstColumn.setText(subForm.getQuestionOptions().get(j).getQNA_Values());
             firstColumn.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+            int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
             firstColumn.setLayoutParams(params);
             firstColumn.setPadding(10,10,10,10);
             binding.llFirstColumn.addView(firstColumn);
@@ -1168,7 +1169,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 if (isTotal) {
                     textView.setEnabled(false);
                 }
-                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
+                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 10);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
                 textView.setText(values.get(j));
@@ -1177,7 +1178,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
             }
@@ -1187,7 +1189,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 if (isTotal) {
                     textView.setEnabled(false);
                 }
-                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 8);
+                int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 10);
                 textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
                 textView.setInputType(validation);
                 textView.setSubForm(questionOption.getQNAOption_ID());
@@ -1195,7 +1197,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
                 int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
             }
