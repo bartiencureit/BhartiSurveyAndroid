@@ -42,6 +42,7 @@ import android.widget.LinearLayout;
 import com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout;
 import com.encureit.samtadoot.custom.CustomRadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -126,10 +127,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
    // private List<Bitmap> photoList = new ArrayList<>();
     private ImageAdapter mImageAdapter;
     private SingleFotoViewBinding binding;
-    int first_column_count = 0;
-    int second_column_count = 0;
-    int third_column_count = 0;
-    int fourth_column_count = 0;
+    int first_column_count = -1;
+    int second_column_count = -1;
+    int third_column_count = -1;
+    int fourth_column_count = -1;
     int c = 0;
 
     private File fileImage = null;
@@ -491,7 +492,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             emptyAllLists();
             getAllChildViewIterative(mainLinear);
             if (section.getSurveySection_ID().equalsIgnoreCase("4")) {
-                if (first_column_count == 0 && second_column_count == 0 && third_column_count == 0 && fourth_column_count == 0) {
+                if (first_column_count == -1 && second_column_count == -1 && third_column_count == -1 && fourth_column_count == -1) {
+                    return false;
+                } else if (first_column_count == 0 && second_column_count == 0 && third_column_count == 0 && fourth_column_count == 0) {
                     return false;
                 } else {
                     if (candidateDetails.isEmpty()) {
@@ -1061,13 +1064,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         binding.llFourthSection.setVisibility(View.VISIBLE);
         binding.horizontalScrollOther.setVisibility(View.GONE);
 
+        int width = getScreenWidth(3);
+        int height = getScreenHeight(5);
+
         addLabelHeader(subForm, binding.llMultiInputParentOne);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
             HeaderTextView firstColumn = new HeaderTextView(EditFormActivity.this);
             firstColumn.setText(subForm.getQuestionOptions().get(j).getQNA_Values());
             firstColumn.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-            int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-            int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+            //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            //int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
             firstColumn.setLayoutParams(params);
             firstColumn.setPadding(10,10,10,10);
@@ -1160,6 +1166,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         if (questionOption.getQNA_Values().contains("4.16")) {
             isTotal = true;
         }
+        int width = getScreenWidth(3);
+        int height = getScreenHeight(5);
+
         CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,linked_question_index);
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             String value = candidateDetails.getSurvey_que_values();
@@ -1177,8 +1186,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setSubForm(questionOption.getQNAOption_ID());
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+               // int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                //int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
@@ -1196,8 +1205,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setIndex(j);
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
+                //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                //int height = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_height_one));
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, height);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
@@ -1271,13 +1280,16 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         questionOption.setQNA_Values("अनु क्र.");
         binding.tvHeader.setVisibility(View.GONE);
         binding.setOption(questionOption);
+
+        int width = getScreenWidth(3);
+
         for (int j = 0; j < labels.size(); j++) {
             //add Header To Layout
             HeaderTextView textView = new HeaderTextView(EditFormActivity.this);
             int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 10);
             textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-            int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -2231,6 +2243,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         }
                     }
                 }
+            } else if (view instanceof RelativeLayout) {
+                RelativeLayout relativeLayout = (RelativeLayout) view;
+                getAllChildViewIterative(relativeLayout);
+
             }
         }
     }
@@ -2393,6 +2409,28 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             }
         });
         builder.show();
+    }
+
+    private int getScreenWidth(int divider) {
+        int screen_width = Helper.getScreenWidth(EditFormActivity.this);
+        int width = screen_width / divider;
+
+        if (width == 0) {
+            width = screen_width / 2;
+        }
+
+        return width;
+    }
+
+    private int getScreenHeight(int divider) {
+        int screen_width = Helper.getScreenWidth(EditFormActivity.this);
+        int height = screen_width / divider;
+
+        if (height == 0) {
+            height = screen_width / 4;
+        }
+
+        return height;
     }
 
 }

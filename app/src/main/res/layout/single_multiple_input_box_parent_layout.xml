@@ -34,7 +34,6 @@
                     android:maxLines="100"
                     android:textColor="@color/black"/>
 
-
             </LinearLayout>
 
             <HorizontalScrollView

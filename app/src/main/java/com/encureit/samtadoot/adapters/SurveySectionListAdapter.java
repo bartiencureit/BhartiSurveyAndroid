@@ -51,7 +51,7 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
         } else {
             holder.binding.setImgVisibility(View.GONE);
         }
-        holder.binding.tvQueSectionName.setOnClickListener(view -> {
+        holder.binding.tvQueSectionCount.setOnClickListener(view -> {
             if (isEditMode) {
                 if (mListener != null) {
                     mListener.onItemClicked(listItem,position);

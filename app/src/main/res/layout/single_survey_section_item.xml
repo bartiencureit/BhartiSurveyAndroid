@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:text= "@{@string/generic_name(sectionId)}"
+                    android:text= "@{@string/generic_name(surveySection.sectionName)}"
                     android:textColor="@color/textBlackColor" />
 
                 <TextView
@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textSize="16sp"
+                    android:visibility="gone"
                     android:text="@={surveySection.sectionNumber}"
                     android:textColor="@color/textBlackColor"
                     android:layout_marginStart="5dp" />

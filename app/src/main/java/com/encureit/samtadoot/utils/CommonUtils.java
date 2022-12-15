@@ -1,8 +1,14 @@
 package com.encureit.samtadoot.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.core.widget.AutoSizeableTextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +21,11 @@ import java.util.UUID;
 public class CommonUtils {
 
     private static final String TAG = "act_CommonUtils";
+    private static TextView textView;
+    private static int autoSizeMinTextSize;
+    private static int autoSizeMaxTextSize;
+    private static int autoSizeStepGranularity;
+    private static int unit;
 
     /**
      * Returns the font name.
@@ -124,6 +135,27 @@ public class CommonUtils {
     public static int dip2pix(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip,
                 context.getResources().getDisplayMetrics());
+    }
+
+    @SuppressLint("RestrictedApi")
+    public static void setAutoSizeTextTypeUniformWithConfiguration(
+            @NonNull TextView textView,
+            int autoSizeMinTextSize,
+            int autoSizeMaxTextSize,
+            int autoSizeStepGranularity,
+            int unit) throws IllegalArgumentException {
+        CommonUtils.textView = textView;
+        CommonUtils.autoSizeMinTextSize = autoSizeMinTextSize;
+        CommonUtils.autoSizeMaxTextSize = autoSizeMaxTextSize;
+        CommonUtils.autoSizeStepGranularity = autoSizeStepGranularity;
+        CommonUtils.unit = unit;
+        if (Build.VERSION.SDK_INT >= 26) {
+            textView.setAutoSizeTextTypeUniformWithConfiguration(
+                    autoSizeMinTextSize, autoSizeMaxTextSize, autoSizeStepGranularity, unit);
+        } else if (textView instanceof AutoSizeableTextView) {
+            ((AutoSizeableTextView) textView).setAutoSizeTextTypeUniformWithConfiguration(
+                    autoSizeMinTextSize, autoSizeMaxTextSize, autoSizeStepGranularity, unit);
+        }
     }
 
 }

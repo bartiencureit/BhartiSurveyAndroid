@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.encureit.samtadoot.Helpers.GlobalHelper;
+import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.login.LoginActivity;
@@ -37,26 +38,36 @@ public class SplashPresenter implements SplashContract.Presenter {
         //String loginDate = "2019/10/28";
         String currentDate = getCurrentDateOnly();
         if (!loginDate.isEmpty()) {
-            try {
-                Date currentD = myFormat.parse(currentDate);
-                Date loginD = myFormat.parse(loginDate);
-                long difference = currentD.getTime() - loginD.getTime();
-                float daysBetween = (difference / (1000 * 60 * 60 * 24));
-                /* You can also convert the milliseconds to days using this method
-                 * float daysBetween = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS) */
-                if (daysBetween < 15) {
-                   mViewModel.startAnotherActivity(DashboardActivity.class, true);
-                    Log.i("SplashActivity::", "direct start");
-                } else {
-                    try {
-                        mViewModel.startAnotherActivity(LoginActivity.class, true);
-                    } catch (Exception e) {
-                        Log.e(TAG, "checkLastLoginDate: "+e.getMessage() );
+            if (DatabaseUtil.on().getSurveyQuestionDao().getAllFlowableCodes().size() > 0) {
+
+                try {
+                    Date currentD = myFormat.parse(currentDate);
+                    Date loginD = myFormat.parse(loginDate);
+                    long difference = currentD.getTime() - loginD.getTime();
+                    float daysBetween = (difference / (1000 * 60 * 60 * 24));
+                    /* You can also convert the milliseconds to days using this method
+                     * float daysBetween = TimeUnit.DAYS.convert(difference, TimeUnit.MILLISECONDS) */
+                    if (daysBetween < 15) {
+                        mViewModel.startAnotherActivity(DashboardActivity.class, true);
+                        Log.i("SplashActivity::", "direct start");
+                    } else {
+                        try {
+                            mViewModel.startAnotherActivity(LoginActivity.class, true);
+                        } catch (Exception e) {
+                            Log.e(TAG, "checkLastLoginDate: " + e.getMessage());
+                        }
+                        Log.i("SplashActivity::", "login expired start");
                     }
-                    Log.i("SplashActivity::", "login expired start");
+                } catch (Exception e) {
+                    ScreenHelper.showErrorSnackBar(rootView, e.getMessage());
                 }
-            } catch (Exception e) {
-                ScreenHelper.showErrorSnackBar(rootView,e.getMessage());
+            } else {
+                try {
+                    mViewModel.startAnotherActivity(LoginActivity.class, true);
+                } catch (Exception e) {
+                    Log.e(TAG, "checkLastLoginDate: "+e.getMessage());
+                }
+                Log.i("SplashActivity::", "Freshly start");
             }
         } else {
             // todo direct login screen

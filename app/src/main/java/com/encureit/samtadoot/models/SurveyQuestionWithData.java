@@ -353,6 +353,8 @@ public class SurveyQuestionWithData implements Parcelable {
                 return InputType.TYPE_CLASS_TEXT;
             case "numeric":
                 return InputType.TYPE_CLASS_NUMBER;
+            case "floats":
+                return InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
         }
 
         return InputType.TYPE_CLASS_TEXT;

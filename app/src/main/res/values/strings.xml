@@ -58,5 +58,13 @@
     <string name="first_fill_first_section">"आधी पहिला सेक्शन भरणे बंधनकारक आहे"</string>
     <string name="last_updated">Last Updated :</string>
     <string name="calculate">Calculate</string>
+    <array name="autosize_text_sizes">
+        <item>10sp</item>
+        <item>12sp</item>
+        <item>20sp</item>
+        <item>40sp</item>
+        <item>100sp</item>
+    </array>
+
 
 </resources>

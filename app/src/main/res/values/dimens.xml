@@ -2,7 +2,7 @@
 <resources>
     
     <dimen name="multi_input_width">100dp</dimen>
-    <dimen name="multi_input_height_one">30dp</dimen>
+    <dimen name="multi_input_height_one">40dp</dimen>
     <dimen name="multi_input_width_header">100dp</dimen>
     <dimen name="image_height_width">150dp</dimen>
     <dimen name="image_parent_height_width">160dp</dimen>
