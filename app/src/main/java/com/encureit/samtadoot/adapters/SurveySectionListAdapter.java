@@ -1,6 +1,7 @@
 package com.encureit.samtadoot.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySectionListAdapter.SurveySectionHolder> {
+    private static final String TAG = SurveySectionListAdapter.class.getName();
     private final Context context;
     private final List<SurveySection> stateList;
     private final OnItemClickListener mListener;
@@ -43,7 +45,10 @@ public class SurveySectionListAdapter extends RecyclerView.Adapter<SurveySection
         holder.binding.setSurveySection(listItem);
         holder.binding.setSectionId(String.valueOf(position+1));
         if (isEditMode && formId != null) {
-            if (DatabaseUtil.on().isSectionFilled(listItem,formId)) {
+            Log.e(TAG, "onBindViewHolder: "+listItem.getSurveySection_ID());
+            boolean isFilled = DatabaseUtil.on().isSectionFilled(listItem,formId);
+            Log.e(TAG, "isSectionFilled: "+isFilled);
+            if (isFilled) {
                 holder.binding.setImgVisibility(View.VISIBLE);
             } else {
                 holder.binding.setImgVisibility(View.GONE);

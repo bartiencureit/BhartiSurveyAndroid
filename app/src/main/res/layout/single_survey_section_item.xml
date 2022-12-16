@@ -38,13 +38,14 @@
 
                 <TextView
                     android:id="@+id/tv_que_section_count"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:textSize="16sp"
                     android:text= "@{@string/generic_name(surveySection.sectionName)}"
                     android:textColor="@color/textBlackColor" />
 
-                <TextView
+              <!--  <TextView
                     android:id="@+id/tv_que_section_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -53,7 +54,7 @@
                     android:visibility="gone"
                     android:text="@={surveySection.sectionNumber}"
                     android:textColor="@color/textBlackColor"
-                    android:layout_marginStart="5dp" />
+                    android:layout_marginStart="5dp" />-->
 
                 <ImageView
                     android:layout_width="wrap_content"
