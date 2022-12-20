@@ -1067,7 +1067,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         int width = getScreenWidth(3);
         int height = getScreenHeight(5);
 
-        addLabelHeader(subForm, binding.llMultiInputParentOne);
+        addLabelHeaderFourthSection(subForm, binding.llMultiInputParentOne);
         for (int j = 0; j < subForm.getQuestionOptions().size(); j++) {
             HeaderTextView firstColumn = new HeaderTextView(EditFormActivity.this);
             firstColumn.setText(subForm.getQuestionOptions().get(j).getQNA_Values());
@@ -1236,6 +1236,10 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setOption(questionOption);
         int tot_input_boxes = Integer.parseInt(questionOption.getDisplayTypeCount());
+        int width = getScreenWidth(4);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+        binding.tvHeader.setLayoutParams(params);
+
         CandidateDetails candidateDetails = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionId(questionOption.getQNAOption_ID(), formId,linked_question_index);
         if (candidateDetails != null && candidateDetails.getSurvey_que_values() != null) {
             String value = candidateDetails.getSurvey_que_values();
@@ -1249,8 +1253,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setSubForm(questionOption.getQNAOption_ID());
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
             }
@@ -1263,8 +1267,8 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 textView.setSubForm(questionOption.getQNAOption_ID());
                 textView.setLinked_id(linked_question_index);
                 textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
-                int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+                params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                 textView.setLayoutParams(params);
                 binding.llInputBox.addView(textView);
             }
@@ -1272,7 +1276,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         llMultiInputParent.addView(binding.getRoot());
     }
 
-    private void addLabelHeader(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
+    /**
+     * Label Header for fourth section
+     * @param subForm
+     * @param llMultiInputParent
+     */
+    private void addLabelHeaderFourthSection(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
         String label_header = subForm.getLabelHeader().replaceAll("\".*\"", "");
         List<String> labels = Arrays.asList(label_header.split(","));
         SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
@@ -1291,6 +1300,39 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
             //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+            textView.setLayoutParams(params);
+            textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            textView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            textView.setMinLines(2);
+            textView.setMaxLines(100);
+            textView.setText(labels.get(j));
+            binding.llInputBox.addView(textView);
+        }
+        llMultiInputParent.addView(binding.getRoot());
+    }
+
+    private void addLabelHeader(SurveyQuestionWithData subForm, LinearLayout llMultiInputParent) {
+        String label_header = subForm.getLabelHeader().replaceAll("\".*\"", "");
+        List<String> labels = Arrays.asList(label_header.split(","));
+        SingleMultipleInputBoxLayoutBinding binding = SingleMultipleInputBoxLayoutBinding.inflate(getLayoutInflater());
+        QuestionOption questionOption = new QuestionOption();
+        questionOption.setQNA_Values("अनु क्र.");
+        //binding.tvHeader.setVisibility(View.GONE);
+        binding.setOption(questionOption);
+
+        int width = getScreenWidth(4);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+
+        binding.tvHeader.setLayoutParams(params);
+
+        for (int j = 0; j < labels.size(); j++) {
+            //add Header To Layout
+            HeaderTextView textView = new HeaderTextView(EditFormActivity.this);
+            int ten_dp = CommonUtils.dip2pix(EditFormActivity.this, 10);
+            textView.setPadding(ten_dp, ten_dp, ten_dp, ten_dp);
+            textView.setBackground(getResources().getDrawable(R.drawable.balck_border_rectangle));
+            //int width = CommonUtils.dip2pix(EditFormActivity.this, getResources().getDimensionPixelSize(R.dimen.multi_input_width));
+            params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(params);
             textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             textView.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
