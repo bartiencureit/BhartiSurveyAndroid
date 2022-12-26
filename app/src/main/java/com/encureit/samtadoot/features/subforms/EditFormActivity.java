@@ -6,44 +6,32 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.service.autofill.Validator;
-import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
 import com.encureit.samtadoot.Helpers.Helper;
 import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.custom.CustomCheckBox;
 
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout;
 import com.encureit.samtadoot.custom.CustomRadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -55,16 +43,12 @@ import androidx.core.content.FileProvider;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
-import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
 import com.encureit.samtadoot.Helpers.GPSTracker;
 import com.encureit.samtadoot.Helpers.GlobalHelper;
 import com.encureit.samtadoot.Helpers.PermissionsUtil;
 import com.encureit.samtadoot.R;
 import com.encureit.samtadoot.base.BaseActivity;
-import com.encureit.samtadoot.custom.CustomCheckBox;
 import com.encureit.samtadoot.custom.CustomDropDown;
-import com.encureit.samtadoot.custom.CustomEditText;
-import com.encureit.samtadoot.custom.CustomRadioButton;
 import com.encureit.samtadoot.custom.CustomRadioGroup;
 import com.encureit.samtadoot.custom.HeaderTextView;
 import com.encureit.samtadoot.database.DatabaseUtil;
@@ -915,7 +899,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     }
                 }
             }
-            EditFormActivity.this.recreate();
+           // EditFormActivity.this.recreate();
         }
 
     }
@@ -943,7 +927,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 populateLabelText(subForm, null);
                 break;
             case AppKeys.HEADER_TEXT:
-                populateHeaderText(subForm, null);
+                populateHeaderText(subForm);
                 break;
             case AppKeys.DROPDOWNMULTISELECT:
                 populateDropDownMultiSelect(subForm, null);
@@ -1014,7 +998,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         return keyPairBoolDataList;
     }
 
-    private void populateHeaderText(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateHeaderText(SurveyQuestionWithData subForm) {
         try {
             HeaderTextView headerTextView = new HeaderTextView(EditFormActivity.this);
             if (subForm.getRequired() != null && subForm.getRequired().equalsIgnoreCase("true")) {
@@ -1551,9 +1535,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                                 }
                             }
                         } else {
+                            binding.llChildQuestion.removeAllViews();
+                            binding.llChildQuestion.setVisibility(View.GONE);
                             if (DatabaseUtil.on().isPresentInOtherValues(questionOption)) {
-                                binding.llChildQuestion.removeAllViews();
-                                binding.llChildQuestion.setVisibility(View.GONE);
                                 binding.edtDropDownItar.setVisibility(View.VISIBLE);
                                 binding.edtDropDownItar.setSubForm(questionOption);
                                 binding.edtDropDownItar.setLinked_id(0);
@@ -1568,8 +1552,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                                 }
 
                             } else {
-                                binding.llChildQuestion.removeAllViews();
-                                binding.llChildQuestion.setVisibility(View.GONE);
                                 binding.edtDropDownItar.setVisibility(View.GONE);
                             }
                         }
@@ -1615,14 +1597,102 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                         .getCandidateDetailsByQuestionOptionIdList(questionOption.getQNAOption_ID(), formId,0);
                 if (details != null && details.size() > 0 && questionOption.getQNA_Values().equalsIgnoreCase(details.get(0).getSurvey_que_values())) {
                     radioButton.setChecked(true);
-                    radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),0);
+                    //radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),0);
+                    try {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                            binding.llChildQuestion.removeAllViews();
+                            binding.btnAddAnother.setVisibility(View.GONE);
+                            String childQuesId = questionOption.getChildQuestionId();
+                            if (childQuesId.contains(",")) {
+                                //binding.btnAddAnother.setVisibility(View.GONE);
+                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                for (int j = 0; j < childQuesIds.size(); j++) {
+                                    String currentChildQuesId = null;
+                                    try {
+                                        currentChildQuesId = childQuesIds.get(j);
+                                    } catch (Exception e) {
+                                        Log.e("TAG", "radioButtonOnClick: "+e.getMessage());
+                                    }
+                                    SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(currentChildQuesId,formId);
+                                    if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(linked_question_index);
+                                        addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                    }
+                                    binding.llChildQuestion.addView(singleBinding.getRoot());
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(childQuesId,formId);
+                                if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(linked_question_index);
+                                    addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.llChildQuestion.removeAllViews();
+                            binding.btnAddAnother.setVisibility(View.GONE);
+                        }
+                    } catch (Exception e) {
+                        //Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "radioButtonOnClick: "+e.getMessage() );
+                    }
                 }
                 radioButton.setSubForm(questionOption);
                 radioButton.setLinked_id(0);
                 radioButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),0);
+                       // radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),0);
+                        try {
+                            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                                //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                                binding.llChildQuestion.removeAllViews();
+                                binding.btnAddAnother.setVisibility(View.GONE);
+                                String childQuesId = questionOption.getChildQuestionId();
+                                if (childQuesId.contains(",")) {
+                                    //binding.btnAddAnother.setVisibility(View.GONE);
+                                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                    for (int j = 0; j < childQuesIds.size(); j++) {
+                                        String currentChildQuesId = null;
+                                        try {
+                                            currentChildQuesId = childQuesIds.get(j);
+                                        } catch (Exception e) {
+                                            Log.e("TAG", "radioButtonOnClick: "+e.getMessage());
+                                        }
+                                        SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(currentChildQuesId,formId);
+                                        if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            childQues.setLinked_question_id(linked_question_index);
+                                            addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                        }
+                                        binding.llChildQuestion.addView(singleBinding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(childQuesId,formId);
+                                    if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(linked_question_index);
+                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                binding.llChildQuestion.setVisibility(View.GONE);
+                                binding.llChildQuestion.removeAllViews();
+                                binding.btnAddAnother.setVisibility(View.GONE);
+                            }
+                        } catch (Exception e) {
+                            //Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e("TAG", "radioButtonOnClick: "+e.getMessage() );
+                        }
                     }
                 });
             }
@@ -1633,7 +1703,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
     }
 
-    private void radioButtonOnClick(QuestionOption questionOption, LinearLayout llChildQuestion, View root,int linked_question_index) {
+    /*private void radioButtonOnClick(QuestionOption questionOption, LinearLayout llChildQuestion, View root,int linked_question_index) {
         try {
             if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
                 //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
@@ -1677,7 +1747,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             Log.e("TAG", "radioButtonOnClick: "+e.getMessage() );
         }
     }
-
+*/
     /**
      * @param subForm
      * @date 7-3-2022
@@ -2134,12 +2204,100 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 List<CandidateDetails> details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionOptionIdList(questionOption.getQNAOption_ID(), formId,subForm.getLinked_question_id());
                 if (details != null && details.size() > 0 && questionOption.getQNA_Values().equalsIgnoreCase(details.get(0).getSurvey_que_values())) {
                     radioButton.setChecked(true);
-                    radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
+                    //radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
+                    try {
+                        if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                            //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                            binding.llChildQuestion.removeAllViews();
+                            binding.btnAddAnother.setVisibility(View.GONE);
+                            String childQuesId = questionOption.getChildQuestionId();
+                            if (childQuesId.contains(",")) {
+                                //binding.btnAddAnother.setVisibility(View.GONE);
+                                List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                for (int j = 0; j < childQuesIds.size(); j++) {
+                                    String currentChildQuesId = null;
+                                    try {
+                                        currentChildQuesId = childQuesIds.get(j);
+                                    } catch (Exception e) {
+                                        Log.e("TAG", "radioButtonOnClick: "+e.getMessage());
+                                    }
+                                    SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(currentChildQuesId,formId);
+                                    if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
+                                        addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                    }
+                                    binding.llChildQuestion.addView(singleBinding.getRoot());
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(childQuesId,formId);
+                                if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                    childQues.setLinked_question_id(subForm.getLinked_question_id());
+                                    addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                    binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                }
+                            }
+                        } else {
+                            binding.llChildQuestion.setVisibility(View.GONE);
+                            binding.llChildQuestion.removeAllViews();
+                            binding.btnAddAnother.setVisibility(View.GONE);
+                        }
+                    } catch (Exception e) {
+                        //Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TAG", "radioButtonOnClick: "+e.getMessage() );
+                    }
                 }
                 radioButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
+                        //radioButtonOnClick(questionOption, binding.llChildQuestion, binding.getRoot(),subForm.getLinked_question_id());
+                        try {
+                            if (questionOption.getChildQuestionId() != null && !questionOption.getChildQuestionId().equalsIgnoreCase("null") && !questionOption.getChildQuestionId().equalsIgnoreCase("")) {
+                                //Toast.makeText(SubFormActivity.this, "Id : "+questionOption.getChildQuestionId(), Toast.LENGTH_SHORT).show();
+                                binding.llChildQuestion.removeAllViews();
+                                binding.btnAddAnother.setVisibility(View.GONE);
+                                String childQuesId = questionOption.getChildQuestionId();
+                                if (childQuesId.contains(",")) {
+                                    //binding.btnAddAnother.setVisibility(View.GONE);
+                                    List<String> childQuesIds = Arrays.asList(childQuesId.split(","));
+                                    for (int j = 0; j < childQuesIds.size(); j++) {
+                                        String currentChildQuesId = null;
+                                        try {
+                                            currentChildQuesId = childQuesIds.get(j);
+                                        } catch (Exception e) {
+                                            Log.e("TAG", "radioButtonOnClick: "+e.getMessage());
+                                        }
+                                        SingleLinkedChildDataBinding singleBinding = SingleLinkedChildDataBinding.inflate(getLayoutInflater());
+                                        SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(currentChildQuesId,formId);
+                                        if (childQues != null) {
+//                                        populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                            childQues.setLinked_question_id(subForm.getLinked_question_id());
+                                            addSingleChildViews(childQues, singleBinding.llChildQuestion, singleBinding.getRoot());
+                                        }
+                                        binding.llChildQuestion.addView(singleBinding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    SurveyQuestionWithData childQues = DatabaseUtil.on().getChildQuestionFromIdInEdit(childQuesId,formId);
+                                    if (childQues != null) {
+//                                    populateChildQuestionInput(childQues,binding.llChildQuestion);
+                                        childQues.setLinked_question_id(subForm.getLinked_question_id());
+                                        addSingleChildViews(childQues, binding.llChildQuestion, binding.getRoot());
+                                        binding.llChildQuestion.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            } else {
+                                binding.llChildQuestion.setVisibility(View.GONE);
+                                binding.llChildQuestion.removeAllViews();
+                                binding.btnAddAnother.setVisibility(View.GONE);
+                            }
+                        } catch (Exception e) {
+                            //Toast.makeText(EditFormActivity.this, "Error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Log.e("TAG", "radioButtonOnClick: "+e.getMessage() );
+                        }
                     }
                 });
             }
