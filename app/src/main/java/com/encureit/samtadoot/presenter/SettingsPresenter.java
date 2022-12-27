@@ -262,6 +262,8 @@ public class SettingsPresenter implements SettingsContract.Presenter {
     }
 
     public void getSurveySectionFields() {
+        mActivity.key = mActivity.helper.getSharedPreferencesHelper().getLoginKey();
+        RetrofitClient.key = mActivity.key;
         mActivity.service.getSurveySection().enqueue(new Callback<SurveySectionResponseModel>() {
             @Override
             public void onResponse(@NonNull Call<SurveySectionResponseModel> call, @NonNull Response<SurveySectionResponseModel> response) {
