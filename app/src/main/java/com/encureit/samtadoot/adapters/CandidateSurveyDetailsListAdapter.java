@@ -38,6 +38,8 @@ public class CandidateSurveyDetailsListAdapter extends RecyclerView.Adapter<Cand
         if (candidateDetails != null) {
             holder.binding.setCandidateSurveyDetails(listItem);
             holder.binding.setCandidateDetails(candidateDetails);
+            int id = position + 1;
+            holder.binding.setId(""+id);
         }
 
         holder.binding.tvQueSectionName.setOnClickListener(view -> {

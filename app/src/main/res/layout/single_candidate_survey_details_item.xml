@@ -12,6 +12,10 @@
             name="candidateSurveyDetails"
             type="com.encureit.samtadoot.models.CandidateSurveyStatusDetails"
             />
+
+        <variable
+            name="id"
+            type="String" />
     </data>
 
     <LinearLayout
@@ -45,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="18sp"
-                        android:text= "@{@string/generic_name(candidateSurveyDetails.id)}"
+                        android:text= "@{@string/generic_name(id)}"
                         android:textColor="@color/textBlackColor" />
 
                     <TextView
