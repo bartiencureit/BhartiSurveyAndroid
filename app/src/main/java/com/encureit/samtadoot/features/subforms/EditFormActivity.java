@@ -532,7 +532,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     }
 
     private void editAllCandidates() {
-        if(candidateDetails.size() > 0) {
+        if(candidateDetails.size() > 0 || multiEditTextValues.size() > 0) {
             DatabaseUtil.on().getCandidateDetailsDao().deleteCandidateBySectionIdFormId(section.getSurveySection_ID(),formId);
         }
 
@@ -633,16 +633,20 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 } else {
                     saveCandidate(subForm.getParentQuestionId(),subForm.getSurveyQuestion_ID(),"0",editText.getText().toString(),linked_id);
                 }
-            } else if (!TextUtils.isEmpty(editText.getText().toString())) {
-                if (subForm.getQuestions().contains("ईमेल")) {
-                    if (Helper.emailValidator(editText.getText().toString())) {
-                        saveCandidate(subForm.getParentQuestionId(),subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
+            } else  {
+                if (!TextUtils.isEmpty(editText.getText().toString())) {
+                    if (subForm.getQuestions().contains("ईमेल")) {
+                        if (Helper.emailValidator(editText.getText().toString())) {
+                            saveCandidate(subForm.getParentQuestionId(), subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
+                        } else {
+                            isValid = false;
+                            editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        }
                     } else {
-                        isValid = false;
-                        editText.setError("कृपया बरोबर ईमेल आय डी टाका");
+                        saveCandidate(subForm.getParentQuestionId(), subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
                     }
                 } else {
-                    saveCandidate(subForm.getParentQuestionId(),subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
+                    isValid = false;
                 }
             }
 
@@ -669,8 +673,12 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 } else {
                     saveCandidate(subForm.getParentQuestionId(),questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
                 }
-            } else if (!TextUtils.isEmpty(editText.getText().toString())) {
-                saveCandidate(subForm.getParentQuestionId(),questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
+            } else {
+                if (!TextUtils.isEmpty(editText.getText().toString())) {
+                    saveCandidate(subForm.getParentQuestionId(), questionOption.getSurveyQuestion_ID(), questionOption.getQNAOption_ID(), editText.getText().toString(), linked_id);
+                } else {
+                    isValid = false;
+                }
             }
         }
     }
