@@ -213,7 +213,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 initData();
             }
         } catch (Exception e) {
-            //Toast.makeText(mActivity, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.e("TAG", "onCreate: "+e.getMessage() );
         }
     }
@@ -233,7 +232,6 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                 }
             }, 1000);
         } catch (Exception e) {
-            //Toast.makeText(mActivity, "Error : "+e.getMessage(), Toast.LENGTH_SHORT).show();
             Log.e("TAG", "initData: "+e.getMessage() );
         }
     }
