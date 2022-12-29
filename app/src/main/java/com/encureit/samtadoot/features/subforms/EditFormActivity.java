@@ -920,25 +920,25 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
     private void populateQuestion(SurveyQuestionWithData subForm) {
         switch (subForm.getQuestionType().getQuestionTypes()) {
             case AppKeys.INPUT_TEXT:
-                populateInputText(subForm, null);
+                populateInputText(subForm);
                 break;
             case AppKeys.RADIO_BUTTON:
-                populateRadioButton(subForm, null);
+                populateRadioButton(subForm);
                 break;
             case AppKeys.CHECKBOX:
-                populateCheckBox(subForm, null);
+                populateCheckBox(subForm);
                 break;
             case AppKeys.DROPDOWNLIST:
-                populateDropDown(subForm, null);
+                populateDropDown(subForm);
                 break;
             case AppKeys.LABEL_TEXT:
-                populateLabelText(subForm, null);
+                populateLabelText(subForm);
                 break;
             case AppKeys.HEADER_TEXT:
                 populateHeaderText(subForm);
                 break;
             case AppKeys.DROPDOWNMULTISELECT:
-                populateDropDownMultiSelect(subForm, null);
+                populateDropDownMultiSelect(subForm);
                 break;
         }
     }
@@ -948,7 +948,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 8-3-2022
      * Insert Multi Select Dropdown
      */
-    private void populateDropDownMultiSelect(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateDropDownMultiSelect(SurveyQuestionWithData subForm) {
         SingleDropDownMultiSelectListLayoutBinding binding = SingleDropDownMultiSelectListLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
 
@@ -1026,7 +1026,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
         }
     }
 
-    private void populateLabelText(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateLabelText(SurveyQuestionWithData subForm) {
         try {
             if (!TextUtils.isEmpty(subForm.getLabelHeader().trim())) {
                 //add multiple edittext
@@ -1341,7 +1341,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 8-3-2022
      * Insert check box in layout
      */
-    private void populateCheckBox(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateCheckBox(SurveyQuestionWithData subForm) {
         try {
             SingleCheckBoxesLayoutBinding binding = SingleCheckBoxesLayoutBinding.inflate(getLayoutInflater());
             binding.setSubForm(subForm);
@@ -1497,7 +1497,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 8-3-2022
      * Insert DropDown in layout
      */
-    private void populateDropDown(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateDropDown(SurveyQuestionWithData subForm) {
         try {
             SingleDropDownListLayoutBinding binding = SingleDropDownListLayoutBinding.inflate(getLayoutInflater());
             binding.setSubForm(subForm);
@@ -1587,7 +1587,7 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 8-3-2022
      * Insert radio button in layout
      */
-    private void populateRadioButton(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateRadioButton(SurveyQuestionWithData subForm) {
         try {
             SingleRadioButtonsLayoutBinding binding = SingleRadioButtonsLayoutBinding.inflate(getLayoutInflater());
             binding.setSubForm(subForm);
@@ -1761,17 +1761,13 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
      * @date 7-3-2022
      * Insert CustomEditText with Label in layout
      */
-    private void populateInputText(SurveyQuestionWithData subForm, CandidateDetails candidateDetails) {
+    private void populateInputText(SurveyQuestionWithData subForm) {
         try {
             SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
-            if (candidateDetails != null) {
-                subForm.setValue(candidateDetails.getSurvey_que_values());
-            } else {
-                String quesId = subForm.getSurveyQuestion_ID();
-                CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(quesId, formId,0);
-                if (details != null) {
-                    subForm.setValue(details.getSurvey_que_values());
-                }
+            String quesId = subForm.getSurveyQuestion_ID();
+            CandidateDetails details = DatabaseUtil.on().getCandidateDetailsDao().getCandidateDetailsByQuestionIdFormId(quesId, formId,0);
+            if (details != null) {
+                subForm.setValue(details.getSurvey_que_values());
             }
             ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
             binding.edtHeader.setSubForm(subForm);
