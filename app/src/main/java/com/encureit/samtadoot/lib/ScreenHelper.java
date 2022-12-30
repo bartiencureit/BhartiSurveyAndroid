@@ -191,6 +191,8 @@ public class ScreenHelper {
         } else {
             if (subForm.getQuestions().equalsIgnoreCase("मोबाईल") || subForm.getQuestions().contains("मोबाईल")) {
                 editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
+            }else if (subForm.getQuestions().equalsIgnoreCase("संपर्क क्रमांक") || subForm.getQuestions().contains("संपर्क क्रमांक")) {
+                editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(10) });
             } else if (subForm.getQuestions().equalsIgnoreCase("आधार क्रमांक") || subForm.getQuestions().contains("आधार क्रमांक")) {
                 editText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(12) });
             } else if (subForm.getQuestions().equalsIgnoreCase("ईमेल") || subForm.getQuestions().contains("ईमेल")) {
