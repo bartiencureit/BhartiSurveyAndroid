@@ -643,9 +643,9 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
                     } else {
                         saveCandidate(subForm.getParentQuestionId(), subForm.getSurveyQuestion_ID(), "0", editText.getText().toString(), linked_id);
                     }
-                } else {
+                }/* else {
                     isValid = false;
-                }
+                }*/
             }
 
         } else if (editText.getSubForm() instanceof QuestionOption) {
