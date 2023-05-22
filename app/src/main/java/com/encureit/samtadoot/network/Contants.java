@@ -9,9 +9,10 @@ public class Contants {
     public static final String CANDIDATE_BASE_URL = BASE_URL+"getdata/";
     public static final String LOGIN_BASE_URL = BASE_URL+"login_api/";
     public static final String GET_LOGIN = "isLoginf";
+    public static final String GET_LOGOUT = "logout";
     public static final String GET_VERIFY_OTP = "verifyOTP";
-    public static final String GET_SURVEY_TYPE = "getForms";
-    //public static final String GET_SURVEY_TYPE = "get_survey_masters";
+    //public static final String GET_SURVEY_TYPE = "getForms";
+    public static final String GET_SURVEY_TYPE = "get_survey_masters";
     public static final String GET_SURVEY_SECTION = "get_survey_section";
     public static final String GET_SURVEY_QUESTION = "get_survey_question";
     public static final String GET_QUESTION_OPTION = "get_question_option";
@@ -29,6 +30,7 @@ public class Contants {
     public static String FOLDER_PATH = Environment.getExternalStorageDirectory().getPath() + "/" + FOLDER_SAVE;
 
     public static String APP_LOGIN_USER_ID = "com.encureit.samtadoot.SYNC_LOGIN_USER_ID";
+    public static String APP_SERVER_LOGIN_USER_ID = "com.encureit.samtadoot.SYNC_LOGIN_SERVER_USER_ID";
     public static String APP_LOGIN_USER_KEY = "com.encureit.samtadoot.SYNC_LOGIN_USER_KEY";
     public static String APP_USER_ID = "com.encureit.samtadoot.SYNC_USER_ID";
     public static String APP_LOGIN_USER_ROLE = "com.encureit.samtadoot.SYNC_LOGIN_USER_ROLE";

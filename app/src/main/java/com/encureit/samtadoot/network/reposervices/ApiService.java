@@ -120,6 +120,7 @@ public interface ApiService {
             @Field("user_id") String user_id
     );
 
+
     /**
      * @date 10-3-2022
      * gets all question validation
@@ -152,7 +153,8 @@ public interface ApiService {
             @Part("Latitude") RequestBody Latitude,
             @Part("Longitude") RequestBody Longitude,
             @Part MultipartBody.Part image
-            );
+    );
+
 
 }
 
