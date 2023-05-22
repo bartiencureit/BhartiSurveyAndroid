@@ -6,9 +6,6 @@ import android.util.AttributeSet;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatCheckBox;
-import androidx.appcompat.widget.AppCompatRadioButton;
-
-import com.encureit.samtadoot.models.SurveyQuestionWithData;
 
 public class CustomCheckBox extends AppCompatCheckBox {
     private Object subForm;

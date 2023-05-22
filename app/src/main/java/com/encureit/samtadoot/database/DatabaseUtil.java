@@ -2,7 +2,6 @@ package com.encureit.samtadoot.database;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 
 import com.encureit.samtadoot.database.dao.AssignDetailsDao;
 import com.encureit.samtadoot.database.dao.CandidateDetailsDao;
@@ -15,7 +14,6 @@ import com.encureit.samtadoot.database.dao.SurveyQuestionDao;
 import com.encureit.samtadoot.database.dao.SurveySectionDao;
 import com.encureit.samtadoot.database.dao.SurveyTypeDao;
 import com.encureit.samtadoot.database.dao.UserDeviceDetailsDao;
-import com.encureit.samtadoot.databinding.SingleLinkedChildDataBinding;
 import com.encureit.samtadoot.models.AssignDetails;
 import com.encureit.samtadoot.models.CandidateDetails;
 import com.encureit.samtadoot.models.CandidateSurveyStatusDetails;

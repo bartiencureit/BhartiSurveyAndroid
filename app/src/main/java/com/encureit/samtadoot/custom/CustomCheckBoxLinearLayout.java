@@ -5,10 +5,10 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import com.encureit.samtadoot.models.QuestionOption;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
-import com.encureit.samtadoot.models.QuestionOption;
 
 public class CustomCheckBoxLinearLayout extends LinearLayout {
     QuestionOption questionOption = null;

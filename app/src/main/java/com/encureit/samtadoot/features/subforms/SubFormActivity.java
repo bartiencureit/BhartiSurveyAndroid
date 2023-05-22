@@ -1,17 +1,17 @@
 package com.encureit.samtadoot.features.subforms;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,31 +19,27 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-import com.encureit.samtadoot.Helpers.Helper;
-import com.encureit.samtadoot.adapters.ImageAdapter;
-import com.encureit.samtadoot.custom.CustomCheckBox;
-
+import android.widget.DatePicker;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
-import com.androidbuts.multispinnerfilter.MultiSpinnerSearch;
 import com.encureit.samtadoot.Helpers.GPSTracker;
 import com.encureit.samtadoot.Helpers.GlobalHelper;
+import com.encureit.samtadoot.Helpers.Helper;
 import com.encureit.samtadoot.Helpers.PermissionsUtil;
 import com.encureit.samtadoot.R;
-import com.encureit.samtadoot.adapters.DropDownArrayAdapter;
+import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
+import com.encureit.samtadoot.custom.CustomCheckBox;
 import com.encureit.samtadoot.custom.CustomDropDown;
 import com.encureit.samtadoot.custom.CustomEditText;
 import com.encureit.samtadoot.custom.CustomRadioButton;
 import com.encureit.samtadoot.custom.CustomRadioGroup;
+import com.encureit.samtadoot.custom.DrawableClickListener;
 import com.encureit.samtadoot.custom.HeaderTextView;
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivitySubFormBinding;
@@ -58,7 +54,6 @@ import com.encureit.samtadoot.databinding.SingleLinkedChildDataBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleMultipleInputBoxParentLayoutBinding;
 import com.encureit.samtadoot.databinding.SingleRadioButtonsLayoutBinding;
-import com.encureit.samtadoot.features.dashboard.DashboardActivity;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.lib.ScreenHelper;
 import com.encureit.samtadoot.models.CandidateDetails;
@@ -74,29 +69,23 @@ import com.encureit.samtadoot.utils.CommonUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.ActivityResultRegistry;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.FileProvider;
-import androidx.databinding.DataBindingUtil;
 
 import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 import static com.encureit.samtadoot.utils.CommonUtils.getRandomAlphaNumericString;
-
-import javax.xml.validation.Validator;
 
 public class SubFormActivity extends BaseActivity implements SubFormContract.ViewModel {
     private ActivitySubFormBinding mBinding;
@@ -220,7 +209,7 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             saveMultiInputBoxDataToDb();
         }
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(), getResources().getString(R.string.data_sync_finished_successfully));
-        Intent intent = new Intent(SubFormActivity.this, QuesSectionListActivity.class);
+        Intent intent = new Intent(SubFormActivity.this, com.encureit.samtadoot.features.subforms.QuesSectionListActivity.class);
         intent.putExtra(AppKeys.SURVEY_TYPE, surveyType);
         intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS, candidateSurveyStatusDetails);
         startActivityOnTop(true, intent);
@@ -750,28 +739,28 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
      * save check boxes data to sqlite db
      *
     private void getCheckBoxCandidate(CustomCheckBox checkBox) {
-        QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
-        int linked_id = checkBox.getLinked_id();
+    QuestionOption questionOption = (QuestionOption) checkBox.getSubForm();
+    int linked_id = checkBox.getLinked_id();
 
-        CandidateDetails candidateDetail = new CandidateDetails();
-        candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
-        candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
-        candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
-        candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
-        candidateDetail.setSurvey_que_values(checkBox.getText().toString());
-        candidateDetail.setFormID(formId);
-        candidateDetail.setCurrent_Form_Status("GY");
-        candidateDetail.setAge_value("0");
-        candidateDetail.setSurvey_StartDate(start_date);
-        candidateDetail.setSurvey_EndDate(end_date);
-        candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
-        candidateDetail.setLatitude(Double.toString(latitude));
-        candidateDetail.setLongitude(Double.toString(longitude));
-        if (linked_id > 0) {
-            candidateDetail.setIndex_if_linked_question(linked_id);
-        }
+    CandidateDetails candidateDetail = new CandidateDetails();
+    candidateDetail.setSurvey_master_id(surveyType.getForm_unique_id());
+    candidateDetail.setSurvey_section_id(section.getSurveySection_ID());
+    candidateDetail.setSurvey_que_id(questionOption.getSurveyQuestion_ID());
+    candidateDetail.setSurvey_que_option_id(questionOption.getQNAOption_ID());
+    candidateDetail.setSurvey_que_values(checkBox.getText().toString());
+    candidateDetail.setFormID(formId);
+    candidateDetail.setCurrent_Form_Status("GY");
+    candidateDetail.setAge_value("0");
+    candidateDetail.setSurvey_StartDate(start_date);
+    candidateDetail.setSurvey_EndDate(end_date);
+    candidateDetail.setCreated_by(helper.getSharedPreferencesHelper().getLoginUserId());
+    candidateDetail.setLatitude(Double.toString(latitude));
+    candidateDetail.setLongitude(Double.toString(longitude));
+    if (linked_id > 0) {
+    candidateDetail.setIndex_if_linked_question(linked_id);
+    }
 
-        candidateDetails.add(candidateDetail);
+    candidateDetails.add(candidateDetail);
     }*/
 
     /**
@@ -1373,9 +1362,46 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
         SingleInputBoxLayoutBinding binding = SingleInputBoxLayoutBinding.inflate(getLayoutInflater());
         binding.setSubForm(subForm);
         ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
-        binding.edtHeader.setText("");
+        if (subForm.getValue().isEmpty()||subForm.getValue().trim().equalsIgnoreCase("")) {
+            binding.edtHeader.setText("");
+        } else {
+            binding.edtHeader.setEnabled(false);
+        }
         binding.edtHeader.setSubForm(subForm);
         binding.edtHeader.setLinked_id(0);
+        if (subForm.getValidationType().equalsIgnoreCase("date")) {
+            binding.edtHeader.setKeyListener(null);
+            binding.edtHeader.setCursorVisible(false);
+            binding.edtHeader.setPressed(false);
+            binding.edtHeader.setFocusable(false);
+            Drawable img = binding.edtHeader.getContext().getResources().getDrawable(R.drawable.ic_ico_date);
+            binding.edtHeader.setCompoundDrawablesWithIntrinsicBounds(null,null,img,null);
+            binding.edtHeader.setDrawableClickListener(new DrawableClickListener() {
+                @Override
+                public void onClick(DrawablePosition target) {
+                    Calendar calendar = Calendar.getInstance();
+                    //@SuppressLint("RestrictedApi")
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            SubFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                            Calendar cal = Calendar.getInstance();
+                            cal.set(Calendar.YEAR,year);
+                            cal.set(Calendar.MONTH,month);
+                            cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                            String date = sdf.format(cal.getTime());
+                            binding.edtHeader.setText(""+date);
+                        }
+                    },
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DAY_OF_MONTH)
+                    );
+                    datePickerDialog.show();
+                }
+            });
+        }
         binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
@@ -1750,9 +1776,47 @@ public class SubFormActivity extends BaseActivity implements SubFormContract.Vie
             binding.setSubForm(subForm);
             /*binding.edtHeader.setInputType(subForm.getInputValidation());*/
             ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
-            binding.edtHeader.setText("");
+            if (subForm.getValue().isEmpty()||subForm.getValue().trim().equalsIgnoreCase("")) {
+                binding.edtHeader.setText("");
+            } else {
+                binding.edtHeader.setEnabled(false);
+            }
             binding.edtHeader.setSubForm(subForm);
             binding.edtHeader.setLinked_id(subForm.getLinked_question_id());
+
+            if (subForm.getValidationType().equalsIgnoreCase("date")) {
+                binding.edtHeader.setKeyListener(null);
+                binding.edtHeader.setCursorVisible(false);
+                binding.edtHeader.setPressed(false);
+                binding.edtHeader.setFocusable(false);
+                Drawable img = binding.edtHeader.getContext().getResources().getDrawable(R.drawable.ic_ico_date);
+                binding.edtHeader.setCompoundDrawablesWithIntrinsicBounds(null,null,img,null);
+                binding.edtHeader.setDrawableClickListener(new DrawableClickListener() {
+                    @Override
+                    public void onClick(DrawablePosition target) {
+                        Calendar calendar = Calendar.getInstance();
+                        //@SuppressLint("RestrictedApi")
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                SubFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.YEAR,year);
+                                cal.set(Calendar.MONTH,month);
+                                cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                String date = sdf.format(cal.getTime());
+                                binding.edtHeader.setText(""+date);
+                            }
+                        },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                        );
+                        datePickerDialog.show();
+                    }
+                });
+            }
             binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {

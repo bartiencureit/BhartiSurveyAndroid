@@ -1,18 +1,17 @@
 package com.encureit.samtadoot.features.subforms;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import com.encureit.samtadoot.R;
-import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivityViewImageBinding;
 import com.encureit.samtadoot.lib.AppKeys;
 import com.encureit.samtadoot.models.CandidateDetails;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 public class ViewImageActivity extends AppCompatActivity {
     private ActivityViewImageBinding binding;

@@ -1,6 +1,5 @@
 package com.encureit.samtadoot.database.dao;
 
-
 import com.encureit.samtadoot.database.BaseDao;
 import com.encureit.samtadoot.database.TableNames;
 import com.encureit.samtadoot.models.CandidateDetails;

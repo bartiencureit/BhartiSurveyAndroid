@@ -17,6 +17,9 @@ public interface AssignDetailsDao extends BaseDao<AssignDetails> {
     @Query("SELECT * FROM " + TableNames.TABLE_USER_ASSIGNED_DATA)
     List<AssignDetails> getAllFlowableCodes();
 
+    @Query("SELECT * FROM "+ TableNames.TABLE_USER_ASSIGNED_DATA +" WHERE status =:village ")
+    List<AssignDetails> getAllVillageCodes(String village);
+
     @Query("SELECT COUNT(id) FROM " + TableNames.TABLE_USER_ASSIGNED_DATA)
     int getRowCount();
 

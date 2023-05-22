@@ -1,7 +1,5 @@
 package com.encureit.samtadoot.features.subforms;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -15,6 +13,8 @@ import com.encureit.samtadoot.models.contracts.CandidateSurveyDetailsContract;
 import com.encureit.samtadoot.presenter.CandidateSurveyDetailsPresenter;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 public class CandidateSurveyActivity extends BaseActivity implements CandidateSurveyDetailsContract.ViewModel {
     private ActivityCandidateSurveyBinding mBinding;

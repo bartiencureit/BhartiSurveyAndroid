@@ -4,12 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatEditText;
-
-import java.lang.Object;
-
 public class CustomRadioGroup extends RadioGroup {
     private Object subForm;
     private int linked_id;

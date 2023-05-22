@@ -1,14 +1,9 @@
 package com.encureit.samtadoot.custom;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.os.Build;
 import android.util.AttributeSet;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatSpinner;
-
-import java.lang.Object;
 
 public class CustomDropDown extends AppCompatSpinner {
     private Object subForm;

@@ -2,12 +2,9 @@ package com.encureit.samtadoot.custom;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.RadioGroup;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatRadioButton;
-
-import com.encureit.samtadoot.models.SurveyQuestionWithData;
 
 public class CustomRadioButton extends AppCompatRadioButton {
     private Object subForm;

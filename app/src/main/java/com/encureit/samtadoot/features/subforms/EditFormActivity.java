@@ -1,12 +1,12 @@
 package com.encureit.samtadoot.features.subforms;
 
-import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
-
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,36 +20,29 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
-import com.encureit.samtadoot.Helpers.Helper;
-import com.encureit.samtadoot.adapters.ImageAdapter;
-import com.encureit.samtadoot.custom.CustomCheckBox;
-
+import android.widget.DatePicker;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-
-import com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout;
-import com.encureit.samtadoot.custom.CustomRadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import com.encureit.samtadoot.custom.CustomEditText;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
 import com.encureit.samtadoot.Helpers.GPSTracker;
 import com.encureit.samtadoot.Helpers.GlobalHelper;
+import com.encureit.samtadoot.Helpers.Helper;
 import com.encureit.samtadoot.Helpers.PermissionsUtil;
 import com.encureit.samtadoot.R;
+import com.encureit.samtadoot.adapters.ImageAdapter;
 import com.encureit.samtadoot.base.BaseActivity;
+import com.encureit.samtadoot.custom.CustomCheckBox;
+import com.encureit.samtadoot.custom.CustomCheckBoxLinearLayout;
 import com.encureit.samtadoot.custom.CustomDropDown;
+import com.encureit.samtadoot.custom.CustomEditText;
+import com.encureit.samtadoot.custom.CustomRadioButton;
 import com.encureit.samtadoot.custom.CustomRadioGroup;
+import com.encureit.samtadoot.custom.DrawableClickListener;
 import com.encureit.samtadoot.custom.HeaderTextView;
 import com.encureit.samtadoot.database.DatabaseUtil;
 import com.encureit.samtadoot.databinding.ActivityEditFormBinding;
@@ -79,11 +72,21 @@ import com.encureit.samtadoot.utils.CommonUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+
+import static com.encureit.samtadoot.utils.CommonUtils.getCurrentDate;
 
 public class EditFormActivity extends BaseActivity implements EditFormContract.ViewModel {
     private final List<CandidateDetails> multiEditTextValues = new ArrayList<>();
@@ -1723,6 +1726,40 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
             binding.edtHeader.setSubForm(subForm);
             binding.edtHeader.setLinked_id(0);
+
+            if (subForm.getValidationType().equalsIgnoreCase("date")) {
+                binding.edtHeader.setKeyListener(null);
+                binding.edtHeader.setCursorVisible(false);
+                binding.edtHeader.setPressed(false);
+                binding.edtHeader.setFocusable(false);
+                Drawable img = binding.edtHeader.getContext().getResources().getDrawable(R.drawable.ic_ico_date);
+                binding.edtHeader.setCompoundDrawablesWithIntrinsicBounds(null,null,img,null);
+                binding.edtHeader.setDrawableClickListener(new DrawableClickListener() {
+                    @Override
+                    public void onClick(DrawablePosition target) {
+                        Calendar calendar = Calendar.getInstance();
+                        //@SuppressLint("RestrictedApi")
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                EditFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.YEAR,year);
+                                cal.set(Calendar.MONTH,month);
+                                cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                String date = sdf.format(cal.getTime());
+                                binding.edtHeader.setText(""+date);
+                            }
+                        },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                        );
+                        datePickerDialog.show();
+                    }
+                });
+            }
             binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {
@@ -2292,6 +2329,39 @@ public class EditFormActivity extends BaseActivity implements EditFormContract.V
             binding.edtHeader.setSubForm(subForm);
             binding.edtHeader.setLinked_id(subForm.getLinked_question_id());
             ScreenHelper.setEditTextValidation(subForm, binding.edtHeader);
+            if (subForm.getValidationType().equalsIgnoreCase("date")) {
+                binding.edtHeader.setKeyListener(null);
+                binding.edtHeader.setCursorVisible(false);
+                binding.edtHeader.setPressed(false);
+                binding.edtHeader.setFocusable(false);
+                Drawable img = binding.edtHeader.getContext().getResources().getDrawable(R.drawable.ic_ico_date);
+                binding.edtHeader.setCompoundDrawablesWithIntrinsicBounds(null,null,img,null);
+                binding.edtHeader.setDrawableClickListener(new DrawableClickListener() {
+                    @Override
+                    public void onClick(DrawablePosition target) {
+                        Calendar calendar = Calendar.getInstance();
+                        //@SuppressLint("RestrictedApi")
+                        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                                EditFormActivity.this, new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker datePicker, int year, int month, int dayOfMonth) {
+                                Calendar cal = Calendar.getInstance();
+                                cal.set(Calendar.YEAR,year);
+                                cal.set(Calendar.MONTH,month);
+                                cal.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                String date = sdf.format(cal.getTime());
+                                binding.edtHeader.setText(""+date);
+                            }
+                        },
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH),
+                                calendar.get(Calendar.DAY_OF_MONTH)
+                        );
+                        datePickerDialog.show();
+                    }
+                });
+            }
             binding.edtHeader.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View view, boolean b) {

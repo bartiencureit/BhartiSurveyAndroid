@@ -1,7 +1,5 @@
 package com.encureit.samtadoot.features.subforms;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +17,10 @@ import com.encureit.samtadoot.presenter.SurveySectionPresenter;
 
 import java.util.List;
 
-public class QuesSectionListActivity extends BaseActivity implements SurveySectionContract.ViewModel {
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+public class
+QuesSectionListActivity extends BaseActivity implements SurveySectionContract.ViewModel {
     private ActivityQuesSectionListBinding mBinding;
     private SurveySectionPresenter mPresenter;
     private SurveySectionListAdapter mAdapter;
@@ -69,7 +70,7 @@ public class QuesSectionListActivity extends BaseActivity implements SurveySecti
             mAdapter = new SurveySectionListAdapter(this, FormId, inEditMode, list, (listModel, position) -> {
                 Intent intent;
                 if (inEditMode) {
-                    intent = new Intent(QuesSectionListActivity.this, EditFormActivity.class);
+                    intent = new Intent(QuesSectionListActivity.this, com.encureit.samtadoot.features.subforms.EditFormActivity.class);
                     intent.putExtra(AppKeys.SURVEY_TYPE,surveyType);
                     intent.putExtra(AppKeys.SURVEY_SECTION,listModel);
                     intent.putExtra(AppKeys.CANDIDATE_SURVEY_DETAILS,candidateSurveyStatusDetails);

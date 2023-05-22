@@ -1,7 +1,6 @@
 package com.encureit.samtadoot.features.setting;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -86,6 +85,7 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),message);
         mPresenter.setUpData(helper);
+
         //dismissPercentageDialog();
     }
 
@@ -96,18 +96,13 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         finish();
-
-        /*Intent startMain = new Intent(Intent.ACTION_MAIN);
-        startMain.addCategory(Intent.CATEGORY_HOME);
-        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mActivity.startActivity(startMain);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            mActivity.finishAffinity();
-        } else {
-            mActivity.finish();
-        }
-        android.os.Process.killProcess(android.os.Process.myPid());*/
     }
+
+//    @Override
+//    public void logoutServer() {
+//        startProgressDialog(mBinding.getRoot());
+//        mPresenter.logout_url(helper.getSharedPreferencesHelper().getLoginUserId());
+//    }
 
     @Override
     public void getSurveySectionFieldsResponse(SurveySectionResponseModel surveySectionResponseModel) {
@@ -238,6 +233,9 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
     private void addSurveyMasterToDb(List<SurveyType> surveyTypes) {
         DatabaseUtil.on().getSurveyTypeDao().nukeTable();
         DatabaseUtil.on().insertAllSurveyTypes(surveyTypes);
+//        helper.getSharedPreferencesHelper().setLastSyncTimeAllData(getCurrentDate());
+//        dismissProgressDialog();
+//        mPresenter.setUpData(helper);
         mPresenter.getOtherValues();
     }
 
@@ -252,5 +250,12 @@ public class SettingsActivity extends BaseActivity implements SettingsContract.V
         helper.getSharedPreferencesHelper().setLastSyncTimeCandidateData(getCurrentDate());
         ScreenHelper.showGreenSnackBar(mBinding.getRoot(),message);
         mPresenter.setUpData(helper);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(SettingsActivity.this,DashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

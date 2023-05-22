@@ -6,11 +6,9 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -24,7 +22,6 @@ import com.encureit.samtadoot.lib.NetworkHelper;
 import com.encureit.samtadoot.network.Contants;
 import com.encureit.samtadoot.network.reposervices.ApiService;
 import com.encureit.samtadoot.network.retrofit.RetrofitClient;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
@@ -79,14 +76,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void startProgressDialog(View view) {
-        try {
-            this.view = view;
-            view.setEnabled(false);
-            snackbar = Snackbar.make(view,getResources().getString(R.string.loading), BaseTransientBottomBar.LENGTH_INDEFINITE);
-            snackbar.show();
-        } catch (Resources.NotFoundException e) {
-            Log.e("TAG", "startProgressDialog: "+e.getMessage());
-        }
+        progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setMessage("Loading..");
+        progressDialog.show();
     }
 
     public void showDialog(Activity activity, String msg,int total) {
@@ -162,9 +154,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void dismissProgressDialog() {
-        if(snackbar != null) {
-            snackbar.dismiss();
-        }
+        progressDialog.dismiss();
     }
 
     public boolean isInternetConnected() {
